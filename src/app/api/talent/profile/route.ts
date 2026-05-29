@@ -1,0 +1,56 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth";
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await requireAuth();
+    if (session.role !== "talent") {
+      return NextResponse.json(
+        { success: false, message: "Hanya talent yang bisa update profil" },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json();
+    const { bio, rate_per_hour, rate_per_project, availability, location, portfolio_url } = body;
+
+    const profile = await prisma.talentProfile.findUnique({
+      where: { userId: session.userId },
+    });
+
+    if (!profile) {
+      return NextResponse.json(
+        { success: false, message: "Profil belum dibuat. Selesaikan onboarding terlebih dahulu." },
+        { status: 404 }
+      );
+    }
+
+    const updated = await prisma.talentProfile.update({
+      where: { id: profile.id },
+      data: {
+        ...(bio !== undefined && { bio }),
+        ...(rate_per_hour !== undefined && { ratePerHour: rate_per_hour }),
+        ...(rate_per_project !== undefined && { ratePerProject: rate_per_project }),
+        ...(availability !== undefined && { availability }),
+        ...(location !== undefined && { location }),
+        ...(portfolio_url !== undefined && { portfolioUrl: portfolio_url }),
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Profil berhasil diupdate",
+      data: { id: updated.id },
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+    console.error("[ProfilePatch]", error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Nyamby Database Schema",
+  "version": "1.0.0",
+  "description": "PostgreSQL schema untuk MVP Nyamby — Hackathon Digdaya X 2026",
+  "tech": {
+    "database": "PostgreSQL",
+    "orm": "Prisma",
+    "id_strategy": "UUID v4 untuk semua primary key"
+  },
+  "tables": {
+    "users": {
+      "description": "Tabel utama autentikasi. Satu user bisa berperan sebagai talent atau client.",
+      "fields": {
+        "id": { "type": "UUID", "constraint": "PRIMARY KEY", "note": "Auto-generated" },
+        "email": { "type": "VARCHAR(255)", "constraint": "UNIQUE NOT NULL", "note": "Email untuk login" },
+        "password_hash": { "type": "TEXT", "constraint": "NOT NULL", "note": "Bcrypt hash, JANGAN simpan plain text" },
+        "role": { "type": "ENUM", "values": ["talent", "client"], "constraint": "NOT NULL", "note": "Role pengguna di platform" },
+        "full_name": { "type": "VARCHAR(255)", "constraint": "NOT NULL", "note": "Nama lengkap" },
+        "avatar_url": { "type": "TEXT", "constraint": "NULLABLE", "note": "URL foto profil dari Cloudinary/Supabase" },
+        "created_at": { "type": "TIMESTAMP", "constraint": "DEFAULT NOW()", "note": "Waktu registrasi" },
+        "updated_at": { "type": "TIMESTAMP", "constraint": "AUTO UPDATE", "note": "Waktu update terakhir" }
+      },
+      "relations": [],
+      "indexes": ["email"]
+    },
+    "talent_profiles": {
+      "description": "Profil detail talenta. Relasi 1-to-1 dengan users (hanya untuk role=talent).",
+      "fields": {
+        "id": { "type": "UUID", "constraint": "PRIMARY KEY" },
+        "user_id": { "type": "UUID", "constraint": "UNIQUE NOT NULL", "note": "FK → users.id, 1-to-1" },
+        "bio": { "type": "TEXT", "constraint": "NULLABLE", "note": "Deskripsi diri singkat" },
+        "category": { "type": "ENUM", "values": ["web_dev", "graphic_designer"], "constraint": "NOT NULL", "note": "Kategori utama talenta (Phase 1)" },
+        "rate_per_hour": { "type": "DECIMAL(10,2)", "constraint": "NULLABLE", "note": "Rate per jam dalam IDR" },
+        "rate_per_project": { "type": "DECIMAL(10,2)", "constraint": "NULLABLE", "note": "Rate per project dalam IDR" },
+        "availability": { "type": "ENUM", "values": ["available", "busy", "unavailable"], "constraint": "DEFAULT 'available'", "note": "Status ketersediaan real-time" },
+        "location": { "type": "VARCHAR(255)", "constraint": "NULLABLE", "note": "Kota/lokasi talenta" },
+        "portfolio_url": { "type": "TEXT", "constraint": "NULLABLE", "note": "Link Behance, GitHub, dll" },
+        "portfolio_file": { "type": "TEXT", "constraint": "NULLABLE", "note": "Path file yang diupload ke storage" },
+        "created_at": { "type": "TIMESTAMP", "constraint": "DEFAULT NOW()" }
+      },
+      "relations": [
+        { "type": "BELONGS_TO", "table": "users", "foreign_key": "user_id", "on_delete": "CASCADE" },
+        { "type": "HAS_MANY", "table": "talent_skills", "foreign_key": "talent_profile_id" },
+        { "type": "HAS_MANY", "table": "skill_gap_analyses", "foreign_key": "talent_profile_id" },
+        { "type": "HAS_MANY", "table": "job_matches", "foreign_key": "talent_profile_id" }
+      ],
+      "indexes": ["user_id", "category", "availability"]
+    },
+    "skills": {
+      "description": "Master tabel skill. Digunakan oleh talent_skills dan job_required_skills.",
+      "fields": {
+        "id": { "type": "UUID", "constraint": "PRIMARY KEY" },
+        "name": { "type": "VARCHAR(100)", "constraint": "UNIQUE NOT NULL", "note": "Nama skill. Contoh: React, Figma, Tailwind CSS" },
+        "category": { "type": "VARCHAR(100)", "constraint": "NOT NULL", "note": "Kelompok skill. Contoh: Frontend, Design Tool, Backend" }
+      },
+      "relations": [
+        { "type": "HAS_MANY", "table": "talent_skills", "foreign_key": "skill_id" },
+        { "type": "HAS_MANY", "table": "job_required_skills", "foreign_key": "skill_id" }
+      ],
+      "indexes": ["name", "category"],
+      "seed_data": {
+        "web_dev": ["HTML/CSS", "JavaScript", "TypeScript", "React", "Next.js", "Vue.js", "Node.js", "Express.js", "PostgreSQL", "MongoDB", "Tailwind CSS", "REST API", "Git"],
+        "graphic_designer": ["Figma", "Adobe Illustrator", "Adobe Photoshop", "Canva", "UI/UX Design", "Brand Identity", "Motion Graphics", "Adobe XD"]
+      }
+    },
+    "talent_skills": {
+      "description": "Tabel pivot: skill yang dimiliki talenta beserta level kemampuannya.",
+      "fields": {
+        "id": { "type": "UUID", "constraint": "PRIMARY KEY" },
+        "talent_profile_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → talent_profiles.id" },
+        "skill_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → skills.id" },
+        "level": { "type": "ENUM", "values": ["beginner", "intermediate", "expert"], "constraint": "NOT NULL", "note": "Level kemampuan talenta di skill ini" }
+      },
+      "relations": [
+        { "type": "BELONGS_TO", "table": "talent_profiles", "foreign_key": "talent_profile_id", "on_delete": "CASCADE" },
+        { "type": "BELONGS_TO", "table": "skills", "foreign_key": "skill_id", "on_delete": "CASCADE" }
+      ],
+      "unique_constraint": ["talent_profile_id", "skill_id"],
+      "indexes": ["talent_profile_id", "skill_id"]
+    },
+    "skill_gap_analyses": {
+      "description": "Hasil AI Skill Gap Analysis per talenta. Hanya 1 record aktif per talenta (is_latest=true).",
+      "fields": {
+        "id": { "type": "UUID", "constraint": "PRIMARY KEY" },
+        "talent_profile_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → talent_profiles.id" },
+        "recommended_skills": {
+          "type": "JSONB",
+          "constraint": "NOT NULL",
+          "note": "Output dari GPT-4o. Array of recommendations.",
+          "schema": [
+            {
+              "skill_name": "string",
+              "priority": "high | medium | low",
+              "reason": "string",
+              "estimated_impact": "string"
+            }
+          ]
+        },
+        "summary": { "type": "TEXT", "constraint": "NOT NULL", "note": "Ringkasan narasi dari AI" },
+        "generated_at": { "type": "TIMESTAMP", "constraint": "DEFAULT NOW()", "note": "Waktu analisis dijalankan" },
+        "is_latest": { "type": "BOOLEAN", "constraint": "DEFAULT true", "note": "Set false untuk record lama saat generate ulang" }
+      },
+      "relations": [
+        { "type": "BELONGS_TO", "table": "talent_profiles", "foreign_key": "talent_profile_id", "on_delete": "CASCADE" }
+      ],
+      "indexes": ["talent_profile_id", "is_latest"]
+    },
+    "jobs": {
+      "description": "Job yang diposting oleh client. Satu job punya satu escrow dan banyak match.",
+      "fields": {
+        "id": { "type": "UUID", "constraint": "PRIMARY KEY" },
+        "client_user_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → users.id (hanya role=client)" },
+        "title": { "type": "VARCHAR(255)", "constraint": "NOT NULL", "note": "Judul job" },
+        "description": { "type": "TEXT", "constraint": "NOT NULL", "note": "Deskripsi lengkap kebutuhan" },
+        "category": { "type": "ENUM", "values": ["web_dev", "graphic_designer"], "constraint": "NOT NULL" },
+        "budget_min": { "type": "DECIMAL(12,2)", "constraint": "NULLABLE", "note": "Budget minimum dalam IDR" },
+        "budget_max": { "type": "DECIMAL(12,2)", "constraint": "NULLABLE", "note": "Budget maksimum dalam IDR" },
+        "deadline": { "type": "DATE", "constraint": "NULLABLE", "note": "Target selesai" },
+        "status": {
+          "type": "ENUM",
+          "values": ["active", "matched", "in_progress", "completed", "cancelled"],
+          "constraint": "DEFAULT 'active'",
+          "note": "Status job dalam lifecycle"
+        },
+        "created_at": { "type": "TIMESTAMP", "constraint": "DEFAULT NOW()" }
+      },
+      "relations": [
+        { "type": "BELONGS_TO", "table": "users", "foreign_key": "client_user_id" },
+        { "type": "HAS_MANY", "table": "job_required_skills", "foreign_key": "job_id" },
+        { "type": "HAS_MANY", "table": "job_matches", "foreign_key": "job_id" },
+        { "type": "HAS_ONE", "table": "escrow_transactions", "foreign_key": "job_id" }
+      ],
+      "indexes": ["client_user_id", "status", "category"]
+    },
+    "job_required_skills": {
+      "description": "Tabel pivot: skill yang dibutuhkan oleh suatu job.",
+      "fields": {
+        "id": { "type": "UUID", "constraint": "PRIMARY KEY" },
+        "job_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → jobs.id" },
+        "skill_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → skills.id" },
+        "is_mandatory": { "type": "BOOLEAN", "constraint": "DEFAULT true", "note": "true = skill wajib, false = nice-to-have" }
+      },
+      "relations": [
+        { "type": "BELONGS_TO", "table": "jobs", "foreign_key": "job_id", "on_delete": "CASCADE" },
+        { "type": "BELONGS_TO", "table": "skills", "foreign_key": "skill_id", "on_delete": "CASCADE" }
+      ],
+      "unique_constraint": ["job_id", "skill_id"],
+      "indexes": ["job_id"]
+    },
+    "job_matches": {
+      "description": "Hasil AI Job Matching. Setiap record = satu talenta yang direkomendasikan untuk satu job.",
+      "fields": {
+        "id": { "type": "UUID", "constraint": "PRIMARY KEY" },
+        "job_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → jobs.id" },
+        "talent_profile_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → talent_profiles.id" },
+        "match_score": { "type": "DECIMAL(5,2)", "constraint": "NOT NULL", "note": "Skor 0.00–100.00 dari AI GPT-4o" },
+        "strengths": { "type": "JSONB", "constraint": "NOT NULL", "note": "Array of string: kelebihan talenta untuk job ini" },
+        "gaps": { "type": "JSONB", "constraint": "NOT NULL", "note": "Array of string: skill yang kurang" },
+        "reasoning": { "type": "TEXT", "constraint": "NOT NULL", "note": "Narasi penjelasan AI" },
+        "recommendation": {
+          "type": "ENUM",
+          "values": ["highly_recommended", "recommended", "not_recommended"],
+          "constraint": "NOT NULL"
+        },
+        "status": {
+          "type": "ENUM",
+          "values": ["recommended", "applied", "accepted", "rejected"],
+          "constraint": "DEFAULT 'recommended'",
+          "note": "Diupdate saat talenta accept/reject, atau client pilih talenta"
+        },
+        "generated_at": { "type": "TIMESTAMP", "constraint": "DEFAULT NOW()" }
+      },
+      "relations": [
+        { "type": "BELONGS_TO", "table": "jobs", "foreign_key": "job_id", "on_delete": "CASCADE" },
+        { "type": "BELONGS_TO", "table": "talent_profiles", "foreign_key": "talent_profile_id", "on_delete": "CASCADE" }
+      ],
+      "unique_constraint": ["job_id", "talent_profile_id"],
+      "indexes": ["job_id", "talent_profile_id", "match_score", "status"]
+    },
+    "escrow_transactions": {
+      "description": "Mock escrow per job. Satu job = satu escrow (1-to-1). Tidak perlu payment gateway live untuk MVP.",
+      "fields": {
+        "id": { "type": "UUID", "constraint": "PRIMARY KEY" },
+        "job_id": { "type": "UUID", "constraint": "UNIQUE NOT NULL", "note": "FK → jobs.id, 1-to-1 relationship" },
+        "client_user_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → users.id (pihak pembayar)" },
+        "talent_user_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → users.id (pihak penerima)" },
+        "amount": { "type": "DECIMAL(12,2)", "constraint": "NOT NULL", "note": "Nilai transaksi dalam IDR" },
+        "platform_fee": { "type": "DECIMAL(12,2)", "constraint": "NOT NULL", "note": "Fee platform. Default: 10% dari amount" },
+        "status": {
+          "type": "ENUM",
+          "values": ["held", "released", "refunded"],
+          "constraint": "DEFAULT 'held'",
+          "note": "held = dana ditahan, released = dikirim ke talenta, refunded = dikembalikan ke client"
+        },
+        "held_at": { "type": "TIMESTAMP", "constraint": "NULLABLE", "note": "Waktu dana ditahan (saat client konfirmasi)" },
+        "released_at": { "type": "TIMESTAMP", "constraint": "NULLABLE", "note": "Waktu dana dirilis (saat client approve hasil)" }
+      },
+      "relations": [
+        { "type": "BELONGS_TO", "table": "jobs", "foreign_key": "job_id", "on_delete": "RESTRICT" },
+        { "type": "BELONGS_TO", "table": "users", "foreign_key": "client_user_id" },
+        { "type": "BELONGS_TO", "table": "users", "foreign_key": "talent_user_id" }
+      ],
+      "indexes": ["job_id", "status"]
+    },
+    "notifications": {
+      "description": "In-app notifikasi untuk semua event penting di platform.",
+      "fields": {
+        "id": { "type": "UUID", "constraint": "PRIMARY KEY" },
+        "user_id": { "type": "UUID", "constraint": "NOT NULL", "note": "FK → users.id (penerima notifikasi)" },
+        "type": {
+          "type": "VARCHAR(100)",
+          "constraint": "NOT NULL",
+          "note": "Tipe notifikasi",
+          "valid_values": ["new_match", "job_offer", "job_accepted", "job_rejected", "payment_held", "payment_released", "job_submitted", "job_completed"]
+        },
+        "message": { "type": "TEXT", "constraint": "NOT NULL", "note": "Isi pesan yang ditampilkan ke user" },
+        "related_job_id": { "type": "UUID", "constraint": "NULLABLE", "note": "FK → jobs.id untuk konteks notifikasi" },
+        "is_read": { "type": "BOOLEAN", "constraint": "DEFAULT false" },
+        "created_at": { "type": "TIMESTAMP", "constraint": "DEFAULT NOW()" }
+      },
+      "relations": [
+        { "type": "BELONGS_TO", "table": "users", "foreign_key": "user_id", "on_delete": "CASCADE" }
+      ],
+      "indexes": ["user_id", "is_read", "created_at"]
+    }
+  },
+  "summary": {
+    "total_tables": 9,
+    "total_enums": 8,
+    "supports_features": [
+      "Auth dengan 2 role (talent & client)",
+      "Onboarding form talenta dengan skill multi-select",
+      "AI Skill Gap Analysis dengan output JSONB",
+      "Client post job dengan required skills",
+      "AI Job Matching dengan match score & reasoning",
+      "Job status lifecycle tracking",
+      "Mock escrow (held → released → refunded)",
+      "In-app notification system"
+    ]
+  }
+}

@@ -1,0 +1,645 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Nyamby API",
+    "version": "1.0.0",
+    "description": "API spec untuk MVP Nyamby — Next.js Route Handlers. Base URL: /api",
+    "contact": {
+      "name": "Satria Romanda"
+    }
+  },
+  "servers": [
+    { "url": "http://localhost:3000/api", "description": "Local Development" },
+    { "url": "https://nyamby.vercel.app/api", "description": "Production (Vercel)" }
+  ],
+  "tags": [
+    { "name": "Auth", "description": "Autentikasi dan manajemen session" },
+    { "name": "Talent", "description": "Profil dan dashboard talenta" },
+    { "name": "Jobs", "description": "CRUD job posting oleh client" },
+    { "name": "AI", "description": "AI Matching dan Skill Gap Analysis" },
+    { "name": "Escrow", "description": "Mock escrow transaction" },
+    { "name": "Notifications", "description": "In-app notification" }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register user baru",
+        "description": "Buat akun baru sebagai talent atau client",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "full_name", "role"],
+                "properties": {
+                  "email": { "type": "string", "format": "email", "example": "raka@email.com" },
+                  "password": { "type": "string", "minLength": 8, "example": "password123" },
+                  "full_name": { "type": "string", "example": "Raka Pratama" },
+                  "role": { "type": "string", "enum": ["talent", "client"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registrasi berhasil",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Akun berhasil dibuat",
+                  "data": { "id": "uuid", "email": "raka@email.com", "role": "talent" }
+                }
+              }
+            }
+          },
+          "400": { "description": "Email sudah terdaftar atau validasi gagal" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "user": { "id": "uuid", "email": "raka@email.com", "role": "talent" },
+                    "token": "jwt_token_here"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Email atau password salah" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Logout user",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Logout berhasil" }
+        }
+      }
+    },
+    "/talent/onboarding": {
+      "post": {
+        "tags": ["Talent"],
+        "summary": "Simpan onboarding form talenta",
+        "description": "Menyimpan data profil talenta dan **otomatis men-trigger AI Skill Gap Analysis** setelah berhasil.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["bio", "category", "skills"],
+                "properties": {
+                  "bio": { "type": "string", "example": "Web developer dengan fokus React dan Next.js" },
+                  "category": { "type": "string", "enum": ["web_dev", "graphic_designer"] },
+                  "rate_per_hour": { "type": "number", "example": 75000 },
+                  "rate_per_project": { "type": "number", "example": 2000000 },
+                  "availability": { "type": "string", "enum": ["available", "busy", "unavailable"] },
+                  "location": { "type": "string", "example": "Bandung" },
+                  "portfolio_url": { "type": "string", "format": "uri", "example": "https://github.com/raka" },
+                  "skills": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "skill_id": { "type": "string", "format": "uuid" },
+                        "level": { "type": "string", "enum": ["beginner", "intermediate", "expert"] }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Profil disimpan + AI Skill Gap triggered",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Profil berhasil dibuat. AI sedang menganalisis skill gap kamu.",
+                  "data": { "talent_profile_id": "uuid", "skill_gap_analysis_id": "uuid" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/talent/profile/{id}": {
+      "get": {
+        "tags": ["Talent"],
+        "summary": "Ambil profil talenta (publik)",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data profil talenta",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "id": "uuid",
+                    "full_name": "Raka Pratama",
+                    "bio": "Web developer...",
+                    "category": "web_dev",
+                    "rate_per_hour": 75000,
+                    "availability": "available",
+                    "location": "Bandung",
+                    "portfolio_url": "https://github.com/raka",
+                    "skills": [
+                      { "name": "React", "level": "expert" },
+                      { "name": "Next.js", "level": "intermediate" }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Profil tidak ditemukan" }
+        }
+      }
+    },
+    "/talent/profile": {
+      "patch": {
+        "tags": ["Talent"],
+        "summary": "Update profil talenta",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Semua field opsional — hanya kirim yang ingin diupdate",
+                "properties": {
+                  "bio": { "type": "string" },
+                  "rate_per_hour": { "type": "number" },
+                  "availability": { "type": "string", "enum": ["available", "busy", "unavailable"] },
+                  "skills": { "type": "array" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Profil berhasil diupdate" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/talent/dashboard": {
+      "get": {
+        "tags": ["Talent"],
+        "summary": "Data dashboard talenta",
+        "description": "Mengembalikan job rekomendasi (dari matching) + skill gap insight terbaru.",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "skill_gap": {
+                      "recommendations": [
+                        { "skill_name": "TypeScript", "priority": "high", "reason": "Muncul di 23 job aktif", "estimated_impact": "Rate naik 30%" }
+                      ],
+                      "summary": "Skill kamu sudah solid untuk entry level..."
+                    },
+                    "recommended_jobs": [
+                      { "job_id": "uuid", "title": "Landing Page UMKM", "match_score": 87, "budget_max": 2000000, "deadline": "2026-06-30" }
+                    ],
+                    "active_jobs": [
+                      { "job_id": "uuid", "title": "Brand Identity", "status": "in_progress" }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/talent/skill-gap": {
+      "get": {
+        "tags": ["Talent"],
+        "summary": "Ambil hasil AI Skill Gap Analysis terbaru",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "generated_at": "2026-05-28T10:00:00Z",
+                    "recommendations": [
+                      { "skill_name": "TypeScript", "priority": "high", "reason": "...", "estimated_impact": "..." },
+                      { "skill_name": "Jest / Testing", "priority": "medium", "reason": "...", "estimated_impact": "..." },
+                      { "skill_name": "Docker", "priority": "low", "reason": "...", "estimated_impact": "..." }
+                    ],
+                    "summary": "..."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/jobs": {
+      "post": {
+        "tags": ["Jobs"],
+        "summary": "Client buat job baru",
+        "description": "Menyimpan job posting dan **otomatis men-trigger AI Job Matching** terhadap semua talenta terdaftar.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "description", "category", "required_skills"],
+                "properties": {
+                  "title": { "type": "string", "example": "Landing Page untuk UMKM Kuliner" },
+                  "description": { "type": "string", "example": "Butuh landing page responsive dengan CTA dan form kontak..." },
+                  "category": { "type": "string", "enum": ["web_dev", "graphic_designer"] },
+                  "budget_min": { "type": "number", "example": 1000000 },
+                  "budget_max": { "type": "number", "example": 3000000 },
+                  "deadline": { "type": "string", "format": "date", "example": "2026-06-30" },
+                  "required_skills": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "skill_id": { "type": "string", "format": "uuid" },
+                        "is_mandatory": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Job berhasil diposting. AI sedang mencarikan talenta terbaik.",
+                  "data": { "job_id": "uuid", "status": "active", "matching_triggered": true }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Jobs"],
+        "summary": "List semua job aktif",
+        "parameters": [
+          { "name": "category", "in": "query", "schema": { "type": "string", "enum": ["web_dev", "graphic_designer"] } },
+          { "name": "skill", "in": "query", "schema": { "type": "string" }, "description": "Filter by skill name" },
+          { "name": "budget_max", "in": "query", "schema": { "type": "number" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "jobs": [
+                      { "id": "uuid", "title": "Landing Page UMKM", "category": "web_dev", "budget_max": 3000000, "deadline": "2026-06-30", "status": "active", "required_skills": ["React", "Tailwind CSS"] }
+                    ],
+                    "pagination": { "page": 1, "limit": 10, "total": 45 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/jobs/{id}": {
+      "get": {
+        "tags": ["Jobs"],
+        "summary": "Detail job + matched talents",
+        "description": "Untuk client: menampilkan job beserta shortlist talenta hasil matching. Untuk talent: menampilkan detail job beserta match score dirinya.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "job": { "id": "uuid", "title": "Landing Page UMKM", "description": "...", "status": "active" },
+                    "matched_talents": [
+                      {
+                        "talent_id": "uuid",
+                        "full_name": "Raka Pratama",
+                        "match_score": 87,
+                        "strengths": ["React Expert", "Pengalaman 2 tahun"],
+                        "gaps": ["Belum familiar TypeScript"],
+                        "recommendation": "highly_recommended",
+                        "status": "recommended"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/jobs/{id}/status": {
+      "patch": {
+        "tags": ["Jobs"],
+        "summary": "Update status job",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": { "type": "string", "enum": ["active", "matched", "in_progress", "completed", "cancelled"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Status berhasil diupdate" }
+        }
+      }
+    },
+    "/ai/match-job": {
+      "post": {
+        "tags": ["AI"],
+        "summary": "🤖 Jalankan AI Job Matching",
+        "description": "Dipanggil otomatis dari POST /jobs. Bisa juga dipanggil manual untuk refresh matching. Memanggil GPT-4o dan menyimpan hasilnya ke tabel job_matches.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["job_id"],
+                "properties": {
+                  "job_id": { "type": "string", "format": "uuid" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Matching selesai. 12 talenta dievaluasi.",
+                  "data": {
+                    "job_id": "uuid",
+                    "matches_generated": 12,
+                    "top_match": { "talent_id": "uuid", "match_score": 87, "recommendation": "highly_recommended" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/skill-gap": {
+      "post": {
+        "tags": ["AI"],
+        "summary": "🤖 Jalankan AI Skill Gap Analysis",
+        "description": "Dipanggil otomatis dari POST /talent/onboarding. Bisa dipanggil manual untuk refresh. Memanggil GPT-4o dan menyimpan hasilnya ke tabel skill_gap_analyses.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "talent_profile_id": { "type": "string", "format": "uuid", "description": "Jika tidak diisi, gunakan talenta yang sedang login" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "recommendations": [
+                      { "skill_name": "TypeScript", "priority": "high", "reason": "Muncul di 23 dari 30 job aktif", "estimated_impact": "Potensi rate naik 30%" }
+                    ],
+                    "summary": "Skill kamu sudah solid untuk entry level..."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matches/{id}/status": {
+      "patch": {
+        "tags": ["AI"],
+        "summary": "Talenta accept atau reject job offer",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "description": "job_match ID", "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": { "type": "string", "enum": ["applied", "rejected"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Status match diupdate" }
+        }
+      }
+    },
+    "/escrow/hold": {
+      "post": {
+        "tags": ["Escrow"],
+        "summary": "Client konfirmasi — dana ditahan (mock)",
+        "description": "Membuat record escrow_transaction dengan status 'held'. Untuk MVP ini adalah mock — tidak ada integrasi payment gateway.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["job_id", "talent_user_id", "amount"],
+                "properties": {
+                  "job_id": { "type": "string", "format": "uuid" },
+                  "talent_user_id": { "type": "string", "format": "uuid" },
+                  "amount": { "type": "number", "example": 2000000 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Dana berhasil ditahan. Talenta dapat mulai bekerja.",
+                  "data": { "escrow_id": "uuid", "amount": 2000000, "platform_fee": 200000, "status": "held" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/escrow/release": {
+      "post": {
+        "tags": ["Escrow"],
+        "summary": "Client approve — dana dirilis ke talenta (mock)",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["job_id"],
+                "properties": {
+                  "job_id": { "type": "string", "format": "uuid" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Dana berhasil dirilis ke talenta. Job selesai!",
+                  "data": { "escrow_id": "uuid", "status": "released", "released_at": "2026-05-28T15:00:00Z" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Ambil notifikasi user yang sedang login",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "unread_only", "in": "query", "schema": { "type": "boolean", "default": false } }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "unread_count": 2,
+                    "notifications": [
+                      { "id": "uuid", "type": "new_match", "message": "Ada job baru yang cocok untukmu: Landing Page UMKM (87% match)", "is_read": false, "created_at": "2026-05-28T10:00:00Z" }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/{id}/read": {
+      "patch": {
+        "tags": ["Notifications"],
+        "summary": "Mark notifikasi sebagai dibaca",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Notifikasi ditandai sebagai dibaca" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token dari NextAuth.js. Sertakan di header: Authorization: Bearer <token>"
+      }
+    }
+  }
+}
