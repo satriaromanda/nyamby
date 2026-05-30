@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { Logo } from "@/components/ui/Logo";
+import { Rocket, Target } from "lucide-react";
 
 function RegisterForm() {
   const router = useRouter();
@@ -53,15 +55,7 @@ function RegisterForm() {
   return (
     <div className="min-h-screen gradient-hero flex items-center justify-center px-6">
       <div className="w-full max-w-md">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center font-bold text-lg text-white" style={{ fontFamily: "Outfit" }}>
-            N
-          </div>
-          <span className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
-            Nyamby
-          </span>
-        </Link>
+        <Logo size="lg" className="justify-center mb-8" />
 
         <div className="glass rounded-2xl p-8 animate-scale-in">
           <h1 className="text-2xl font-bold text-center mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
@@ -74,8 +68,8 @@ function RegisterForm() {
           {/* Role Selector */}
           <div className="grid grid-cols-2 gap-2 p-1 bg-surface-100 rounded-xl mb-6">
             {[
-              { value: "talent", label: "🚀 Talenta", desc: "Cari job & grow" },
-              { value: "client", label: "🎯 Client", desc: "Cari talenta" },
+              { value: "talent", label: "Talenta", desc: "Cari job & grow", Icon: Rocket },
+              { value: "client", label: "Client", desc: "Cari talenta", Icon: Target },
             ].map((r) => (
               <button
                 key={r.value}
@@ -87,7 +81,10 @@ function RegisterForm() {
                     : "hover:bg-white text-surface-500"
                 }`}
               >
-                <div className="text-sm font-semibold">{r.label}</div>
+                <div className="text-sm font-semibold flex items-center justify-center gap-1.5">
+                  <r.Icon className="w-4 h-4" />
+                  {r.label}
+                </div>
                 <div className="text-xs mt-0.5 opacity-70">{r.desc}</div>
               </button>
             ))}

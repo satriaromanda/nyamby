@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Logo } from "@/components/ui/Logo";
+import { Code, Palette, Sparkles, Bot, ArrowLeft, Check } from "lucide-react";
 
 interface Skill {
   id: string;
@@ -91,7 +93,6 @@ export default function PostJobPage() {
         return;
       }
 
-      // Show AI matching animation
       setTimeout(() => {
         setAiMatching(false);
         router.push("/client/dashboard");
@@ -108,8 +109,8 @@ export default function PostJobPage() {
     return (
       <div className="min-h-screen gradient-hero flex items-center justify-center">
         <div className="text-center animate-scale-in">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-accent flex items-center justify-center text-4xl text-white animate-pulse-glow">
-            🤖
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-accent flex items-center justify-center text-white animate-pulse-glow">
+            <Bot className="w-10 h-10" />
           </div>
           <h2 className="text-2xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>
             AI sedang mencarikan talenta terbaik...
@@ -129,24 +130,20 @@ export default function PostJobPage() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Nav */}
       <nav className="glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm text-white" style={{ fontFamily: "Outfit" }}>
-              N
-            </div>
-            <span className="font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>Nyamby</span>
-          </Link>
-          <Link href="/client/dashboard" className="text-sm text-surface-500 hover:text-surface-900">
-            ← Kembali ke Dashboard
+          <Logo size="sm" />
+          <Link href="/client/dashboard" className="text-sm text-surface-500 hover:text-surface-900 flex items-center gap-1">
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Kembali ke Dashboard
           </Link>
         </div>
       </nav>
 
       <div className="max-w-2xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-          Post Job Baru ✨
+        <h1 className="text-3xl font-bold mb-2 text-surface-900 flex items-center gap-2" style={{ fontFamily: "Outfit" }}>
+          <Sparkles className="w-7 h-7 text-primary-500" />
+          Post Job Baru
         </h1>
         <p className="text-surface-500 mb-8">
           Deskripsikan kebutuhanmu dan AI akan mencarikan talenta terbaik.
@@ -180,19 +177,20 @@ export default function PostJobPage() {
             <label className="block text-sm text-surface-600 mb-2">Kategori *</label>
             <div className="grid grid-cols-2 gap-3">
               {[
-                { value: "web_dev", label: "💻 Web Development" },
-                { value: "graphic_designer", label: "🎨 Graphic Design" },
+                { value: "web_dev", label: "Web Development", Icon: Code },
+                { value: "graphic_designer", label: "Graphic Design", Icon: Palette },
               ].map((cat) => (
                 <button
                   key={cat.value}
                   type="button"
                   onClick={() => setForm({ ...form, category: cat.value, required_skills: [] })}
-                  className={`p-3 rounded-xl text-sm font-medium transition-all ${
+                  className={`p-3 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                     form.category === cat.value
                       ? "gradient-primary text-white"
                       : "bg-white border border-surface-200 text-surface-600 hover:border-primary-200"
                   }`}
                 >
+                  <cat.Icon className="w-4 h-4" />
                   {cat.label}
                 </button>
               ))}
@@ -211,12 +209,13 @@ export default function PostJobPage() {
                     key={skill.id}
                     type="button"
                     onClick={() => toggleSkill(skill)}
-                    className={`text-xs px-3 py-1.5 rounded-full transition-all ${
+                    className={`text-xs px-3 py-1.5 rounded-full transition-all flex items-center gap-1 ${
                       selected
                         ? "gradient-primary text-white"
                         : "bg-white border border-surface-200 text-surface-500 hover:border-primary-200"
                     }`}
                   >
+                    {selected && <Check className="w-3 h-3" />}
                     {skill.name}
                   </button>
                 );
@@ -266,9 +265,10 @@ export default function PostJobPage() {
           <button
             type="submit"
             disabled={loading || !form.title || !form.description || form.required_skills.length === 0}
-            className="btn-primary w-full py-3.5 text-base disabled:opacity-30"
+            className="btn-primary w-full py-3.5 text-base disabled:opacity-30 flex items-center justify-center gap-2"
           >
-            {loading ? "Posting..." : "🤖 Post Job & Trigger AI Matching"}
+            <Bot className="w-4 h-4" />
+            {loading ? "Posting..." : "Post Job & Trigger AI Matching"}
           </button>
         </form>
       </div>

@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Logo } from "@/components/ui/Logo";
+import { Code, Palette, Check, ChevronRight, ChevronLeft, Sparkles, Circle } from "lucide-react";
 
 interface Skill {
   id: string;
@@ -94,7 +97,6 @@ export default function OnboardingPage() {
         return;
       }
 
-      // Show AI loading animation for a moment
       setTimeout(() => {
         setAiLoading(false);
         router.push("/talent/dashboard");
@@ -111,8 +113,8 @@ export default function OnboardingPage() {
     return (
       <div className="min-h-screen gradient-hero flex items-center justify-center">
         <div className="text-center animate-scale-in">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center text-4xl text-white animate-pulse-glow">
-            🤖
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center text-white animate-pulse-glow">
+            <Sparkles className="w-10 h-10" />
           </div>
           <h2 className="text-2xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>
             AI sedang menganalisis profilmu...
@@ -144,7 +146,7 @@ export default function OnboardingPage() {
                     : "bg-white border border-surface-200 text-surface-400"
                 }`}
               >
-                {step > s ? "✓" : s}
+                {step > s ? <Check className="w-4 h-4" /> : s}
               </div>
               {s < 3 && (
                 <div className={`w-12 h-0.5 ${step > s ? "bg-primary-500" : "bg-surface-200"}`} />
@@ -166,8 +168,8 @@ export default function OnboardingPage() {
 
               <div className="grid grid-cols-2 gap-4 mb-8">
                 {[
-                  { value: "web_dev", label: "Web Developer", icon: "💻", desc: "Frontend, Backend, Full-stack" },
-                  { value: "graphic_designer", label: "Graphic Designer", icon: "🎨", desc: "UI/UX, Branding, Visual" },
+                  { value: "web_dev", label: "Web Developer", Icon: Code, desc: "Frontend, Backend, Full-stack" },
+                  { value: "graphic_designer", label: "Graphic Designer", Icon: Palette, desc: "UI/UX, Branding, Visual" },
                 ].map((cat) => (
                   <button
                     key={cat.value}
@@ -179,7 +181,7 @@ export default function OnboardingPage() {
                         : "bg-white border border-surface-200 hover:border-primary-200 hover:shadow-md"
                     }`}
                   >
-                    <div className="text-3xl mb-3">{cat.icon}</div>
+                    <cat.Icon className={`w-8 h-8 mb-3 ${form.category === cat.value ? "text-white" : "text-primary-500"}`} />
                     <div className={`font-bold mb-1 ${form.category === cat.value ? "text-white" : "text-surface-900"}`}>{cat.label}</div>
                     <div className="text-xs opacity-70">{cat.desc}</div>
                   </button>
@@ -189,9 +191,9 @@ export default function OnboardingPage() {
               <button
                 onClick={() => form.category && setStep(2)}
                 disabled={!form.category}
-                className="btn-primary w-full py-3 disabled:opacity-30"
+                className="btn-primary w-full py-3 disabled:opacity-30 flex items-center justify-center gap-1"
               >
-                Lanjut →
+                Lanjut <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -219,10 +221,10 @@ export default function OnboardingPage() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded flex items-center justify-center text-xs ${
+                          <div className={`w-5 h-5 rounded flex items-center justify-center ${
                             selected ? "bg-primary-500 text-white" : "border border-surface-300"
                           }`}>
-                            {selected && "✓"}
+                            {selected && <Check className="w-3 h-3" />}
                           </div>
                           <div>
                             <div className="text-sm font-medium text-surface-900">{skill.name}</div>
@@ -261,15 +263,15 @@ export default function OnboardingPage() {
               </div>
 
               <div className="flex gap-3">
-                <button onClick={() => setStep(1)} className="btn-secondary flex-1 py-3">
-                  ← Kembali
+                <button onClick={() => setStep(1)} className="btn-secondary flex-1 py-3 flex items-center justify-center gap-1">
+                  <ChevronLeft className="w-4 h-4" /> Kembali
                 </button>
                 <button
                   onClick={() => form.skills.length > 0 && setStep(3)}
                   disabled={form.skills.length === 0}
-                  className="btn-primary flex-1 py-3 disabled:opacity-30"
+                  className="btn-primary flex-1 py-3 disabled:opacity-30 flex items-center justify-center gap-1"
                 >
-                  Lanjut →
+                  Lanjut <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -359,7 +361,7 @@ export default function OnboardingPage() {
                             : "bg-white border border-surface-200 hover:border-surface-300"
                         }`}
                       >
-                        <span className={a.color}>●</span> {a.label}
+                        <Circle className={`w-2 h-2 inline mr-1 fill-current ${a.color}`} /> {a.label}
                       </button>
                     ))}
                   </div>
@@ -373,15 +375,16 @@ export default function OnboardingPage() {
               )}
 
               <div className="flex gap-3 mt-6">
-                <button onClick={() => setStep(2)} className="btn-secondary flex-1 py-3">
-                  ← Kembali
+                <button onClick={() => setStep(2)} className="btn-secondary flex-1 py-3 flex items-center justify-center gap-1">
+                  <ChevronLeft className="w-4 h-4" /> Kembali
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="btn-primary flex-1 py-3 disabled:opacity-50"
+                  className="btn-primary flex-1 py-3 disabled:opacity-50 flex items-center justify-center gap-1"
                 >
-                  {loading ? "Menyimpan..." : "🤖 Simpan & Analisis AI"}
+                  <Sparkles className="w-4 h-4" />
+                  {loading ? "Menyimpan..." : "Simpan & Analisis AI"}
                 </button>
               </div>
             </div>

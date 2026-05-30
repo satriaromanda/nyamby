@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Logo } from "@/components/ui/Logo";
+import { FlaskConical } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -45,14 +47,7 @@ export default function LoginPage() {
     <div className="min-h-screen gradient-hero flex items-center justify-center px-6">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center font-bold text-lg text-white" style={{ fontFamily: "Outfit" }}>
-            N
-          </div>
-          <span className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
-            Nyamby
-          </span>
-        </Link>
+        <Logo size="lg" className="justify-center mb-8" />
 
         <div className="glass rounded-2xl p-8 animate-scale-in">
           <h1 className="text-2xl font-bold text-center mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
@@ -114,7 +109,10 @@ export default function LoginPage() {
 
           {/* Demo Accounts */}
           <div className="mt-6 p-4 bg-surface-50 rounded-xl border border-surface-200">
-            <div className="text-xs text-surface-500 font-medium mb-3 text-center">🧪 Akun Demo</div>
+            <div className="text-xs text-surface-500 font-medium mb-3 flex items-center justify-center gap-1.5">
+              <FlaskConical className="w-3.5 h-3.5" />
+              Akun Demo
+            </div>
             <div className="grid grid-cols-2 gap-2">
               {[
                 { email: "raka@demo.com", label: "Raka (Talent)" },

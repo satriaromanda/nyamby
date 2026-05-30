@@ -1,7 +1,10 @@
 import jwt from "jsonwebtoken";
 import { cookies, headers } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET || "nyamby-dev-secret-change-in-prod";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required");
+}
 const COOKIE_NAME = "nyamby-session";
 
 export interface SessionPayload {

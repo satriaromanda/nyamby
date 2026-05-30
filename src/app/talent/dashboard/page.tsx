@@ -1,8 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { Logo } from "@/components/ui/Logo";
+import { NotificationBell } from "@/components/NotificationBell";
+import { JobStatusTracker } from "@/components/JobStatusTracker";
+import { StatCard } from "@/components/StatCard";
+import {
+  Zap, Target, Briefcase, Circle, BarChart3,
+  Sparkles, Search, Banknote, Calendar, Lightbulb,
+} from "lucide-react";
 
 interface SkillGapRec {
   skill_name: string;
@@ -47,224 +55,11 @@ interface DashboardData {
   active_jobs?: { job_id: string; title: string; client_name: string; status: string }[];
 }
 
-interface Notification {
-  id: string;
-  type: string;
-  message: string;
-  related_job_id: string | null;
-  is_read: boolean;
-  created_at: string;
-}
-
-/* ─── Job Status Tracker ─────────────────────────────────────────── */
-
-function JobStatusTracker({ status }: { status: string }) {
-  const steps = [
-    { key: "active", label: "Posted", icon: "📝" },
-    { key: "matched", label: "Matched", icon: "🤖" },
-    { key: "in_progress", label: "In Progress", icon: "⚙️" },
-    { key: "completed", label: "Selesai", icon: "✅" },
-  ];
-
-  const statusOrder: Record<string, number> = {
-    active: 0,
-    matched: 1,
-    in_progress: 2,
-    completed: 3,
-    cancelled: -1,
-  };
-
-  const currentIndex = statusOrder[status] ?? 0;
-
-  if (status === "cancelled") {
-    return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
-        <span className="text-sm">❌</span>
-        <span className="text-xs text-red-600 font-medium">Dibatalkan</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-0 w-full">
-      {steps.map((step, i) => {
-        const isActive = i <= currentIndex;
-        const isCurrent = i === currentIndex;
-        return (
-          <div key={step.key} className="flex items-center flex-1 last:flex-none">
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-all duration-500 ${
-                  isCurrent
-                    ? "gradient-primary shadow-lg shadow-primary-500/20 scale-110 text-white"
-                    : isActive
-                      ? "bg-accent-500/10 text-accent-600"
-                      : "bg-surface-100 text-surface-400"
-                }`}
-              >
-                {isActive && i < currentIndex ? "✓" : step.icon}
-              </div>
-              <span
-                className={`text-[8px] mt-1 font-medium transition-colors ${
-                  isCurrent
-                    ? "text-primary-600"
-                    : isActive
-                      ? "text-accent-600"
-                      : "text-surface-300"
-                }`}
-              >
-                {step.label}
-              </span>
-            </div>
-            {i < steps.length - 1 && (
-              <div
-                className={`flex-1 h-0.5 mx-0.5 rounded-full transition-all duration-500 ${
-                  i < currentIndex ? "bg-accent-500/30" : "bg-surface-200"
-                }`}
-              />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/* ─── Notification Bell ──────────────────────────────────────────── */
-
-function NotificationBell() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  const fetchNotifications = useCallback(async () => {
-    try {
-      const res = await fetch("/api/notifications");
-      const d = await res.json();
-      if (d.success) {
-        setNotifications(d.data.notifications);
-        setUnreadCount(d.data.unread_count);
-      }
-    } catch {
-      // silent fail
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
-  }, [fetchNotifications]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const markAsRead = async (id: string) => {
-    await fetch(`/api/notifications/${id}/read`, { method: "PATCH" });
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-    );
-    setUnreadCount((prev) => Math.max(0, prev - 1));
-  };
-
-  const typeIcons: Record<string, string> = {
-    new_match: "🎯",
-    job_accepted: "✅",
-    job_rejected: "❌",
-    payment_held: "💰",
-    payment_released: "🎉",
-  };
-
-  const timeAgo = (dateStr: string) => {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return "Baru saja";
-    if (mins < 60) return `${mins} menit lalu`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours} jam lalu`;
-    const days = Math.floor(hours / 24);
-    return `${days} hari lalu`;
-  };
-
-  return (
-    <div className="relative" ref={panelRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-xl hover:bg-surface-100 transition-colors"
-      >
-        <svg className="w-5 h-5 text-surface-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-        </svg>
-        {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full gradient-primary flex items-center justify-center text-[10px] font-bold text-white animate-pulse">
-            {unreadCount > 9 ? "9+" : unreadCount}
-          </span>
-        )}
-      </button>
-
-      {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl overflow-hidden shadow-xl shadow-black/10 border border-surface-200 animate-scale-in z-50">
-          <div className="p-4 border-b border-surface-200">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm text-surface-900">Notifikasi</h3>
-              {unreadCount > 0 && (
-                <span className="text-[10px] text-primary-600 font-medium">
-                  {unreadCount} belum dibaca
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="max-h-80 overflow-y-auto">
-            {notifications.length > 0 ? (
-              notifications.slice(0, 15).map((notif) => (
-                <button
-                  key={notif.id}
-                  onClick={() => !notif.is_read && markAsRead(notif.id)}
-                  className={`w-full text-left p-4 hover:bg-surface-50 transition-colors border-b border-surface-100 last:border-0 ${
-                    !notif.is_read ? "bg-primary-50/50" : ""
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="text-lg shrink-0 mt-0.5">
-                      {typeIcons[notif.type] || "🔔"}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-xs leading-relaxed ${!notif.is_read ? "text-surface-900" : "text-surface-500"}`}>
-                        {notif.message}
-                      </p>
-                      <span className="text-[10px] text-surface-400 mt-1 block">
-                        {timeAgo(notif.created_at)}
-                      </span>
-                    </div>
-                    {!notif.is_read && (
-                      <div className="w-2 h-2 rounded-full bg-primary-500 shrink-0 mt-1.5" />
-                    )}
-                  </div>
-                </button>
-              ))
-            ) : (
-              <div className="p-8 text-center">
-                <div className="text-2xl mb-2">🔔</div>
-                <p className="text-xs text-surface-400">Belum ada notifikasi</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ─── Main Dashboard ─────────────────────────────────────────────── */
+const priorityConfig: Record<string, { color: string; bg: string; label: string }> = {
+  high: { color: "text-red-600", bg: "bg-red-50", label: "Prioritas Tinggi" },
+  medium: { color: "text-amber-600", bg: "bg-amber-50", label: "Prioritas Sedang" },
+  low: { color: "text-accent-600", bg: "bg-emerald-50", label: "Prioritas Rendah" },
+};
 
 export default function TalentDashboard() {
   const router = useRouter();
@@ -324,23 +119,11 @@ export default function TalentDashboard() {
 
   if (!data?.profile) return null;
 
-  const priorityConfig: Record<string, { color: string; bg: string; label: string }> = {
-    high: { color: "text-red-600", bg: "bg-red-50", label: "Prioritas Tinggi" },
-    medium: { color: "text-amber-600", bg: "bg-amber-50", label: "Prioritas Sedang" },
-    low: { color: "text-accent-600", bg: "bg-emerald-50", label: "Prioritas Rendah" },
-  };
-
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Top Nav */}
       <nav className="glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm text-white" style={{ fontFamily: "Outfit" }}>
-              N
-            </div>
-            <span className="font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>Nyamby</span>
-          </Link>
+          <Logo size="sm" />
 
           <div className="flex items-center gap-3">
             <Link href="/jobs" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
@@ -364,7 +147,7 @@ export default function TalentDashboard() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-            Halo, {data.profile.full_name.split(" ")[0]}! 👋
+            Halo, {data.profile.full_name.split(" ")[0]}!
           </h1>
           <p className="text-surface-500">
             Dashboard karirmu — lihat insight AI dan job yang cocok untukmu.
@@ -373,33 +156,23 @@ export default function TalentDashboard() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: "Skills", value: data.profile.skills.length, icon: "⚡" },
-            { label: "Job Match", value: data.recommended_jobs?.length || 0, icon: "🎯" },
-            { label: "Active Jobs", value: data.active_jobs?.length || 0, icon: "💼" },
-            {
-              label: "Status",
-              value: data.profile.availability === "available" ? "Available" : data.profile.availability,
-              icon: "🟢",
-            },
-          ].map((stat, i) => (
-            <div key={i} className="glass rounded-xl p-4 card-hover">
-              <div className="text-lg mb-1">{stat.icon}</div>
-              <div className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
-                {stat.value}
-              </div>
-              <div className="text-xs text-surface-400">{stat.label}</div>
-            </div>
-          ))}
+          <StatCard icon={Zap} value={data.profile.skills.length} label="Skills" />
+          <StatCard icon={Target} value={data.recommended_jobs?.length || 0} label="Job Match" />
+          <StatCard icon={Briefcase} value={data.active_jobs?.length || 0} label="Active Jobs" />
+          <StatCard
+            icon={Circle}
+            value={data.profile.availability === "available" ? "Available" : data.profile.availability}
+            label="Status"
+          />
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* ─── Skill Gap Analysis Card ─────────────────────────── */}
+          {/* Skill Gap Analysis */}
           <div className="lg:col-span-1">
             <div className="glass rounded-2xl p-6 card-hover">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-sm">
-                  📊
+                <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center">
+                  <BarChart3 className="w-4 h-4 text-primary-500" />
                 </div>
                 <div>
                   <h2 className="font-bold text-sm text-surface-900">Insight Karir AI</h2>
@@ -425,7 +198,10 @@ export default function TalentDashboard() {
                             </span>
                           </div>
                           <p className="text-xs text-surface-500 mb-1">{rec.reason}</p>
-                          <p className="text-xs text-accent-600">💡 {rec.estimated_impact}</p>
+                          <p className="text-xs text-accent-600 flex items-center gap-1">
+                            <Lightbulb className="w-3 h-3" />
+                            {rec.estimated_impact}
+                          </p>
                         </div>
                       );
                     })}
@@ -449,10 +225,11 @@ export default function TalentDashboard() {
             </div>
           </div>
 
-          {/* ─── Recommended Jobs ────────────────────────────────── */}
+          {/* Recommended Jobs */}
           <div className="lg:col-span-2">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-              🎯 Job Untukmu
+              <Target className="w-5 h-5 text-primary-500" />
+              Job Untukmu
               <span className="text-xs font-normal text-surface-500 bg-surface-100 px-2 py-1 rounded-full">
                 AI Matched
               </span>
@@ -468,7 +245,8 @@ export default function TalentDashboard() {
                           <h3 className="font-bold text-surface-900">{job.title}</h3>
                           {job.recommendation === "highly_recommended" && (
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-accent-600">
-                              ⭐ Top Match
+                              <Sparkles className="w-2.5 h-2.5 inline mr-0.5" />
+                              Top Match
                             </span>
                           )}
                         </div>
@@ -486,16 +264,22 @@ export default function TalentDashboard() {
 
                         <div className="flex gap-4 text-xs text-surface-400">
                           {job.budget_max && (
-                            <span>💰 Rp {Number(job.budget_max).toLocaleString("id-ID")}</span>
+                            <span className="flex items-center gap-1">
+                              <Banknote className="w-3 h-3" />
+                              Rp {Number(job.budget_max).toLocaleString("id-ID")}
+                            </span>
                           )}
                           {job.deadline && (
-                            <span>📅 {new Date(job.deadline).toLocaleDateString("id-ID")}</span>
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {new Date(job.deadline).toLocaleDateString("id-ID")}
+                            </span>
                           )}
                         </div>
 
                         {/* AI Reasoning */}
                         <div className="mt-3 p-3 rounded-lg bg-primary-50 border border-primary-100">
-                          <div className="text-[10px] text-primary-600 font-medium mb-1">🤖 AI Insight</div>
+                          <div className="text-[10px] text-primary-600 font-medium mb-1">AI Insight</div>
                           <p className="text-xs text-surface-500">{job.reasoning}</p>
                         </div>
                       </div>
@@ -527,18 +311,19 @@ export default function TalentDashboard() {
               </div>
             ) : (
               <div className="glass rounded-xl p-12 text-center">
-                <div className="text-4xl mb-4">🔍</div>
+                <Search className="w-10 h-10 text-surface-300 mx-auto mb-4" />
                 <p className="text-surface-500">
                   Belum ada job yang cocok. Job baru akan muncul saat client posting.
                 </p>
               </div>
             )}
 
-            {/* Active Jobs with Status Tracker */}
+            {/* Active Jobs */}
             {data.active_jobs && data.active_jobs.length > 0 && (
               <div className="mt-8">
-                <h2 className="text-xl font-bold mb-4 text-surface-900" style={{ fontFamily: "Outfit" }}>
-                  💼 Job Aktif
+                <h2 className="text-xl font-bold mb-4 text-surface-900 flex items-center gap-2" style={{ fontFamily: "Outfit" }}>
+                  <Briefcase className="w-5 h-5 text-primary-500" />
+                  Job Aktif
                 </h2>
                 <div className="space-y-3">
                   {data.active_jobs.map((job) => (

@@ -3,6 +3,12 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { Logo } from "@/components/ui/Logo";
+import {
+  Code, Palette, MapPin, Frown, Zap, Link2,
+  Globe, Github, BarChart3, Star, Handshake,
+  ExternalLink,
+} from "lucide-react";
 
 interface TalentSkill {
   name: string;
@@ -59,7 +65,7 @@ export default function TalentProfilePage() {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
         <div className="glass rounded-2xl p-12 text-center max-w-md">
-          <div className="text-5xl mb-4">😔</div>
+          <Frown className="w-12 h-12 text-surface-300 mx-auto mb-4" />
           <h2 className="text-xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
             Profil Tidak Ditemukan
           </h2>
@@ -80,8 +86,8 @@ export default function TalentProfilePage() {
 
   const avail = availConfig[profile.availability] || availConfig.available;
 
+  const CategoryIcon = profile.category === "web_dev" ? Code : Palette;
   const categoryLabel = profile.category === "web_dev" ? "Web Developer" : "Graphic Designer";
-  const categoryIcon = profile.category === "web_dev" ? "💻" : "🎨";
 
   const skillsByCategory = profile.skills.reduce<Record<string, TalentSkill[]>>((acc, skill) => {
     if (!acc[skill.category]) acc[skill.category] = [];
@@ -91,22 +97,18 @@ export default function TalentProfilePage() {
 
   const levelOrder = { expert: 0, intermediate: 1, beginner: 2 };
 
+  const getPortfolioIcon = () => {
+    if (!profile.portfolio_url) return Globe;
+    if (profile.portfolio_url.includes("github")) return Github;
+    return Globe;
+  };
+  const PortfolioIcon = getPortfolioIcon();
+
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Nav */}
       <nav className="glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div
-              className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm text-white"
-              style={{ fontFamily: "Outfit" }}
-            >
-              N
-            </div>
-            <span className="font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
-              Nyamby
-            </span>
-          </Link>
+          <Logo size="sm" />
           <div className="flex items-center gap-3">
             <Link href="/jobs" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
               Browse Jobs
@@ -158,12 +160,15 @@ export default function TalentProfilePage() {
               </div>
 
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-lg">{categoryIcon}</span>
+                <CategoryIcon className="w-4 h-4 text-primary-500" />
                 <span className="text-surface-600 font-medium">{categoryLabel}</span>
                 {profile.location && (
                   <>
                     <span className="text-surface-300">•</span>
-                    <span className="text-surface-500 text-sm">📍 {profile.location}</span>
+                    <span className="text-surface-500 text-sm flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {profile.location}
+                    </span>
                   </>
                 )}
               </div>
@@ -207,11 +212,12 @@ export default function TalentProfilePage() {
       {/* Content */}
       <div className="max-w-5xl mx-auto px-6 py-10">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* ─── Left: Skills ─────────────────────────── */}
+          {/* Main: Skills */}
           <div className="lg:col-span-2 space-y-6">
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h2 className="text-xl font-bold mb-5 flex items-center gap-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-                ⚡ Skill Map
+                <Zap className="w-5 h-5 text-primary-500" />
+                Skill Map
               </h2>
 
               <div className="space-y-6">
@@ -241,22 +247,20 @@ export default function TalentProfilePage() {
                   .map((s, i) => (
                     <span key={i} className={`skill-badge skill-badge-${s.level}`}>
                       {s.name}
-                      <span className="opacity-60 text-[10px] ml-1">
-                        {s.level === "expert" ? "★★★" : s.level === "intermediate" ? "★★" : "★"}
-                      </span>
                     </span>
                   ))}
               </div>
             </div>
           </div>
 
-          {/* ─── Right: Sidebar ──────────────────────── */}
+          {/* Sidebar */}
           <div className="space-y-6">
             {/* Portfolio */}
             {profile.portfolio_url && (
               <div className="glass rounded-2xl p-6 card-hover animate-slide-up" style={{ animationDelay: "0.15s" }}>
                 <h3 className="font-bold text-sm mb-3 flex items-center gap-2 text-surface-900">
-                  🔗 Portfolio
+                  <Link2 className="w-4 h-4 text-primary-500" />
+                  Portfolio
                 </h3>
                 <a
                   href={profile.portfolio_url}
@@ -264,10 +268,8 @@ export default function TalentProfilePage() {
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 rounded-xl bg-surface-50 border border-surface-200 hover:border-primary-200 transition-colors group"
                 >
-                  <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-sm text-white shrink-0">
-                    {profile.portfolio_url.includes("github") ? "🐙" :
-                     profile.portfolio_url.includes("behance") ? "🅱️" :
-                     profile.portfolio_url.includes("dribbble") ? "🏀" : "🌐"}
+                  <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-white shrink-0">
+                    <PortfolioIcon className="w-5 h-5" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium text-primary-600 group-hover:text-primary-700 transition-colors truncate">
@@ -275,16 +277,17 @@ export default function TalentProfilePage() {
                     </div>
                     <div className="text-[10px] text-surface-400">Klik untuk membuka</div>
                   </div>
-                  <svg className="w-4 h-4 text-surface-400 group-hover:text-surface-600 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
+                  <ExternalLink className="w-4 h-4 text-surface-400 group-hover:text-surface-600 transition-colors shrink-0" />
                 </a>
               </div>
             )}
 
             {/* Skill Level Legend */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-              <h3 className="font-bold text-sm mb-4 text-surface-900">📊 Level Guide</h3>
+              <h3 className="font-bold text-sm mb-4 flex items-center gap-2 text-surface-900">
+                <BarChart3 className="w-4 h-4 text-primary-500" />
+                Level Guide
+              </h3>
               <div className="space-y-3">
                 {[
                   { level: "Expert", color: "bg-primary-500", textColor: "text-primary-600", desc: "Menguasai mendalam, bisa mengajar" },
@@ -302,10 +305,11 @@ export default function TalentProfilePage() {
               </div>
             </div>
 
-            {/* Dummy Rating */}
+            {/* Rating */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.25s" }}>
               <h3 className="font-bold text-sm mb-3 flex items-center gap-2 text-surface-900">
-                ⭐ Rating & Reputasi
+                <Star className="w-4 h-4 text-amber-400" />
+                Rating & Reputasi
               </h3>
               <div className="flex items-center gap-2 mb-2">
                 <div className="flex">
@@ -345,7 +349,7 @@ export default function TalentProfilePage() {
 
             {/* CTA */}
             <div className="glass rounded-2xl p-6 text-center animate-slide-up" style={{ animationDelay: "0.3s" }}>
-              <div className="text-2xl mb-3">🤝</div>
+              <Handshake className="w-8 h-8 text-primary-400 mx-auto mb-3" />
               <h3 className="font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
                 Tertarik dengan talenta ini?
               </h3>
@@ -363,12 +367,7 @@ export default function TalentProfilePage() {
       {/* Footer */}
       <footer className="border-t border-surface-200 py-8 mt-8 bg-white">
         <div className="max-w-5xl mx-auto px-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg gradient-primary flex items-center justify-center font-bold text-xs text-white" style={{ fontFamily: "Outfit" }}>
-              N
-            </div>
-            <span className="text-sm font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>Nyamby</span>
-          </div>
+          <Logo size="sm" className="pointer-events-none" />
           <span className="text-xs text-surface-400">© 2026 Nyamby — AI Career Platform</span>
         </div>
       </footer>
