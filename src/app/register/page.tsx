@@ -55,24 +55,24 @@ function RegisterForm() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center font-bold text-lg" style={{ fontFamily: "Outfit" }}>
+          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center font-bold text-lg text-white" style={{ fontFamily: "Outfit" }}>
             N
           </div>
-          <span className="text-2xl font-bold" style={{ fontFamily: "Outfit" }}>
+          <span className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
             Nyamby
           </span>
         </Link>
 
         <div className="glass rounded-2xl p-8 animate-scale-in">
-          <h1 className="text-2xl font-bold text-center mb-2" style={{ fontFamily: "Outfit" }}>
+          <h1 className="text-2xl font-bold text-center mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
             Buat Akun Baru
           </h1>
-          <p className="text-surface-200 text-sm text-center mb-8">
+          <p className="text-surface-500 text-sm text-center mb-8">
             Mulai journey karirmu bersama Nyamby
           </p>
 
           {/* Role Selector */}
-          <div className="grid grid-cols-2 gap-2 p-1 glass rounded-xl mb-6">
+          <div className="grid grid-cols-2 gap-2 p-1 bg-surface-100 rounded-xl mb-6">
             {[
               { value: "talent", label: "🚀 Talenta", desc: "Cari job & grow" },
               { value: "client", label: "🎯 Client", desc: "Cari talenta" },
@@ -84,7 +84,7 @@ function RegisterForm() {
                 className={`p-3 rounded-lg text-center transition-all ${
                   form.role === r.value
                     ? "gradient-primary text-white shadow-lg"
-                    : "hover:bg-white/5 text-surface-200"
+                    : "hover:bg-white text-surface-500"
                 }`}
               >
                 <div className="text-sm font-semibold">{r.label}</div>
@@ -95,7 +95,7 @@ function RegisterForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm text-surface-200 mb-2">Nama Lengkap</label>
+              <label className="block text-sm text-surface-600 mb-2">Nama Lengkap</label>
               <input
                 type="text"
                 className="input-dark"
@@ -107,7 +107,7 @@ function RegisterForm() {
             </div>
 
             <div>
-              <label className="block text-sm text-surface-200 mb-2">Email</label>
+              <label className="block text-sm text-surface-600 mb-2">Email</label>
               <input
                 type="email"
                 className="input-dark"
@@ -119,7 +119,7 @@ function RegisterForm() {
             </div>
 
             <div>
-              <label className="block text-sm text-surface-200 mb-2">Password</label>
+              <label className="block text-sm text-surface-600 mb-2">Password</label>
               <input
                 type="password"
                 className="input-dark"
@@ -132,7 +132,7 @@ function RegisterForm() {
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg bg-red-500/15 border border-red-500/25 text-red-400 text-sm">
+              <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
                 {error}
               </div>
             )}
@@ -156,9 +156,9 @@ function RegisterForm() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-surface-200 mt-6">
+          <p className="text-center text-sm text-surface-500 mt-6">
             Sudah punya akun?{" "}
-            <Link href="/login" className="text-primary-400 hover:text-primary-300 font-medium">
+            <Link href="/login" className="text-primary-600 hover:text-primary-700 font-medium">
               Masuk di sini
             </Link>
           </p>

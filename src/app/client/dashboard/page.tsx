@@ -59,9 +59,9 @@ function JobStatusTracker({ status }: { status: string }) {
 
   if (status === "cancelled") {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20">
+      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
         <span className="text-sm">❌</span>
-        <span className="text-xs text-red-400 font-medium">Dibatalkan</span>
+        <span className="text-xs text-red-600 font-medium">Dibatalkan</span>
       </div>
     );
   }
@@ -77,10 +77,10 @@ function JobStatusTracker({ status }: { status: string }) {
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-500 ${
                   isCurrent
-                    ? "gradient-primary shadow-lg shadow-primary-500/30 scale-110"
+                    ? "gradient-primary shadow-lg shadow-primary-500/20 scale-110 text-white"
                     : isActive
-                      ? "bg-accent-500/20 text-accent-400"
-                      : "bg-white/5 text-surface-200/50"
+                      ? "bg-accent-500/10 text-accent-600"
+                      : "bg-surface-100 text-surface-400"
                 }`}
               >
                 {isActive && i < currentIndex ? "✓" : step.icon}
@@ -88,10 +88,10 @@ function JobStatusTracker({ status }: { status: string }) {
               <span
                 className={`text-[9px] mt-1 font-medium transition-colors ${
                   isCurrent
-                    ? "text-primary-300"
+                    ? "text-primary-600"
                     : isActive
-                      ? "text-accent-400"
-                      : "text-surface-200/40"
+                      ? "text-accent-600"
+                      : "text-surface-300"
                 }`}
               >
                 {step.label}
@@ -100,7 +100,7 @@ function JobStatusTracker({ status }: { status: string }) {
             {i < steps.length - 1 && (
               <div
                 className={`flex-1 h-0.5 mx-1 rounded-full transition-all duration-500 ${
-                  i < currentIndex ? "bg-accent-500/40" : "bg-white/5"
+                  i < currentIndex ? "bg-accent-500/30" : "bg-surface-200"
                 }`}
               />
             )}
@@ -179,25 +179,25 @@ function NotificationBell() {
     <div className="relative" ref={panelRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-xl hover:bg-white/5 transition-colors"
+        className="relative p-2 rounded-xl hover:bg-surface-100 transition-colors"
       >
-        <svg className="w-5 h-5 text-surface-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-5 h-5 text-surface-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full gradient-primary flex items-center justify-center text-[10px] font-bold animate-pulse">
+          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full gradient-primary flex items-center justify-center text-[10px] font-bold text-white animate-pulse">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 glass rounded-2xl overflow-hidden shadow-2xl shadow-black/30 animate-scale-in z-50">
-          <div className="p-4 border-b border-white/10">
+        <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl overflow-hidden shadow-xl shadow-black/10 border border-surface-200 animate-scale-in z-50">
+          <div className="p-4 border-b border-surface-200">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm">Notifikasi</h3>
+              <h3 className="font-bold text-sm text-surface-900">Notifikasi</h3>
               {unreadCount > 0 && (
-                <span className="text-[10px] text-primary-300 font-medium">
+                <span className="text-[10px] text-primary-600 font-medium">
                   {unreadCount} belum dibaca
                 </span>
               )}
@@ -210,8 +210,8 @@ function NotificationBell() {
                 <button
                   key={notif.id}
                   onClick={() => !notif.is_read && markAsRead(notif.id)}
-                  className={`w-full text-left p-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 ${
-                    !notif.is_read ? "bg-primary-500/5" : ""
+                  className={`w-full text-left p-4 hover:bg-surface-50 transition-colors border-b border-surface-100 last:border-0 ${
+                    !notif.is_read ? "bg-primary-50/50" : ""
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -219,15 +219,15 @@ function NotificationBell() {
                       {typeIcons[notif.type] || "🔔"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-xs leading-relaxed ${!notif.is_read ? "text-white" : "text-surface-200"}`}>
+                      <p className={`text-xs leading-relaxed ${!notif.is_read ? "text-surface-900" : "text-surface-500"}`}>
                         {notif.message}
                       </p>
-                      <span className="text-[10px] text-surface-200/60 mt-1 block">
+                      <span className="text-[10px] text-surface-400 mt-1 block">
                         {timeAgo(notif.created_at)}
                       </span>
                     </div>
                     {!notif.is_read && (
-                      <div className="w-2 h-2 rounded-full bg-primary-400 shrink-0 mt-1.5" />
+                      <div className="w-2 h-2 rounded-full bg-primary-500 shrink-0 mt-1.5" />
                     )}
                   </div>
                 </button>
@@ -235,7 +235,7 @@ function NotificationBell() {
             ) : (
               <div className="p-8 text-center">
                 <div className="text-2xl mb-2">🔔</div>
-                <p className="text-xs text-surface-200">Belum ada notifikasi</p>
+                <p className="text-xs text-surface-400">Belum ada notifikasi</p>
               </div>
             )}
           </div>
@@ -319,7 +319,7 @@ export default function ClientDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-950 flex items-center justify-center">
+      <div className="min-h-screen bg-surface-50 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full" />
       </div>
     );
@@ -334,22 +334,22 @@ export default function ClientDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-950">
+    <div className="min-h-screen bg-surface-50">
       {/* Nav */}
       <nav className="glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm" style={{ fontFamily: "Outfit" }}>
+            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm text-white" style={{ fontFamily: "Outfit" }}>
               N
             </div>
-            <span className="font-bold" style={{ fontFamily: "Outfit" }}>Nyamby</span>
+            <span className="font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>Nyamby</span>
           </Link>
           <div className="flex items-center gap-3">
             <NotificationBell />
             <Link href="/client/post-job" className="btn-primary text-xs px-4 py-2">
               + Post Job Baru
             </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-200 hover:text-white">
+            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
               Keluar
             </button>
           </div>
@@ -359,10 +359,10 @@ export default function ClientDashboard() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "Outfit" }}>
+            <h1 className="text-3xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
               Dashboard Client 📋
             </h1>
-            <p className="text-surface-200">
+            <p className="text-surface-500">
               Kelola job posting dan lihat talenta terbaik yang direkomendasikan AI.
             </p>
           </div>
@@ -378,8 +378,8 @@ export default function ClientDashboard() {
           ].map((stat, i) => (
             <div key={i} className="glass rounded-xl p-4">
               <div className="text-lg mb-1">{stat.icon}</div>
-              <div className="text-2xl font-bold" style={{ fontFamily: "Outfit" }}>{stat.value}</div>
-              <div className="text-xs text-surface-200">{stat.label}</div>
+              <div className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>{stat.value}</div>
+              <div className="text-xs text-surface-400">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -396,19 +396,19 @@ export default function ClientDashboard() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-bold">{job.title}</h3>
+                        <h3 className="text-lg font-bold text-surface-900">{job.title}</h3>
                         <span className={`text-xs px-3 py-1 rounded-full status-${job.status}`}>
                           {statusLabels[job.status]}
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-1.5 mb-3">
                         {job.required_skills.map((s, i) => (
-                          <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-surface-200">
+                          <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-surface-100 text-surface-500">
                             {s}
                           </span>
                         ))}
                       </div>
-                      <div className="flex gap-4 text-xs text-surface-200 mb-4">
+                      <div className="flex gap-4 text-xs text-surface-400 mb-4">
                         {job.budget_max && (
                           <span>💰 Rp {Number(job.budget_max).toLocaleString("id-ID")}</span>
                         )}
@@ -422,7 +422,7 @@ export default function ClientDashboard() {
                       <JobStatusTracker status={job.status} />
                     </div>
 
-                    <div className="text-surface-200 text-sm">
+                    <div className="text-surface-400 text-sm">
                       {expandedJob === job.id ? "▲" : "▼"}
                     </div>
                   </div>
@@ -430,38 +430,38 @@ export default function ClientDashboard() {
 
                 {/* Expanded: Matched Talents */}
                 {expandedJob === job.id && (
-                  <div className="px-6 pb-6 border-t border-white/5 pt-4 animate-slide-up">
-                    <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
+                  <div className="px-6 pb-6 border-t border-surface-200 pt-4 animate-slide-up">
+                    <h4 className="text-sm font-bold mb-3 flex items-center gap-2 text-surface-900">
                       🤖 AI Matched Talents
                     </h4>
 
                     {job.top_matches.length > 0 ? (
                       <div className="space-y-3">
                         {job.top_matches.map((match) => (
-                          <div key={match.match_id} className="flex items-center justify-between p-3 rounded-xl bg-white/5">
+                          <div key={match.match_id} className="flex items-center justify-between p-3 rounded-xl bg-surface-50 border border-surface-200">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-sm font-bold">
+                              <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-sm font-bold text-white">
                                 {match.full_name[0]}
                               </div>
                               <div>
                                 <Link
                                   href={`/talent/profile/${match.talent_profile_id}`}
-                                  className="text-sm font-medium hover:text-primary-300 transition-colors"
+                                  className="text-sm font-medium text-surface-900 hover:text-primary-600 transition-colors"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {match.full_name}
                                 </Link>
-                                <div className="text-xs text-surface-200">
+                                <div className="text-xs text-surface-400">
                                   {match.recommendation === "highly_recommended" ? "⭐ Sangat Direkomendasikan" : "✓ Direkomendasikan"}
                                 </div>
                               </div>
                             </div>
                             <div className="flex items-center gap-4">
                               <div className="text-right">
-                                <div className={`text-xl font-bold ${Number(match.match_score) >= 80 ? "text-accent-400" : "text-primary-300"}`}>
+                                <div className={`text-xl font-bold ${Number(match.match_score) >= 80 ? "text-accent-600" : "text-primary-600"}`}>
                                   {Math.round(Number(match.match_score))}%
                                 </div>
-                                <div className="text-[10px] text-surface-200">Match Score</div>
+                                <div className="text-[10px] text-surface-400">Match Score</div>
                               </div>
                               {match.status === "recommended" && (
                                 <button
@@ -486,7 +486,7 @@ export default function ClientDashboard() {
                                 </button>
                               )}
                               {match.status === "accepted" && (
-                                <span className="text-xs px-3 py-1 rounded-full bg-accent-500/20 text-accent-400">
+                                <span className="text-xs px-3 py-1 rounded-full bg-emerald-50 text-accent-600">
                                   Diterima
                                 </span>
                               )}
@@ -495,20 +495,20 @@ export default function ClientDashboard() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-surface-200">Belum ada talenta yang dimatch.</p>
+                      <p className="text-sm text-surface-400">Belum ada talenta yang dimatch.</p>
                     )}
 
                     {/* Escrow Status */}
                     {job.escrow && (
-                      <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10">
+                      <div className="mt-4 p-4 rounded-xl bg-surface-50 border border-surface-200">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="text-sm font-medium mb-1">💳 Status Escrow</div>
+                            <div className="text-sm font-medium mb-1 text-surface-900">💳 Status Escrow</div>
                             <div className="flex items-center gap-3">
                               <span className={`text-xs px-3 py-1 rounded-full status-${job.escrow.status}`}>
                                 {job.escrow.status === "held" ? "Dana Ditahan" : job.escrow.status === "released" ? "Dana Dirilis" : job.escrow.status}
                               </span>
-                              <span className="text-sm text-surface-200">
+                              <span className="text-sm text-surface-500">
                                 Rp {Number(job.escrow.amount).toLocaleString("id-ID")}
                               </span>
                             </div>
@@ -534,11 +534,11 @@ export default function ClientDashboard() {
                             { label: "Dana Dirilis", active: job.escrow.status === "released" },
                           ].map((step, i) => (
                             <div key={i} className="flex items-center gap-2 flex-1">
-                              <div className={`w-3 h-3 rounded-full ${step.active ? "bg-accent-400" : "bg-white/10"}`} />
-                              <span className={`text-[10px] ${step.active ? "text-accent-400" : "text-surface-200"}`}>
+                              <div className={`w-3 h-3 rounded-full ${step.active ? "bg-accent-500" : "bg-surface-200"}`} />
+                              <span className={`text-[10px] ${step.active ? "text-accent-600" : "text-surface-400"}`}>
                                 {step.label}
                               </span>
-                              {i < 2 && <div className={`flex-1 h-px ${step.active ? "bg-accent-400/30" : "bg-white/5"}`} />}
+                              {i < 2 && <div className={`flex-1 h-px ${step.active ? "bg-accent-500/30" : "bg-surface-200"}`} />}
                             </div>
                           ))}
                         </div>
@@ -552,8 +552,8 @@ export default function ClientDashboard() {
         ) : (
           <div className="glass rounded-2xl p-16 text-center">
             <div className="text-5xl mb-4">📝</div>
-            <h3 className="text-xl font-bold mb-2" style={{ fontFamily: "Outfit" }}>Belum ada job</h3>
-            <p className="text-surface-200 text-sm mb-6">Post job pertamamu dan biarkan AI mencarikan talenta terbaik.</p>
+            <h3 className="text-xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>Belum ada job</h3>
+            <p className="text-surface-500 text-sm mb-6">Post job pertamamu dan biarkan AI mencarikan talenta terbaik.</p>
             <Link href="/client/post-job" className="btn-primary">
               + Post Job Baru
             </Link>

@@ -46,25 +46,25 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center font-bold text-lg" style={{ fontFamily: "Outfit" }}>
+          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center font-bold text-lg text-white" style={{ fontFamily: "Outfit" }}>
             N
           </div>
-          <span className="text-2xl font-bold" style={{ fontFamily: "Outfit" }}>
+          <span className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
             Nyamby
           </span>
         </Link>
 
         <div className="glass rounded-2xl p-8 animate-scale-in">
-          <h1 className="text-2xl font-bold text-center mb-2" style={{ fontFamily: "Outfit" }}>
+          <h1 className="text-2xl font-bold text-center mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
             Selamat Datang Kembali
           </h1>
-          <p className="text-surface-200 text-sm text-center mb-8">
+          <p className="text-surface-500 text-sm text-center mb-8">
             Masuk ke akun Nyamby-mu
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm text-surface-200 mb-2">Email</label>
+              <label className="block text-sm text-surface-600 mb-2">Email</label>
               <input
                 type="email"
                 className="input-dark"
@@ -76,7 +76,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm text-surface-200 mb-2">Password</label>
+              <label className="block text-sm text-surface-600 mb-2">Password</label>
               <input
                 type="password"
                 className="input-dark"
@@ -88,7 +88,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg bg-red-500/15 border border-red-500/25 text-red-400 text-sm">
+              <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
                 {error}
               </div>
             )}
@@ -113,8 +113,8 @@ export default function LoginPage() {
           </form>
 
           {/* Demo Accounts */}
-          <div className="mt-6 p-4 glass rounded-xl">
-            <div className="text-xs text-surface-200 font-medium mb-3 text-center">🧪 Akun Demo</div>
+          <div className="mt-6 p-4 bg-surface-50 rounded-xl border border-surface-200">
+            <div className="text-xs text-surface-500 font-medium mb-3 text-center">🧪 Akun Demo</div>
             <div className="grid grid-cols-2 gap-2">
               {[
                 { email: "raka@demo.com", label: "Raka (Talent)" },
@@ -124,18 +124,18 @@ export default function LoginPage() {
                   key={demo.email}
                   type="button"
                   onClick={() => setForm({ email: demo.email, password: "password123" })}
-                  className="p-2 rounded-lg hover:bg-white/5 transition-colors text-xs text-center"
+                  className="p-2 rounded-lg hover:bg-surface-100 transition-colors text-xs text-center"
                 >
-                  <div className="text-primary-300 font-medium">{demo.label}</div>
-                  <div className="text-surface-200 text-[10px]">{demo.email}</div>
+                  <div className="text-primary-600 font-medium">{demo.label}</div>
+                  <div className="text-surface-400 text-[10px]">{demo.email}</div>
                 </button>
               ))}
             </div>
           </div>
 
-          <p className="text-center text-sm text-surface-200 mt-6">
+          <p className="text-center text-sm text-surface-500 mt-6">
             Belum punya akun?{" "}
-            <Link href="/register" className="text-primary-400 hover:text-primary-300 font-medium">
+            <Link href="/register" className="text-primary-600 hover:text-primary-700 font-medium">
               Daftar sekarang
             </Link>
           </p>

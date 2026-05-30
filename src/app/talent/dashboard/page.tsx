@@ -78,9 +78,9 @@ function JobStatusTracker({ status }: { status: string }) {
 
   if (status === "cancelled") {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20">
+      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
         <span className="text-sm">❌</span>
-        <span className="text-xs text-red-400 font-medium">Dibatalkan</span>
+        <span className="text-xs text-red-600 font-medium">Dibatalkan</span>
       </div>
     );
   }
@@ -96,10 +96,10 @@ function JobStatusTracker({ status }: { status: string }) {
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-all duration-500 ${
                   isCurrent
-                    ? "gradient-primary shadow-lg shadow-primary-500/30 scale-110"
+                    ? "gradient-primary shadow-lg shadow-primary-500/20 scale-110 text-white"
                     : isActive
-                      ? "bg-accent-500/20 text-accent-400"
-                      : "bg-white/5 text-surface-200/50"
+                      ? "bg-accent-500/10 text-accent-600"
+                      : "bg-surface-100 text-surface-400"
                 }`}
               >
                 {isActive && i < currentIndex ? "✓" : step.icon}
@@ -107,10 +107,10 @@ function JobStatusTracker({ status }: { status: string }) {
               <span
                 className={`text-[8px] mt-1 font-medium transition-colors ${
                   isCurrent
-                    ? "text-primary-300"
+                    ? "text-primary-600"
                     : isActive
-                      ? "text-accent-400"
-                      : "text-surface-200/40"
+                      ? "text-accent-600"
+                      : "text-surface-300"
                 }`}
               >
                 {step.label}
@@ -119,7 +119,7 @@ function JobStatusTracker({ status }: { status: string }) {
             {i < steps.length - 1 && (
               <div
                 className={`flex-1 h-0.5 mx-0.5 rounded-full transition-all duration-500 ${
-                  i < currentIndex ? "bg-accent-500/40" : "bg-white/5"
+                  i < currentIndex ? "bg-accent-500/30" : "bg-surface-200"
                 }`}
               />
             )}
@@ -198,25 +198,25 @@ function NotificationBell() {
     <div className="relative" ref={panelRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-xl hover:bg-white/5 transition-colors"
+        className="relative p-2 rounded-xl hover:bg-surface-100 transition-colors"
       >
-        <svg className="w-5 h-5 text-surface-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-5 h-5 text-surface-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full gradient-primary flex items-center justify-center text-[10px] font-bold animate-pulse">
+          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full gradient-primary flex items-center justify-center text-[10px] font-bold text-white animate-pulse">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 glass rounded-2xl overflow-hidden shadow-2xl shadow-black/30 animate-scale-in z-50">
-          <div className="p-4 border-b border-white/10">
+        <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl overflow-hidden shadow-xl shadow-black/10 border border-surface-200 animate-scale-in z-50">
+          <div className="p-4 border-b border-surface-200">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm">Notifikasi</h3>
+              <h3 className="font-bold text-sm text-surface-900">Notifikasi</h3>
               {unreadCount > 0 && (
-                <span className="text-[10px] text-primary-300 font-medium">
+                <span className="text-[10px] text-primary-600 font-medium">
                   {unreadCount} belum dibaca
                 </span>
               )}
@@ -229,8 +229,8 @@ function NotificationBell() {
                 <button
                   key={notif.id}
                   onClick={() => !notif.is_read && markAsRead(notif.id)}
-                  className={`w-full text-left p-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 ${
-                    !notif.is_read ? "bg-primary-500/5" : ""
+                  className={`w-full text-left p-4 hover:bg-surface-50 transition-colors border-b border-surface-100 last:border-0 ${
+                    !notif.is_read ? "bg-primary-50/50" : ""
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -238,15 +238,15 @@ function NotificationBell() {
                       {typeIcons[notif.type] || "🔔"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className={`text-xs leading-relaxed ${!notif.is_read ? "text-white" : "text-surface-200"}`}>
+                      <p className={`text-xs leading-relaxed ${!notif.is_read ? "text-surface-900" : "text-surface-500"}`}>
                         {notif.message}
                       </p>
-                      <span className="text-[10px] text-surface-200/60 mt-1 block">
+                      <span className="text-[10px] text-surface-400 mt-1 block">
                         {timeAgo(notif.created_at)}
                       </span>
                     </div>
                     {!notif.is_read && (
-                      <div className="w-2 h-2 rounded-full bg-primary-400 shrink-0 mt-1.5" />
+                      <div className="w-2 h-2 rounded-full bg-primary-500 shrink-0 mt-1.5" />
                     )}
                   </div>
                 </button>
@@ -254,7 +254,7 @@ function NotificationBell() {
             ) : (
               <div className="p-8 text-center">
                 <div className="text-2xl mb-2">🔔</div>
-                <p className="text-xs text-surface-200">Belum ada notifikasi</p>
+                <p className="text-xs text-surface-400">Belum ada notifikasi</p>
               </div>
             )}
           </div>
@@ -316,7 +316,7 @@ export default function TalentDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-950 flex items-center justify-center">
+      <div className="min-h-screen bg-surface-50 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full" />
       </div>
     );
@@ -325,35 +325,35 @@ export default function TalentDashboard() {
   if (!data?.profile) return null;
 
   const priorityConfig: Record<string, { color: string; bg: string; label: string }> = {
-    high: { color: "text-red-400", bg: "bg-red-500/15", label: "Prioritas Tinggi" },
-    medium: { color: "text-warning-400", bg: "bg-warning-500/15", label: "Prioritas Sedang" },
-    low: { color: "text-accent-400", bg: "bg-accent-500/15", label: "Prioritas Rendah" },
+    high: { color: "text-red-600", bg: "bg-red-50", label: "Prioritas Tinggi" },
+    medium: { color: "text-amber-600", bg: "bg-amber-50", label: "Prioritas Sedang" },
+    low: { color: "text-accent-600", bg: "bg-emerald-50", label: "Prioritas Rendah" },
   };
 
   return (
-    <div className="min-h-screen bg-surface-950">
+    <div className="min-h-screen bg-surface-50">
       {/* Top Nav */}
       <nav className="glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm" style={{ fontFamily: "Outfit" }}>
+            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm text-white" style={{ fontFamily: "Outfit" }}>
               N
             </div>
-            <span className="font-bold" style={{ fontFamily: "Outfit" }}>Nyamby</span>
+            <span className="font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>Nyamby</span>
           </Link>
 
           <div className="flex items-center gap-3">
-            <Link href="/jobs" className="text-sm text-surface-200 hover:text-white transition-colors">
+            <Link href="/jobs" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
               Browse Jobs
             </Link>
             <NotificationBell />
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-xs font-bold">
+              <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-white">
                 {data.profile.full_name[0]}
               </div>
-              <span className="text-sm font-medium hidden md:block">{data.profile.full_name}</span>
+              <span className="text-sm font-medium hidden md:block text-surface-900">{data.profile.full_name}</span>
             </div>
-            <button onClick={handleLogout} className="text-xs text-surface-200 hover:text-white">
+            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
               Keluar
             </button>
           </div>
@@ -363,10 +363,10 @@ export default function TalentDashboard() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: "Outfit" }}>
+          <h1 className="text-3xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
             Halo, {data.profile.full_name.split(" ")[0]}! 👋
           </h1>
-          <p className="text-surface-200">
+          <p className="text-surface-500">
             Dashboard karirmu — lihat insight AI dan job yang cocok untukmu.
           </p>
         </div>
@@ -385,10 +385,10 @@ export default function TalentDashboard() {
           ].map((stat, i) => (
             <div key={i} className="glass rounded-xl p-4 card-hover">
               <div className="text-lg mb-1">{stat.icon}</div>
-              <div className="text-2xl font-bold" style={{ fontFamily: "Outfit" }}>
+              <div className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
                 {stat.value}
               </div>
-              <div className="text-xs text-surface-200">{stat.label}</div>
+              <div className="text-xs text-surface-400">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -398,18 +398,18 @@ export default function TalentDashboard() {
           <div className="lg:col-span-1">
             <div className="glass rounded-2xl p-6 card-hover">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-primary-500/20 flex items-center justify-center text-sm">
+                <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-sm">
                   📊
                 </div>
                 <div>
-                  <h2 className="font-bold text-sm">Insight Karir AI</h2>
-                  <span className="text-[10px] text-surface-200">Skill Gap Analysis</span>
+                  <h2 className="font-bold text-sm text-surface-900">Insight Karir AI</h2>
+                  <span className="text-[10px] text-surface-400">Skill Gap Analysis</span>
                 </div>
               </div>
 
               {data.skill_gap ? (
                 <>
-                  <p className="text-xs text-surface-200 mb-4 leading-relaxed">
+                  <p className="text-xs text-surface-500 mb-4 leading-relaxed">
                     {data.skill_gap.summary}
                   </p>
 
@@ -417,28 +417,28 @@ export default function TalentDashboard() {
                     {(data.skill_gap.recommendations as unknown as SkillGapRec[]).map((rec, i) => {
                       const cfg = priorityConfig[rec.priority] || priorityConfig.medium;
                       return (
-                        <div key={i} className="p-3 rounded-xl bg-white/5 border border-white/5">
+                        <div key={i} className="p-3 rounded-xl bg-surface-50 border border-surface-200">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-sm font-semibold">{rec.skill_name}</span>
+                            <span className="text-sm font-semibold text-surface-900">{rec.skill_name}</span>
                             <span className={`text-[10px] px-2 py-0.5 rounded-full ${cfg.bg} ${cfg.color}`}>
                               {cfg.label}
                             </span>
                           </div>
-                          <p className="text-xs text-surface-200 mb-1">{rec.reason}</p>
-                          <p className="text-xs text-accent-400">💡 {rec.estimated_impact}</p>
+                          <p className="text-xs text-surface-500 mb-1">{rec.reason}</p>
+                          <p className="text-xs text-accent-600">💡 {rec.estimated_impact}</p>
                         </div>
                       );
                     })}
                   </div>
                 </>
               ) : (
-                <p className="text-sm text-surface-200">Belum ada analisis. Lengkapi profilmu.</p>
+                <p className="text-sm text-surface-500">Belum ada analisis. Lengkapi profilmu.</p>
               )}
             </div>
 
             {/* Skills */}
             <div className="glass rounded-2xl p-6 mt-4">
-              <h3 className="font-bold text-sm mb-3">Skill-mu</h3>
+              <h3 className="font-bold text-sm mb-3 text-surface-900">Skill-mu</h3>
               <div className="flex flex-wrap gap-2">
                 {data.profile.skills.map((s, i) => (
                   <span key={i} className={`skill-badge skill-badge-${s.level}`}>
@@ -451,9 +451,9 @@ export default function TalentDashboard() {
 
           {/* ─── Recommended Jobs ────────────────────────────────── */}
           <div className="lg:col-span-2">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ fontFamily: "Outfit" }}>
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
               🎯 Job Untukmu
-              <span className="text-xs font-normal text-surface-200 bg-white/5 px-2 py-1 rounded-full">
+              <span className="text-xs font-normal text-surface-500 bg-surface-100 px-2 py-1 rounded-full">
                 AI Matched
               </span>
             </h2>
@@ -465,26 +465,26 @@ export default function TalentDashboard() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-bold">{job.title}</h3>
+                          <h3 className="font-bold text-surface-900">{job.title}</h3>
                           {job.recommendation === "highly_recommended" && (
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-400">
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-accent-600">
                               ⭐ Top Match
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-surface-200 mb-3">
+                        <p className="text-sm text-surface-500 mb-3">
                           oleh {job.client_name} · {job.category === "web_dev" ? "Web Dev" : "Design"}
                         </p>
 
                         <div className="flex flex-wrap gap-1.5 mb-3">
                           {job.required_skills.map((s, i) => (
-                            <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-surface-200">
+                            <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-surface-100 text-surface-500">
                               {s}
                             </span>
                           ))}
                         </div>
 
-                        <div className="flex gap-4 text-xs text-surface-200">
+                        <div className="flex gap-4 text-xs text-surface-400">
                           {job.budget_max && (
                             <span>💰 Rp {Number(job.budget_max).toLocaleString("id-ID")}</span>
                           )}
@@ -494,18 +494,18 @@ export default function TalentDashboard() {
                         </div>
 
                         {/* AI Reasoning */}
-                        <div className="mt-3 p-3 rounded-lg bg-primary-500/5 border border-primary-500/10">
-                          <div className="text-[10px] text-primary-300 font-medium mb-1">🤖 AI Insight</div>
-                          <p className="text-xs text-surface-200">{job.reasoning}</p>
+                        <div className="mt-3 p-3 rounded-lg bg-primary-50 border border-primary-100">
+                          <div className="text-[10px] text-primary-600 font-medium mb-1">🤖 AI Insight</div>
+                          <p className="text-xs text-surface-500">{job.reasoning}</p>
                         </div>
                       </div>
 
                       {/* Match Score */}
                       <div className="text-center shrink-0">
-                        <div className={`text-3xl font-bold ${Number(job.match_score) >= 80 ? "text-accent-400" : "text-primary-300"}`} style={{ fontFamily: "Outfit" }}>
+                        <div className={`text-3xl font-bold ${Number(job.match_score) >= 80 ? "text-accent-600" : "text-primary-600"}`} style={{ fontFamily: "Outfit" }}>
                           {Math.round(Number(job.match_score))}%
                         </div>
-                        <div className="text-[10px] text-surface-200 mb-3">Match</div>
+                        <div className="text-[10px] text-surface-400 mb-3">Match</div>
 
                         {job.match_status === "recommended" ? (
                           <button
@@ -528,7 +528,7 @@ export default function TalentDashboard() {
             ) : (
               <div className="glass rounded-xl p-12 text-center">
                 <div className="text-4xl mb-4">🔍</div>
-                <p className="text-surface-200">
+                <p className="text-surface-500">
                   Belum ada job yang cocok. Job baru akan muncul saat client posting.
                 </p>
               </div>
@@ -537,7 +537,7 @@ export default function TalentDashboard() {
             {/* Active Jobs with Status Tracker */}
             {data.active_jobs && data.active_jobs.length > 0 && (
               <div className="mt-8">
-                <h2 className="text-xl font-bold mb-4" style={{ fontFamily: "Outfit" }}>
+                <h2 className="text-xl font-bold mb-4 text-surface-900" style={{ fontFamily: "Outfit" }}>
                   💼 Job Aktif
                 </h2>
                 <div className="space-y-3">
@@ -545,8 +545,8 @@ export default function TalentDashboard() {
                     <div key={job.job_id} className="glass rounded-xl p-5">
                       <div className="flex items-center justify-between mb-4">
                         <div>
-                          <div className="font-medium text-sm">{job.title}</div>
-                          <div className="text-xs text-surface-200">{job.client_name}</div>
+                          <div className="font-medium text-sm text-surface-900">{job.title}</div>
+                          <div className="text-xs text-surface-400">{job.client_name}</div>
                         </div>
                         <span className={`text-xs px-3 py-1 rounded-full status-${job.status}`}>
                           {job.status === "in_progress" ? "In Progress" : job.status === "completed" ? "Selesai" : job.status}

@@ -111,19 +111,19 @@ export default function OnboardingPage() {
     return (
       <div className="min-h-screen gradient-hero flex items-center justify-center">
         <div className="text-center animate-scale-in">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center text-4xl animate-pulse-glow">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center text-4xl text-white animate-pulse-glow">
             🤖
           </div>
-          <h2 className="text-2xl font-bold mb-3" style={{ fontFamily: "Outfit" }}>
+          <h2 className="text-2xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>
             AI sedang menganalisis profilmu...
           </h2>
-          <p className="text-surface-200 text-sm mb-6">
+          <p className="text-surface-500 text-sm mb-6">
             Mencocokkan skill-mu dengan demand pasar saat ini
           </p>
           <div className="flex items-center justify-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-primary-400 animate-bounce" style={{ animationDelay: "0s" }} />
-            <div className="w-2 h-2 rounded-full bg-primary-400 animate-bounce" style={{ animationDelay: "0.15s" }} />
-            <div className="w-2 h-2 rounded-full bg-primary-400 animate-bounce" style={{ animationDelay: "0.3s" }} />
+            <div className="w-2 h-2 rounded-full bg-primary-500 animate-bounce" style={{ animationDelay: "0s" }} />
+            <div className="w-2 h-2 rounded-full bg-primary-500 animate-bounce" style={{ animationDelay: "0.15s" }} />
+            <div className="w-2 h-2 rounded-full bg-primary-500 animate-bounce" style={{ animationDelay: "0.3s" }} />
           </div>
         </div>
       </div>
@@ -140,14 +140,14 @@ export default function OnboardingPage() {
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
                   step >= s
-                    ? "gradient-primary"
-                    : "glass text-surface-200"
+                    ? "gradient-primary text-white"
+                    : "bg-white border border-surface-200 text-surface-400"
                 }`}
               >
                 {step > s ? "✓" : s}
               </div>
               {s < 3 && (
-                <div className={`w-12 h-0.5 ${step > s ? "bg-primary-500" : "bg-white/10"}`} />
+                <div className={`w-12 h-0.5 ${step > s ? "bg-primary-500" : "bg-surface-200"}`} />
               )}
             </div>
           ))}
@@ -157,10 +157,10 @@ export default function OnboardingPage() {
           {/* Step 1: Category */}
           {step === 1 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: "Outfit" }}>
+              <h2 className="text-2xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
                 Pilih Kategorimu
               </h2>
-              <p className="text-surface-200 text-sm mb-8">
+              <p className="text-surface-500 text-sm mb-8">
                 Kategori apa yang paling menggambarkan keahlianmu?
               </p>
 
@@ -175,12 +175,12 @@ export default function OnboardingPage() {
                     onClick={() => setForm({ ...form, category: cat.value, skills: [] })}
                     className={`p-6 rounded-xl text-left transition-all card-hover ${
                       form.category === cat.value
-                        ? "gradient-primary shadow-lg"
-                        : "glass hover:bg-white/5"
+                        ? "gradient-primary shadow-lg text-white"
+                        : "bg-white border border-surface-200 hover:border-primary-200 hover:shadow-md"
                     }`}
                   >
                     <div className="text-3xl mb-3">{cat.icon}</div>
-                    <div className="font-bold mb-1">{cat.label}</div>
+                    <div className={`font-bold mb-1 ${form.category === cat.value ? "text-white" : "text-surface-900"}`}>{cat.label}</div>
                     <div className="text-xs opacity-70">{cat.desc}</div>
                   </button>
                 ))}
@@ -199,10 +199,10 @@ export default function OnboardingPage() {
           {/* Step 2: Skills */}
           {step === 2 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: "Outfit" }}>
+              <h2 className="text-2xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
                 Pilih Skill-mu
               </h2>
-              <p className="text-surface-200 text-sm mb-6">
+              <p className="text-surface-500 text-sm mb-6">
                 Pilih skill yang kamu kuasai dan tentukan levelnya
               </p>
 
@@ -213,20 +213,20 @@ export default function OnboardingPage() {
                     <div
                       key={skill.id}
                       className={`p-3 rounded-xl transition-all cursor-pointer ${
-                        selected ? "bg-primary-500/15 border border-primary-500/30" : "glass hover:bg-white/5"
+                        selected ? "bg-primary-50 border border-primary-200" : "bg-white border border-surface-200 hover:border-primary-200"
                       }`}
                       onClick={() => toggleSkill(skill)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className={`w-5 h-5 rounded flex items-center justify-center text-xs ${
-                            selected ? "bg-primary-500 text-white" : "border border-white/20"
+                            selected ? "bg-primary-500 text-white" : "border border-surface-300"
                           }`}>
                             {selected && "✓"}
                           </div>
                           <div>
-                            <div className="text-sm font-medium">{skill.name}</div>
-                            <div className="text-xs text-surface-200">{skill.category}</div>
+                            <div className="text-sm font-medium text-surface-900">{skill.name}</div>
+                            <div className="text-xs text-surface-400">{skill.category}</div>
                           </div>
                         </div>
                         {selected && (
@@ -238,11 +238,11 @@ export default function OnboardingPage() {
                                 className={`px-2 py-1 rounded text-[10px] font-medium transition-all ${
                                   selected.level === lvl
                                     ? lvl === "expert"
-                                      ? "bg-primary-500/30 text-primary-300"
+                                      ? "bg-primary-100 text-primary-700"
                                       : lvl === "intermediate"
-                                        ? "bg-accent-500/30 text-accent-400"
-                                        : "bg-warning-500/30 text-warning-400"
-                                    : "text-surface-200 hover:bg-white/5"
+                                        ? "bg-emerald-100 text-emerald-700"
+                                        : "bg-amber-100 text-amber-700"
+                                    : "text-surface-400 hover:bg-surface-100"
                                 }`}
                               >
                                 {lvl.charAt(0).toUpperCase() + lvl.slice(1)}
@@ -256,7 +256,7 @@ export default function OnboardingPage() {
                 })}
               </div>
 
-              <div className="text-xs text-surface-200 mb-4">
+              <div className="text-xs text-surface-400 mb-4">
                 {form.skills.length} skill dipilih
               </div>
 
@@ -278,16 +278,16 @@ export default function OnboardingPage() {
           {/* Step 3: Profile Details */}
           {step === 3 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: "Outfit" }}>
+              <h2 className="text-2xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
                 Detail Profilmu
               </h2>
-              <p className="text-surface-200 text-sm mb-6">
+              <p className="text-surface-500 text-sm mb-6">
                 Lengkapi informasi untuk meningkatkan peluang match-mu
               </p>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-surface-200 mb-2">Bio / Tentang Dirimu</label>
+                  <label className="block text-sm text-surface-600 mb-2">Bio / Tentang Dirimu</label>
                   <textarea
                     className="input-dark min-h-[100px] resize-none"
                     placeholder="Ceritakan pengalaman dan keahlianmu..."
@@ -298,7 +298,7 @@ export default function OnboardingPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-surface-200 mb-2">Rate / Jam (IDR)</label>
+                    <label className="block text-sm text-surface-600 mb-2">Rate / Jam (IDR)</label>
                     <input
                       type="number"
                       className="input-dark"
@@ -308,7 +308,7 @@ export default function OnboardingPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-surface-200 mb-2">Rate / Project (IDR)</label>
+                    <label className="block text-sm text-surface-600 mb-2">Rate / Project (IDR)</label>
                     <input
                       type="number"
                       className="input-dark"
@@ -320,7 +320,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-surface-200 mb-2">Lokasi</label>
+                  <label className="block text-sm text-surface-600 mb-2">Lokasi</label>
                   <input
                     type="text"
                     className="input-dark"
@@ -331,7 +331,7 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-surface-200 mb-2">Portfolio URL</label>
+                  <label className="block text-sm text-surface-600 mb-2">Portfolio URL</label>
                   <input
                     type="url"
                     className="input-dark"
@@ -342,12 +342,12 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-surface-200 mb-2">Availability</label>
+                  <label className="block text-sm text-surface-600 mb-2">Availability</label>
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { value: "available", label: "Available", color: "text-accent-400" },
-                      { value: "busy", label: "Busy", color: "text-warning-400" },
-                      { value: "unavailable", label: "Unavailable", color: "text-red-400" },
+                      { value: "available", label: "Available", color: "text-accent-600" },
+                      { value: "busy", label: "Busy", color: "text-amber-600" },
+                      { value: "unavailable", label: "Unavailable", color: "text-red-500" },
                     ].map((a) => (
                       <button
                         key={a.value}
@@ -355,8 +355,8 @@ export default function OnboardingPage() {
                         onClick={() => setForm({ ...form, availability: a.value })}
                         className={`p-2 rounded-lg text-sm transition-all ${
                           form.availability === a.value
-                            ? "bg-white/10 border border-white/20"
-                            : "glass hover:bg-white/5"
+                            ? "bg-surface-100 border border-surface-300"
+                            : "bg-white border border-surface-200 hover:border-surface-300"
                         }`}
                       >
                         <span className={a.color}>●</span> {a.label}
@@ -367,7 +367,7 @@ export default function OnboardingPage() {
               </div>
 
               {error && (
-                <div className="mt-4 p-3 rounded-lg bg-red-500/15 border border-red-500/25 text-red-400 text-sm">
+                <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm">
                   {error}
                 </div>
               )}

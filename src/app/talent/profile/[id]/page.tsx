@@ -49,7 +49,7 @@ export default function TalentProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-950 flex items-center justify-center">
+      <div className="min-h-screen bg-surface-50 flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full" />
       </div>
     );
@@ -57,13 +57,13 @@ export default function TalentProfilePage() {
 
   if (error || !profile) {
     return (
-      <div className="min-h-screen bg-surface-950 flex items-center justify-center">
+      <div className="min-h-screen bg-surface-50 flex items-center justify-center">
         <div className="glass rounded-2xl p-12 text-center max-w-md">
           <div className="text-5xl mb-4">😔</div>
-          <h2 className="text-xl font-bold mb-2" style={{ fontFamily: "Outfit" }}>
+          <h2 className="text-xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
             Profil Tidak Ditemukan
           </h2>
-          <p className="text-surface-200 text-sm mb-6">{error}</p>
+          <p className="text-surface-500 text-sm mb-6">{error}</p>
           <Link href="/" className="btn-primary text-sm">
             Kembali ke Beranda
           </Link>
@@ -73,9 +73,9 @@ export default function TalentProfilePage() {
   }
 
   const availConfig: Record<string, { color: string; bg: string; label: string; dot: string }> = {
-    available: { color: "text-accent-400", bg: "bg-accent-500/15", label: "Tersedia", dot: "bg-accent-400" },
-    busy: { color: "text-warning-400", bg: "bg-warning-500/15", label: "Sibuk", dot: "bg-warning-400" },
-    unavailable: { color: "text-red-400", bg: "bg-red-500/15", label: "Tidak Tersedia", dot: "bg-red-400" },
+    available: { color: "text-accent-600", bg: "bg-emerald-50", label: "Tersedia", dot: "bg-accent-500" },
+    busy: { color: "text-amber-600", bg: "bg-amber-50", label: "Sibuk", dot: "bg-amber-500" },
+    unavailable: { color: "text-red-500", bg: "bg-red-50", label: "Tidak Tersedia", dot: "bg-red-500" },
   };
 
   const avail = availConfig[profile.availability] || availConfig.available;
@@ -92,23 +92,23 @@ export default function TalentProfilePage() {
   const levelOrder = { expert: 0, intermediate: 1, beginner: 2 };
 
   return (
-    <div className="min-h-screen bg-surface-950">
+    <div className="min-h-screen bg-surface-50">
       {/* Nav */}
       <nav className="glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <div
-              className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm"
+              className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm text-white"
               style={{ fontFamily: "Outfit" }}
             >
               N
             </div>
-            <span className="font-bold" style={{ fontFamily: "Outfit" }}>
+            <span className="font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
               Nyamby
             </span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link href="/jobs" className="text-sm text-surface-200 hover:text-white transition-colors">
+            <Link href="/jobs" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
               Browse Jobs
             </Link>
             <Link href="/login" className="btn-primary text-xs px-4 py-2">
@@ -121,9 +121,9 @@ export default function TalentProfilePage() {
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 gradient-hero">
-          <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-primary-500/10 rounded-full blur-3xl animate-float" />
+          <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-primary-400/10 rounded-full blur-3xl animate-float" />
           <div
-            className="absolute bottom-1/4 right-1/4 w-56 h-56 bg-purple-500/10 rounded-full blur-3xl animate-float"
+            className="absolute bottom-1/4 right-1/4 w-56 h-56 bg-purple-400/10 rounded-full blur-3xl animate-float"
             style={{ animationDelay: "2s" }}
           />
         </div>
@@ -132,7 +132,7 @@ export default function TalentProfilePage() {
           <div className="flex flex-col md:flex-row items-start gap-8 animate-slide-up">
             {/* Avatar */}
             <div className="shrink-0">
-              <div className="w-28 h-28 rounded-3xl gradient-primary flex items-center justify-center text-5xl font-bold shadow-lg shadow-primary-500/20 animate-pulse-glow">
+              <div className="w-28 h-28 rounded-3xl gradient-primary flex items-center justify-center text-5xl font-bold text-white shadow-lg shadow-primary-500/20 animate-pulse-glow">
                 {profile.avatar_url ? (
                   <img
                     src={profile.avatar_url}
@@ -148,7 +148,7 @@ export default function TalentProfilePage() {
             {/* Info */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2 flex-wrap">
-                <h1 className="text-3xl md:text-4xl font-extrabold" style={{ fontFamily: "Outfit" }}>
+                <h1 className="text-3xl md:text-4xl font-extrabold text-surface-900" style={{ fontFamily: "Outfit" }}>
                   {profile.full_name}
                 </h1>
                 <span className={`inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full ${avail.bg} ${avail.color}`}>
@@ -159,17 +159,17 @@ export default function TalentProfilePage() {
 
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-lg">{categoryIcon}</span>
-                <span className="text-surface-200 font-medium">{categoryLabel}</span>
+                <span className="text-surface-600 font-medium">{categoryLabel}</span>
                 {profile.location && (
                   <>
-                    <span className="text-surface-200/30">•</span>
-                    <span className="text-surface-200 text-sm">📍 {profile.location}</span>
+                    <span className="text-surface-300">•</span>
+                    <span className="text-surface-500 text-sm">📍 {profile.location}</span>
                   </>
                 )}
               </div>
 
               {profile.bio && (
-                <p className="text-surface-200 leading-relaxed max-w-2xl text-sm md:text-base">
+                <p className="text-surface-500 leading-relaxed max-w-2xl text-sm md:text-base">
                   {profile.bio}
                 </p>
               )}
@@ -178,7 +178,7 @@ export default function TalentProfilePage() {
               <div className="flex flex-wrap gap-4 mt-6">
                 {profile.rate_per_hour && (
                   <div className="glass rounded-xl px-5 py-3">
-                    <div className="text-xs text-surface-200 mb-0.5">Rate / Jam</div>
+                    <div className="text-xs text-surface-400 mb-0.5">Rate / Jam</div>
                     <div className="text-lg font-bold gradient-text" style={{ fontFamily: "Outfit" }}>
                       Rp {Number(profile.rate_per_hour).toLocaleString("id-ID")}
                     </div>
@@ -186,15 +186,15 @@ export default function TalentProfilePage() {
                 )}
                 {profile.rate_per_project && (
                   <div className="glass rounded-xl px-5 py-3">
-                    <div className="text-xs text-surface-200 mb-0.5">Rate / Project</div>
+                    <div className="text-xs text-surface-400 mb-0.5">Rate / Project</div>
                     <div className="text-lg font-bold gradient-text" style={{ fontFamily: "Outfit" }}>
                       Rp {Number(profile.rate_per_project).toLocaleString("id-ID")}
                     </div>
                   </div>
                 )}
                 <div className="glass rounded-xl px-5 py-3">
-                  <div className="text-xs text-surface-200 mb-0.5">Total Skills</div>
-                  <div className="text-lg font-bold text-primary-300" style={{ fontFamily: "Outfit" }}>
+                  <div className="text-xs text-surface-400 mb-0.5">Total Skills</div>
+                  <div className="text-lg font-bold text-primary-600" style={{ fontFamily: "Outfit" }}>
                     {profile.skills.length}
                   </div>
                 </div>
@@ -210,14 +210,14 @@ export default function TalentProfilePage() {
           {/* ─── Left: Skills ─────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-              <h2 className="text-xl font-bold mb-5 flex items-center gap-2" style={{ fontFamily: "Outfit" }}>
+              <h2 className="text-xl font-bold mb-5 flex items-center gap-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
                 ⚡ Skill Map
               </h2>
 
               <div className="space-y-6">
                 {Object.entries(skillsByCategory).map(([category, skills]) => (
                   <div key={category}>
-                    <div className="text-xs text-surface-200 font-semibold uppercase tracking-wide mb-3">
+                    <div className="text-xs text-surface-400 font-semibold uppercase tracking-wide mb-3">
                       {category}
                     </div>
                     <div className="space-y-2">
@@ -234,7 +234,7 @@ export default function TalentProfilePage() {
 
             {/* Skill Badges Summary */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-              <h3 className="font-bold text-sm mb-4">Semua Skill</h3>
+              <h3 className="font-bold text-sm mb-4 text-surface-900">Semua Skill</h3>
               <div className="flex flex-wrap gap-2">
                 {profile.skills
                   .sort((a, b) => (levelOrder[a.level as keyof typeof levelOrder] ?? 1) - (levelOrder[b.level as keyof typeof levelOrder] ?? 1))
@@ -255,27 +255,27 @@ export default function TalentProfilePage() {
             {/* Portfolio */}
             {profile.portfolio_url && (
               <div className="glass rounded-2xl p-6 card-hover animate-slide-up" style={{ animationDelay: "0.15s" }}>
-                <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
+                <h3 className="font-bold text-sm mb-3 flex items-center gap-2 text-surface-900">
                   🔗 Portfolio
                 </h3>
                 <a
                   href={profile.portfolio_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-surface-50 border border-surface-200 hover:border-primary-200 transition-colors group"
                 >
-                  <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-sm shrink-0">
+                  <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-sm text-white shrink-0">
                     {profile.portfolio_url.includes("github") ? "🐙" :
                      profile.portfolio_url.includes("behance") ? "🅱️" :
                      profile.portfolio_url.includes("dribbble") ? "🏀" : "🌐"}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-primary-300 group-hover:text-primary-200 transition-colors truncate">
+                    <div className="text-sm font-medium text-primary-600 group-hover:text-primary-700 transition-colors truncate">
                       {profile.portfolio_url.replace(/^https?:\/\//, "")}
                     </div>
-                    <div className="text-[10px] text-surface-200">Klik untuk membuka</div>
+                    <div className="text-[10px] text-surface-400">Klik untuk membuka</div>
                   </div>
-                  <svg className="w-4 h-4 text-surface-200 group-hover:text-white transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 text-surface-400 group-hover:text-surface-600 transition-colors shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
                 </a>
@@ -284,18 +284,18 @@ export default function TalentProfilePage() {
 
             {/* Skill Level Legend */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-              <h3 className="font-bold text-sm mb-4">📊 Level Guide</h3>
+              <h3 className="font-bold text-sm mb-4 text-surface-900">📊 Level Guide</h3>
               <div className="space-y-3">
                 {[
-                  { level: "Expert", color: "bg-primary-500", textColor: "text-primary-300", desc: "Menguasai mendalam, bisa mengajar" },
-                  { level: "Intermediate", color: "bg-accent-500", textColor: "text-accent-400", desc: "Kompeten, pengalaman di project" },
-                  { level: "Beginner", color: "bg-warning-500", textColor: "text-warning-400", desc: "Paham dasar, sedang belajar" },
+                  { level: "Expert", color: "bg-primary-500", textColor: "text-primary-600", desc: "Menguasai mendalam, bisa mengajar" },
+                  { level: "Intermediate", color: "bg-accent-500", textColor: "text-accent-600", desc: "Kompeten, pengalaman di project" },
+                  { level: "Beginner", color: "bg-amber-500", textColor: "text-amber-600", desc: "Paham dasar, sedang belajar" },
                 ].map((item) => (
                   <div key={item.level} className="flex items-start gap-3">
                     <div className={`w-3 h-3 rounded-full ${item.color} mt-1 shrink-0`} />
                     <div>
                       <div className={`text-sm font-semibold ${item.textColor}`}>{item.level}</div>
-                      <div className="text-[11px] text-surface-200">{item.desc}</div>
+                      <div className="text-[11px] text-surface-400">{item.desc}</div>
                     </div>
                   </div>
                 ))}
@@ -304,7 +304,7 @@ export default function TalentProfilePage() {
 
             {/* Dummy Rating */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.25s" }}>
-              <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
+              <h3 className="font-bold text-sm mb-3 flex items-center gap-2 text-surface-900">
                 ⭐ Rating & Reputasi
               </h3>
               <div className="flex items-center gap-2 mb-2">
@@ -312,7 +312,7 @@ export default function TalentProfilePage() {
                   {[1, 2, 3, 4, 5].map((star) => (
                     <svg
                       key={star}
-                      className={`w-5 h-5 ${star <= 4 ? "text-warning-400" : "text-warning-400/30"}`}
+                      className={`w-5 h-5 ${star <= 4 ? "text-amber-400" : "text-amber-200"}`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -320,8 +320,8 @@ export default function TalentProfilePage() {
                     </svg>
                   ))}
                 </div>
-                <span className="text-lg font-bold" style={{ fontFamily: "Outfit" }}>4.8</span>
-                <span className="text-xs text-surface-200">(12 reviews)</span>
+                <span className="text-lg font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>4.8</span>
+                <span className="text-xs text-surface-400">(12 reviews)</span>
               </div>
               <div className="space-y-1.5 mt-3">
                 {[
@@ -330,14 +330,14 @@ export default function TalentProfilePage() {
                   { label: "Tepat Waktu", value: 88 },
                 ].map((metric) => (
                   <div key={metric.label} className="flex items-center gap-2">
-                    <span className="text-[11px] text-surface-200 w-20">{metric.label}</span>
-                    <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
+                    <span className="text-[11px] text-surface-500 w-20">{metric.label}</span>
+                    <div className="flex-1 h-1.5 rounded-full bg-surface-200 overflow-hidden">
                       <div
                         className="h-full rounded-full bg-gradient-to-r from-primary-500 to-accent-500 transition-all duration-1000"
                         style={{ width: `${metric.value}%` }}
                       />
                     </div>
-                    <span className="text-[11px] text-surface-200 w-8 text-right">{metric.value}%</span>
+                    <span className="text-[11px] text-surface-500 w-8 text-right">{metric.value}%</span>
                   </div>
                 ))}
               </div>
@@ -346,10 +346,10 @@ export default function TalentProfilePage() {
             {/* CTA */}
             <div className="glass rounded-2xl p-6 text-center animate-slide-up" style={{ animationDelay: "0.3s" }}>
               <div className="text-2xl mb-3">🤝</div>
-              <h3 className="font-bold mb-2" style={{ fontFamily: "Outfit" }}>
+              <h3 className="font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
                 Tertarik dengan talenta ini?
               </h3>
-              <p className="text-xs text-surface-200 mb-4">
+              <p className="text-xs text-surface-400 mb-4">
                 Post job dan AI kami akan otomatis mencocokkan kebutuhanmu.
               </p>
               <Link href="/register?role=client" className="btn-primary text-sm w-full inline-block py-3">
@@ -361,15 +361,15 @@ export default function TalentProfilePage() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 py-8 mt-8">
+      <footer className="border-t border-surface-200 py-8 mt-8 bg-white">
         <div className="max-w-5xl mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg gradient-primary flex items-center justify-center font-bold text-xs" style={{ fontFamily: "Outfit" }}>
+            <div className="w-7 h-7 rounded-lg gradient-primary flex items-center justify-center font-bold text-xs text-white" style={{ fontFamily: "Outfit" }}>
               N
             </div>
-            <span className="text-sm font-bold" style={{ fontFamily: "Outfit" }}>Nyamby</span>
+            <span className="text-sm font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>Nyamby</span>
           </div>
-          <span className="text-xs text-surface-200">© 2026 Nyamby — AI Career Platform</span>
+          <span className="text-xs text-surface-400">© 2026 Nyamby — AI Career Platform</span>
         </div>
       </footer>
     </div>
@@ -380,17 +380,17 @@ export default function TalentProfilePage() {
 
 function SkillBar({ name, level }: { name: string; level: string }) {
   const config: Record<string, { width: string; color: string; gradient: string }> = {
-    expert: { width: "90%", color: "text-primary-300", gradient: "from-primary-500 to-purple-500" },
-    intermediate: { width: "60%", color: "text-accent-400", gradient: "from-accent-500 to-teal-400" },
-    beginner: { width: "30%", color: "text-warning-400", gradient: "from-warning-500 to-orange-400" },
+    expert: { width: "90%", color: "text-primary-600", gradient: "from-primary-500 to-purple-500" },
+    intermediate: { width: "60%", color: "text-accent-600", gradient: "from-accent-500 to-teal-400" },
+    beginner: { width: "30%", color: "text-amber-600", gradient: "from-amber-500 to-orange-400" },
   };
 
   const cfg = config[level] || config.intermediate;
 
   return (
     <div className="flex items-center gap-3">
-      <div className="w-28 text-sm font-medium truncate">{name}</div>
-      <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+      <div className="w-28 text-sm font-medium truncate text-surface-700">{name}</div>
+      <div className="flex-1 h-2 rounded-full bg-surface-200 overflow-hidden">
         <div
           className={`h-full rounded-full bg-gradient-to-r ${cfg.gradient} transition-all duration-1000 ease-out`}
           style={{ width: cfg.width }}
