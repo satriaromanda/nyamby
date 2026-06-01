@@ -353,6 +353,9 @@ export default function TalentDashboard() {
               </div>
               <span className="text-sm font-medium hidden md:block text-surface-900">{data.profile.full_name}</span>
             </div>
+            <Link href="/talent/settings" className="text-sm text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
+              ⚙️
+            </Link>
             <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
               Keluar
             </button>

@@ -349,6 +349,9 @@ export default function ClientDashboard() {
             <Link href="/client/post-job" className="btn-primary text-xs px-4 py-2">
               + Post Job Baru
             </Link>
+            <Link href="/client/settings" className="text-sm text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
+              ⚙️
+            </Link>
             <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
               Keluar
             </button>
