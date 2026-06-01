@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/icons";
 
+
 interface ClientProfile {
   id: string;
   email: string;
@@ -237,13 +238,13 @@ export default function ClientSettingsPage() {
 
             {/* Quick Actions */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
-              <h3 className="font-bold text-sm mb-3 text-surface-900">⚡ Aksi Cepat</h3>
+              <h3 className="font-bold text-sm mb-3 text-surface-900"><Icon name="bolt" className="inline mr-1.5 text-action-500" size={15} />Aksi Cepat</h3>
               <div className="space-y-2">
                 <Link
                   href="/client/post-job"
                   className="flex items-center gap-3 p-3 rounded-xl bg-surface-50 border border-surface-200 hover:border-primary-200 transition-colors group"
                 >
-                  <span className="text-sm">➕</span>
+                  <Icon name="plus" className="text-action-500" size={16} />
                   <span className="text-xs text-surface-600 group-hover:text-primary-600 transition-colors">
                     Post Job Baru
                   </span>
@@ -252,7 +253,7 @@ export default function ClientSettingsPage() {
                   href="/client/dashboard"
                   className="flex items-center gap-3 p-3 rounded-xl bg-surface-50 border border-surface-200 hover:border-primary-200 transition-colors group"
                 >
-                  <span className="text-sm">📋</span>
+                  <Icon name="chart" className="text-primary-600" size={16} />
                   <span className="text-xs text-surface-600 group-hover:text-primary-600 transition-colors">
                     Lihat Dashboard
                   </span>
@@ -269,7 +270,7 @@ export default function ClientSettingsPage() {
                 className="font-bold text-lg mb-1 text-surface-900"
                 style={{ fontFamily: "Outfit" }}
               >
-                📝 Informasi Profil
+                <Icon name="user" className="inline mr-1.5 text-primary-600" size={20} />Informasi Profil
               </h2>
               <p className="text-xs text-surface-400 mb-5">
                 Perbarui informasi profil client-mu.
@@ -300,7 +301,7 @@ export default function ClientSettingsPage() {
                 className="font-bold text-lg mb-1 text-surface-900"
                 style={{ fontFamily: "Outfit" }}
               >
-                🔒 Informasi Akun
+                <Icon name="lock" className="inline mr-1.5 text-trust-500" size={20} />Informasi Akun
               </h2>
               <p className="text-xs text-surface-400 mb-5">
                 Informasi akun yang tidak dapat diubah.
@@ -319,7 +320,7 @@ export default function ClientSettingsPage() {
                 <div className="flex items-center justify-between p-3 rounded-xl bg-surface-50 border border-surface-200">
                   <div>
                     <span className="text-xs text-surface-400">Role</span>
-                    <div className="text-sm font-medium text-surface-900">👔 Client</div>
+                    <div className="text-sm font-medium text-surface-900"><Icon name="briefcase" className="inline mr-1 text-primary-600" size={14} />Client</div>
                   </div>
                   <span className="text-[10px] text-surface-400 px-2 py-1 bg-surface-100 rounded-full">
                     Tidak bisa diubah
@@ -334,7 +335,7 @@ export default function ClientSettingsPage() {
                 className="font-bold text-lg mb-1 text-surface-900"
                 style={{ fontFamily: "Outfit" }}
               >
-                ℹ️ Tentang Platform
+                <Icon name="external" className="inline mr-1.5 text-primary-600" size={20} />Tentang Platform
               </h2>
               <p className="text-xs text-surface-400 mb-5">
                 Informasi penting tentang cara kerja Nyamby.

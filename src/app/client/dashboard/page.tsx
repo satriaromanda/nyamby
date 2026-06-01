@@ -510,7 +510,10 @@ export default function ClientDashboard() {
                       <div className="mt-4 p-4 rounded-xl bg-surface-50 border border-surface-200">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="text-sm font-medium mb-1 text-surface-900">💳 Status Escrow</div>
+                            <div className="text-sm font-medium mb-1 text-surface-900 flex items-center gap-1.5">
+                              <Icon name="shield" className="text-trust-500" size={16} />
+                              Status Escrow
+                            </div>
                             <div className="flex items-center gap-3">
                               <span className={`text-xs px-3 py-1 rounded-full status-${job.escrow.status}`}>
                                 {job.escrow.status === "held" ? "Dana Ditahan" : job.escrow.status === "released" ? "Dana Dirilis" : job.escrow.status}
@@ -528,7 +531,7 @@ export default function ClientDashboard() {
                               }}
                               className="bg-accent-500 hover:bg-accent-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all"
                             >
-                              ✓ Approve & Rilis Dana
+                              <Icon name="check" size={14} /> Approve & Rilis Dana
                             </button>
                           )}
                         </div>
@@ -565,7 +568,7 @@ export default function ClientDashboard() {
           </div>
         ) : (
           <div className="glass rounded-2xl p-16 text-center">
-            <div className="text-5xl mb-4">📝</div>
+            <Icon name="file" className="mx-auto text-surface-300" size={48} />
             <h3 className="text-xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>Belum ada job</h3>
             <p className="text-surface-500 text-sm mb-6">Post job pertamamu dan biarkan AI mencarikan talenta terbaik.</p>
             <Link href="/client/post-job" className="btn-primary">

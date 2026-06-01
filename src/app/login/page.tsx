@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Icon } from "@/components/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -118,7 +119,10 @@ function LoginForm() {
 
           {/* Demo Accounts */}
           <div className="mt-6 p-4 bg-surface-50 rounded-xl border border-surface-200">
-            <div className="text-xs text-surface-500 font-medium mb-3 text-center">🧪 Akun Demo</div>
+            <div className="text-xs text-surface-500 font-medium mb-3 text-center inline-flex items-center justify-center gap-1">
+              <Icon name="beaker" size={14} />
+              Akun Demo
+            </div>
             <div className="grid grid-cols-2 gap-2">
               {[
                 { email: "raka@demo.com", label: "Raka (Talent)" },

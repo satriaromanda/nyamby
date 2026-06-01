@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/icons";
 
+
 interface ProfileData {
   profile_id: string;
   user_id: string;
@@ -349,21 +350,18 @@ export default function TalentSettingsPage() {
                       {
                         value: "available",
                         label: "Available",
-                        icon: "🟢",
                         desc: "Siap menerima job",
                         activeClass: "border-emerald-400 bg-emerald-50",
                       },
                       {
                         value: "busy",
                         label: "Busy",
-                        icon: "🟡",
                         desc: "Sedang ada project",
                         activeClass: "border-amber-400 bg-amber-50",
                       },
                       {
                         value: "unavailable",
                         label: "Unavailable",
-                        icon: "🔴",
                         desc: "Tidak tersedia",
                         activeClass: "border-red-400 bg-red-50",
                       },
@@ -378,7 +376,7 @@ export default function TalentSettingsPage() {
                             : "border-surface-200 bg-white hover:border-surface-300"
                         }`}
                       >
-                        <div className="text-lg mb-1">{a.icon}</div>
+                        {a.value === "available" ? <Icon name="check" className="text-emerald-500" size={18} /> : a.value === "busy" ? <Icon name="arrowRight" className="text-amber-500" size={18} /> : <Icon name="x" className="text-red-500" size={18} />}
                         <div className="text-sm font-medium text-surface-900">{a.label}</div>
                         <div className="text-[10px] text-surface-400">{a.desc}</div>
                       </button>
@@ -391,7 +389,8 @@ export default function TalentSettingsPage() {
             {/* Account Info (read-only) */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" style={{ fontFamily: "Outfit" }}>
-                🔒 Informasi Akun
+                <Icon name="lock" className="inline mr-1.5 text-trust-500" size={20} />
+                Informasi Akun
               </h2>
               <p className="text-xs text-surface-400 mb-5">
                 Informasi akun yang tidak dapat diubah.
