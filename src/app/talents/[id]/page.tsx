@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { Icon, RatingStars } from "@/components/icons";
+import { Icon, RatingStars, Logo } from "@/components/icons";
 
 export default async function TalentPublicProfilePage({
   params,
@@ -36,10 +36,7 @@ export default async function TalentPublicProfilePage({
       <nav className="glass sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm text-white" style={{ fontFamily: "Outfit" }}>
-              N
-            </div>
-            <span className="font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>Nyamby</span>
+            <Logo height={32} />
           </Link>
           <div className="flex items-center gap-4 text-sm">
             <Link href="/talents" className="text-surface-500 hover:text-surface-900">Talenta</Link>

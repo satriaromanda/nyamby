@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Icon } from "@/components/icons";
+import { Icon, Logo } from "@/components/icons";
 
 export default function LandingPage() {
   const [isVisible, setIsVisible] = useState(false);
@@ -17,12 +17,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 w-full z-50 glass">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center font-bold text-lg text-white" style={{ fontFamily: "Outfit" }}>
-              N
-            </div>
-            <span className="text-xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
-              Nyamby
-            </span>
+            <Logo height={36} />
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
@@ -389,10 +384,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm text-white" style={{ fontFamily: "Outfit" }}>
-                N
-              </div>
-              <span className="font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>Nyamby</span>
+              <Logo height={32} />
               <span className="text-surface-400 text-sm ml-2">— AI Career Platform</span>
             </div>
             <div className="text-sm text-surface-400">

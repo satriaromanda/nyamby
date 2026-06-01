@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #eef2ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-200: #c7d2fe;
-  --color-primary-300: #a5b4fc;
-  --color-primary-400: #818cf8;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
-  --color-primary-700: #4338ca;
-  --color-primary-800: #3730a3;
-  --color-primary-900: #312e81;
+  --color-primary-50: #e8f0fe;
+  --color-primary-100: #d2e2fc;
+  --color-primary-200: #a5c5f9;
+  --color-primary-300: #78a8f6;
+  --color-primary-400: #3976e8;
+  --color-primary-500: #1A4EC7;
+  --color-primary-600: #153fa0;
+  --color-primary-700: #0D2661;
+  --color-primary-800: #0a1e4d;
+  --color-primary-900: #071439;
 
   --color-accent-400: #34d399;
   --color-accent-500: #10b981;
@@ -31,11 +31,11 @@
   --color-surface-900: #0f172a;
   --color-surface-950: #020617;
 
-  /* PRD §11.2 — Semantic role-based colors */
-  --color-ai-500: #534AB7;
-  --color-ai-600: #4339a6;
-  --color-ai-50: #eeecf7;
-  --color-ai-100: #ddd8f0;
+  /* Semantic colors — matched to logo palette */
+  --color-ai-500: #1A4EC7;
+  --color-ai-600: #0D2661;
+  --color-ai-50: #e8f0fe;
+  --color-ai-100: #d2e2fc;
 
   --color-action-500: #0F6E56;
   --color-action-600: #0c5845;
@@ -89,15 +89,15 @@ body {
 /* ─── Gradients ───────────────────────────────────────────────── */
 
 .gradient-primary {
-  background: linear-gradient(135deg, #534AB7, #6b63d4, #8b85e8);
+  background: linear-gradient(135deg, #1A4EC7, #008EF1, #1CCEFD);
 }
 
 .gradient-hero {
-  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 40%, #e0e7ff 70%, #c7d2fe 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #e8f0fe 40%, #d2e2fc 70%, #a5c5f9 100%);
 }
 
 .gradient-card {
-  background: linear-gradient(145deg, rgba(99, 102, 241, 0.06), rgba(139, 92, 246, 0.03));
+  background: linear-gradient(145deg, rgba(26, 78, 199, 0.06), rgba(0, 142, 241, 0.03));
 }
 
 .gradient-accent {
@@ -105,14 +105,14 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #534AB7, #6b63d4);
+  background: linear-gradient(135deg, #1A4EC7, #1CCEFD);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-glow {
-  background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(26, 78, 199, 0.08) 0%, transparent 70%);
 }
 
 /* ─── Animations ──────────────────────────────────────────────── */
@@ -123,8 +123,8 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.4); }
+  0%, 100% { box-shadow: 0 0 20px rgba(26, 78, 199, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(26, 78, 199, 0.4); }
 }
 
 @keyframes shimmer {
@@ -161,7 +161,7 @@ body {
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent 25%, rgba(99, 102, 241, 0.06) 50%, transparent 75%);
+  background: linear-gradient(90deg, transparent 25%, rgba(26, 78, 199, 0.06) 50%, transparent 75%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
@@ -189,12 +189,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.2);
+  background: rgba(26, 78, 199, 0.2);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.35);
+  background: rgba(26, 78, 199, 0.35);
 }
 
 /* ─── Skill Badges ────────────────────────────────────────────── */
@@ -211,9 +211,9 @@ body {
 }
 
 .skill-badge-expert {
-  background: rgba(99, 102, 241, 0.1);
-  color: #4f46e5;
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: rgba(26, 78, 199, 0.1);
+  color: #153fa0;
+  border: 1px solid rgba(26, 78, 199, 0.2);
 }
 
 .skill-badge-intermediate {
@@ -261,19 +261,19 @@ body {
 
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 0 30px rgba(99, 102, 241, 0.06);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 0 30px rgba(26, 78, 199, 0.06);
 }
 
 /* ─── Status Badges ───────────────────────────────────────────── */
 
 .status-active { background: rgba(16, 185, 129, 0.1); color: #059669; }
-.status-matched { background: rgba(99, 102, 241, 0.1); color: #4f46e5; }
+.status-matched { background: rgba(26, 78, 199, 0.1); color: #153fa0; }
 .status-in_progress { background: rgba(245, 158, 11, 0.1); color: #d97706; }
 .status-completed { background: rgba(16, 185, 129, 0.1); color: #059669; }
 .status-cancelled { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
 .status-held { background: rgba(245, 158, 11, 0.1); color: #d97706; }
 .status-released { background: rgba(16, 185, 129, 0.1); color: #059669; }
-.status-applied { background: rgba(99, 102, 241, 0.1); color: #4f46e5; }
+.status-applied { background: rgba(26, 78, 199, 0.1); color: #153fa0; }
 .status-available { background: rgba(16, 185, 129, 0.1); color: #3B6D11; }
 .status-busy { background: rgba(245, 158, 11, 0.1); color: #854F0B; }
 .status-unavailable { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
@@ -281,7 +281,7 @@ body {
 /* ─── Button Styles ───────────────────────────────────────────── */
 
 .btn-primary {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #1A4EC7, #1CCEFD);
   color: white;
   font-weight: 600;
   padding: 10px 24px;
@@ -293,7 +293,7 @@ body {
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 8px 24px rgba(26, 78, 199, 0.3);
 }
 
 .btn-primary:active {
@@ -332,8 +332,8 @@ body {
 
 .input-dark:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: #1A4EC7;
+  box-shadow: 0 0 0 3px rgba(26, 78, 199, 0.1);
 }
 
 .input-dark::placeholder {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Prisma, TalentCategory } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { Icon } from "@/components/icons";
+import { Icon, Logo } from "@/components/icons";
 
 const categories = [
   { value: "", label: "Semua Talenta" },
@@ -44,10 +44,7 @@ export default async function TalentsPage({
       <nav className="glass sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center font-bold text-sm text-white" style={{ fontFamily: "Outfit" }}>
-              N
-            </div>
-            <span className="font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>Nyamby</span>
+            <Logo height={32} />
           </Link>
           <div className="flex items-center gap-4 text-sm">
             <Link href="/jobs" className="text-surface-500 hover:text-surface-900">Browse Jobs</Link>

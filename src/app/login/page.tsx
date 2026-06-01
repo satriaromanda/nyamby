@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Icon } from "@/components/icons";
+import { Icon, Logo } from "@/components/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -51,12 +51,7 @@ function LoginForm() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center font-bold text-lg text-white" style={{ fontFamily: "Outfit" }}>
-            N
-          </div>
-          <span className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
-            Nyamby
-          </span>
+          <Logo height={36} />
         </Link>
 
         <div className="glass rounded-2xl p-8 animate-scale-in">
