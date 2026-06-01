@@ -81,8 +81,8 @@ export default function JobsPage() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      <nav className="glass sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
+        <div className="max-w-[1280px] mx-auto px-8 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
           </Link>
@@ -116,7 +116,7 @@ export default function JobsPage() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <main role="main" className="max-w-7xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold mb-2 text-surface-900 flex items-center gap-3" style={{ fontFamily: "Outfit" }}>
           <Icon name="briefcase" className="text-primary-600" size={28} />
           Job Aktif
@@ -132,7 +132,7 @@ export default function JobsPage() {
             <button
               key={f.value}
               onClick={() => setCategory(f.value)}
-              className={`text-sm px-4 py-2 rounded-xl transition-all ${
+              className={`text-sm px-4 py-2 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
                 category === f.value
                   ? "gradient-primary text-white"
                   : "bg-white border border-surface-200 text-surface-500 hover:border-primary-200"
@@ -149,7 +149,7 @@ export default function JobsPage() {
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="skeleton h-40 rounded-2xl" />
+              <div key={i} className="skeleton h-40 rounded-xl" />
             ))}
           </div>
         ) : jobs.length > 0 ? (
@@ -158,7 +158,7 @@ export default function JobsPage() {
               const existingMatch = getMatch(job.id);
               return (
                 <Link key={job.id} href={`/jobs/${job.id}`} className="block">
-                  <div className="glass rounded-2xl p-6 card-hover cursor-pointer">
+                  <div className="glass rounded-xl p-6 card-hover cursor-pointer">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <h3 className="text-lg font-bold mb-1 text-surface-900">{job.title}</h3>
@@ -228,13 +228,13 @@ export default function JobsPage() {
             })}
           </div>
         ) : (
-          <div className="glass rounded-2xl p-16 text-center">
+          <div className="glass rounded-xl p-16 text-center">
             <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
             <h3 className="text-xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>Belum ada job aktif</h3>
             <p className="text-surface-400 text-sm">Job baru akan muncul saat client posting.</p>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

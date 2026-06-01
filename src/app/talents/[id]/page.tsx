@@ -33,7 +33,7 @@ export default async function TalentPublicProfilePage({
 
   return (
     <div className="min-h-screen bg-surface-50">
-      <nav className="glass sticky top-0 z-50">
+      <nav role="navigation" className="glass sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
@@ -53,7 +53,7 @@ export default async function TalentPublicProfilePage({
       <main className="max-w-5xl mx-auto px-6 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
           <aside className="space-y-4">
-            <div className="glass rounded-2xl p-6 text-center">
+            <div className="glass rounded-xl p-6 text-center">
               <div className="w-24 h-24 rounded-2xl mx-auto gradient-primary flex items-center justify-center text-4xl font-bold text-white mb-4">
                 {talent.user.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -69,7 +69,7 @@ export default async function TalentPublicProfilePage({
               <p className="text-xs text-surface-400 mt-1">{talent.location || "Indonesia"}</p>
             </div>
 
-            <div className="glass rounded-2xl p-6">
+            <div className="glass rounded-xl p-6">
               <h2 className="font-bold text-sm text-surface-900 mb-3">Info Talenta</h2>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between gap-3">
@@ -91,7 +91,7 @@ export default async function TalentPublicProfilePage({
               </div>
             </div>
 
-            <div className="glass rounded-2xl p-6">
+            <div className="glass rounded-xl p-6">
               <h2 className="font-bold text-sm text-surface-900 mb-3">Rating & Review</h2>
               <div className="text-center">
                 <RatingStars rating={4.7} reviewCount={8} size={16} />
@@ -103,7 +103,7 @@ export default async function TalentPublicProfilePage({
           </aside>
 
           <section className="lg:col-span-2 space-y-5">
-            <div className="glass rounded-2xl p-7">
+            <div className="glass rounded-xl p-7">
               <div className="flex items-center justify-between gap-3 mb-4">
                 <h2 className="text-xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
                   Profil Publik
@@ -123,7 +123,7 @@ export default async function TalentPublicProfilePage({
               )}
             </div>
 
-            <div className="glass rounded-2xl p-7">
+            <div className="glass rounded-xl p-7">
               <h2 className="text-lg font-bold text-surface-900 mb-4" style={{ fontFamily: "Outfit" }}>
                 Skill Map
               </h2>
@@ -137,7 +137,7 @@ export default async function TalentPublicProfilePage({
               </div>
             </div>
 
-            <div className="glass rounded-2xl p-7 relative overflow-hidden">
+            <div className="glass rounded-xl p-7 relative overflow-hidden">
               <div className="flex items-center justify-between gap-3 mb-4">
                 <h2 className="text-lg font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
                   AI Match Signals

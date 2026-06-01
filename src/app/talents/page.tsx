@@ -41,20 +41,20 @@ export default async function TalentsPage({
 
   return (
     <div className="min-h-screen bg-surface-50">
-      <nav className="glass sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation">
+        <div className="max-w-[1280px] mx-auto px-8 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
           </Link>
           <div className="flex items-center gap-4 text-sm">
             <Link href="/jobs" className="text-surface-500 hover:text-surface-900">Browse Jobs</Link>
             <Link href="/how-it-works" className="text-surface-500 hover:text-surface-900">Cara Kerja</Link>
-            <Link href="/register?role=client" className="btn-primary text-xs px-4 py-2">Post Job</Link>
+            <Link href="/register?role=client" className="btn-primary text-xs px-4 py-2 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">Post Job</Link>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-10">
+      <main role="main" className="max-w-7xl mx-auto px-6 py-10">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
           <div>
             <div className="inline-flex items-center gap-2 text-xs px-3 py-1 rounded-full bg-[#FAEEDA] text-[#854F0B] mb-4">
@@ -81,7 +81,7 @@ export default async function TalentsPage({
               className="input-dark min-w-56"
               placeholder="Cari skill: React, Figma..."
             />
-            <button className="btn-primary px-5 py-3 text-sm" type="submit">
+            <button className="btn-primary px-5 py-3 text-sm focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 rounded-lg" type="submit">
               <span className="inline-flex items-center gap-2">
                 <Icon name="search" size={15} />
                 Cari Talenta
@@ -91,7 +91,7 @@ export default async function TalentsPage({
         </div>
 
         {talents.length === 0 ? (
-          <div className="glass rounded-2xl p-12 text-center">
+          <div className="glass rounded-xl p-12 text-center">
             <h2 className="text-xl font-bold text-surface-900 mb-2" style={{ fontFamily: "Outfit" }}>
               Belum ada talenta yang cocok
             </h2>
@@ -107,7 +107,7 @@ export default async function TalentsPage({
               const categoryLabel = talent.category === "web_dev" ? "Web Developer" : "Graphic Designer";
 
               return (
-                <Link key={talent.id} href={`/talents/${talent.id}`} className="glass rounded-2xl p-6 card-hover block">
+                <Link key={talent.id} href={`/talents/${talent.id}`} className="glass rounded-xl p-6 card-hover block">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center text-white font-bold">

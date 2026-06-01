@@ -182,6 +182,7 @@ function NotificationBell() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-xl hover:bg-surface-100 transition-colors"
+        aria-label="Notifications"
       >
         <Icon name="bell" className="text-surface-500" size={20} />
         {unreadCount > 0 && (
@@ -334,8 +335,8 @@ export default function ClientDashboard() {
   return (
     <div className="min-h-screen bg-surface-50">
       {/* Nav */}
-      <nav className="glass sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
+        <div className="max-w-[1280px] mx-auto px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
           </Link>
@@ -386,7 +387,7 @@ export default function ClientDashboard() {
         {jobs.length > 0 ? (
           <div className="space-y-4">
             {jobs.map((job) => (
-              <div key={job.id} className="glass rounded-2xl overflow-hidden card-hover">
+              <div key={job.id} className="glass rounded-xl overflow-hidden card-hover">
                 <div
                   className="p-6 cursor-pointer"
                   onClick={() => setExpandedJob(expandedJob === job.id ? null : job.id)}
@@ -473,7 +474,7 @@ export default function ClientDashboard() {
                                     e.stopPropagation();
                                     handleAcceptTalent(match.match_id, job.id, match.full_name, match.talent_user_id);
                                   }}
-                                  className="btn-primary text-xs px-3 py-1.5"
+                                  className="btn-primary text-xs px-3 py-1.5 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                                 >
                                   Pilih & Bayar
                                 </button>
@@ -484,7 +485,7 @@ export default function ClientDashboard() {
                                     e.stopPropagation();
                                     handleAcceptTalent(match.match_id, job.id, match.full_name, match.talent_user_id);
                                   }}
-                                  className="btn-primary text-xs px-3 py-1.5"
+                                  className="btn-primary text-xs px-3 py-1.5 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                                 >
                                   Terima
                                 </button>
@@ -564,7 +565,7 @@ export default function ClientDashboard() {
             ))}
           </div>
         ) : (
-          <div className="glass rounded-2xl p-16 text-center">
+          <div className="glass rounded-xl p-16 text-center">
             <Icon name="file" className="mx-auto text-surface-300" size={48} />
             <h3 className="text-xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>Belum ada job</h3>
             <p className="text-surface-500 text-sm mb-6">Post job pertamamu dan biarkan AI mencarikan talenta terbaik.</p>

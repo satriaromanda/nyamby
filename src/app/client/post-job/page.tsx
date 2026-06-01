@@ -130,7 +130,7 @@ export default function PostJobPage() {
   return (
     <div className="min-h-screen bg-surface-50">
       {/* Nav */}
-      <nav className="glass sticky top-0 z-50">
+      <nav className="glass sticky top-0 z-50" role="navigation">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
@@ -141,7 +141,7 @@ export default function PostJobPage() {
         </div>
       </nav>
 
-      <div className="max-w-2xl mx-auto px-6 py-12">
+      <main role="main" className="max-w-2xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
           Post Job Baru
         </h1>
@@ -149,7 +149,7 @@ export default function PostJobPage() {
           Deskripsikan kebutuhanmu dan AI akan mencarikan talenta terbaik.
         </p>
 
-        <form onSubmit={handleSubmit} className="glass rounded-2xl p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8 space-y-6">
           <div>
             <label className="block text-sm text-surface-600 mb-2">Judul Job *</label>
             <input
@@ -263,12 +263,12 @@ export default function PostJobPage() {
           <button
             type="submit"
             disabled={loading || !form.title || !form.description || form.required_skills.length === 0}
-            className="btn-primary w-full py-3.5 text-base disabled:opacity-30"
+            className="btn-primary w-full py-3.5 text-base disabled:opacity-30 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
           >
             {loading ? "Posting..." : <span className="inline-flex items-center justify-center gap-2"><Icon name="ai" size={16} />Post Job & Trigger AI Matching</span>}
           </button>
         </form>
-      </div>
+      </main>
     </div>
   );
 }

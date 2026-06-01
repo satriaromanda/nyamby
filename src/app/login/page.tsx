@@ -48,13 +48,13 @@ function LoginForm() {
 
   return (
     <div className="min-h-screen gradient-hero flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
+      <main role="main" className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
           <Logo height={36} />
         </Link>
 
-        <div className="glass rounded-2xl p-8 animate-scale-in">
+        <div className="glass rounded-xl p-8 animate-scale-in">
           <h1 className="text-2xl font-bold text-center mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
             Selamat Datang Kembali
           </h1>
@@ -69,6 +69,7 @@ function LoginForm() {
                 type="email"
                 className="input-dark"
                 placeholder="email@contoh.com"
+                autoComplete="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
@@ -81,6 +82,7 @@ function LoginForm() {
                 type="password"
                 className="input-dark"
                 placeholder="Masukkan password"
+                autoComplete="current-password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 required
@@ -96,7 +98,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full py-3.5 text-base disabled:opacity-50"
+              className="btn-primary w-full py-3.5 text-base disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -146,7 +148,7 @@ function LoginForm() {
             </Link>
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

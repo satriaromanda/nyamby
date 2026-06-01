@@ -31,20 +31,20 @@ const steps = [
 export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-surface-50">
-      <nav className="glass sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200">
+        <div className="max-w-6xl mx-auto px-8 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
           </Link>
           <div className="flex items-center gap-4 text-sm">
             <Link href="/talents" className="text-surface-500 hover:text-surface-900">Talenta</Link>
             <Link href="/jobs" className="text-surface-500 hover:text-surface-900">Jobs</Link>
-            <Link href="/register" className="btn-primary text-xs px-4 py-2">Mulai</Link>
+            <Link href="/register" className="btn-primary text-xs px-4 py-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">Mulai</Link>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-6 py-12">
+      <main role="main" className="max-w-6xl mx-auto px-6 py-12">
         <section className="mb-10">
           <div className="inline-flex items-center gap-2 text-xs px-3 py-1 rounded-full bg-[#FAEEDA] text-[#854F0B] mb-5">
             <span>AI enrichment</span>
@@ -60,7 +60,7 @@ export default function HowItWorksPage() {
 
         <section className="grid md:grid-cols-2 gap-5 mb-10">
           {steps.map((step, index) => (
-            <div key={step.title} className="glass rounded-2xl p-6">
+            <div key={step.title} className="glass rounded-xl p-6">
               <div className="flex items-start gap-4">
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold text-white shrink-0"
@@ -81,7 +81,7 @@ export default function HowItWorksPage() {
         </section>
 
         <section className="grid lg:grid-cols-3 gap-5">
-          <div className="glass rounded-2xl p-6">
+          <div className="glass rounded-xl p-6">
             <h2 className="font-bold text-surface-900 mb-2" style={{ fontFamily: "Outfit" }}>
               Untuk Talenta
             </h2>
@@ -92,7 +92,7 @@ export default function HowItWorksPage() {
               Daftar sebagai talenta
             </Link>
           </div>
-          <div className="glass rounded-2xl p-6">
+          <div className="glass rounded-xl p-6">
             <h2 className="font-bold text-surface-900 mb-2" style={{ fontFamily: "Outfit" }}>
               Untuk Client
             </h2>
@@ -103,7 +103,7 @@ export default function HowItWorksPage() {
               Cari talenta
             </Link>
           </div>
-          <div className="glass rounded-2xl p-6">
+          <div className="glass rounded-xl p-6">
             <h2 className="font-bold text-surface-900 mb-2" style={{ fontFamily: "Outfit" }}>
               Untuk Demo
             </h2>

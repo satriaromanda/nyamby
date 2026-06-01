@@ -145,7 +145,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen gradient-hero">
+    <main role="main" className="min-h-screen gradient-hero">
       <div className="max-w-2xl mx-auto px-6 py-12">
         {/* Progress Steps */}
         <div className="flex items-center justify-center gap-2 mb-12">
@@ -167,7 +167,7 @@ export default function OnboardingPage() {
           ))}
         </div>
 
-        <div className="glass rounded-2xl p-8 animate-slide-up">
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8 animate-slide-up">
           {/* Step 1: Category */}
           {step === 1 && (
             <div>
@@ -203,7 +203,7 @@ export default function OnboardingPage() {
               <button
                 onClick={() => form.category && setStep(2)}
                 disabled={!form.category}
-                className="btn-primary w-full py-3 disabled:opacity-30"
+                className="btn-primary w-full py-3 disabled:opacity-30 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
               >
                 <span className="inline-flex items-center justify-center gap-2">Lanjut<Icon name="arrowRight" size={16} /></span>
               </button>
@@ -275,13 +275,13 @@ export default function OnboardingPage() {
               </div>
 
               <div className="flex gap-3">
-                <button onClick={() => setStep(1)} className="btn-secondary flex-1 py-3">
+                <button onClick={() => setStep(1)} className="btn-secondary flex-1 py-3 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
                   <span className="inline-flex items-center justify-center gap-2"><Icon name="arrowLeft" size={16} />Kembali</span>
                 </button>
                 <button
                   onClick={() => form.skills.length > 0 && setStep(3)}
                   disabled={form.skills.length === 0}
-                  className="btn-primary flex-1 py-3 disabled:opacity-30"
+                  className="btn-primary flex-1 py-3 disabled:opacity-30 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                 >
                   <span className="inline-flex items-center justify-center gap-2">Lanjut<Icon name="arrowRight" size={16} /></span>
                 </button>
@@ -307,6 +307,7 @@ export default function OnboardingPage() {
                     placeholder="Ceritakan pengalaman dan keahlianmu..."
                     value={form.bio}
                     onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                    autoComplete="off"
                   />
                 </div>
 
@@ -319,6 +320,7 @@ export default function OnboardingPage() {
                       placeholder="75000"
                       value={form.rate_per_hour}
                       onChange={(e) => setForm({ ...form, rate_per_hour: e.target.value })}
+                      autoComplete="off"
                     />
                   </div>
                   <div>
@@ -329,6 +331,7 @@ export default function OnboardingPage() {
                       placeholder="2000000"
                       value={form.rate_per_project}
                       onChange={(e) => setForm({ ...form, rate_per_project: e.target.value })}
+                      autoComplete="off"
                     />
                   </div>
                 </div>
@@ -341,6 +344,7 @@ export default function OnboardingPage() {
                     placeholder="Bandung"
                     value={form.location}
                     onChange={(e) => setForm({ ...form, location: e.target.value })}
+                    autoComplete="address-level2"
                   />
                 </div>
 
@@ -358,6 +362,7 @@ export default function OnboardingPage() {
                     placeholder="https://github.com/username"
                     value={form.portfolio_url}
                     onChange={(e) => setForm({ ...form, portfolio_url: e.target.value })}
+                    autoComplete="url"
                   />
                 </div>
 
@@ -452,13 +457,13 @@ export default function OnboardingPage() {
               )}
 
               <div className="flex gap-3 mt-6">
-                <button onClick={() => setStep(2)} className="btn-secondary flex-1 py-3">
+                <button onClick={() => setStep(2)} className="btn-secondary flex-1 py-3 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
                   <span className="inline-flex items-center justify-center gap-2"><Icon name="arrowLeft" size={16} />Kembali</span>
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="btn-primary flex-1 py-3 disabled:opacity-50"
+                  className="btn-primary flex-1 py-3 disabled:opacity-50 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                 >
                   {loading ? "Menyimpan..." : <span className="inline-flex items-center justify-center gap-2"><Icon name="ai" size={16} />Simpan & Analisis AI</span>}
                 </button>
@@ -467,6 +472,6 @@ export default function OnboardingPage() {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

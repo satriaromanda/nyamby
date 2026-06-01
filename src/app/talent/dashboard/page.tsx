@@ -203,6 +203,7 @@ function NotificationBell() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-xl hover:bg-surface-100 transition-colors"
+        aria-label="Notifications"
       >
         <Icon name="bell" className="text-surface-500" size={20} />
         {unreadCount > 0 && (
@@ -333,8 +334,8 @@ export default function TalentDashboard() {
   return (
     <div className="min-h-screen bg-surface-50">
       {/* Top Nav */}
-      <nav className="glass sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
+        <div className="max-w-[1280px] mx-auto px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
           </Link>
@@ -353,7 +354,7 @@ export default function TalentDashboard() {
             <Link href="/talent/settings" className="text-sm text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
               <Icon name="settings" size={18} />
             </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
+            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
               Keluar
             </button>
           </div>
@@ -396,7 +397,7 @@ export default function TalentDashboard() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* ─── Skill Gap Analysis Card ─────────────────────────── */}
           <div className="lg:col-span-1">
-            <div className="glass rounded-2xl p-6 card-hover">
+            <div className="glass rounded-xl p-6 card-hover">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-sm">
               <Icon name="settings" size={18} />
@@ -448,7 +449,7 @@ export default function TalentDashboard() {
             </div>
 
             {/* Skills */}
-            <div className="glass rounded-2xl p-6 mt-4">
+            <div className="glass rounded-xl p-6 mt-4">
               <h3 className="font-bold text-sm mb-3 text-surface-900">Skill-mu</h3>
               <div className="flex flex-wrap gap-2">
                 {data.profile.skills.map((s, i) => (
@@ -472,7 +473,7 @@ export default function TalentDashboard() {
             {data.recommended_jobs && data.recommended_jobs.length > 0 ? (
               <div className="space-y-4">
                 {data.recommended_jobs.map((job) => (
-                  <div key={job.match_id} className="glass rounded-xl p-5 card-hover">
+                  <Link key={job.match_id} href={`/jobs/${job.job_id}`} className="glass rounded-xl p-5 card-hover block focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -538,7 +539,7 @@ export default function TalentDashboard() {
                         )}
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (

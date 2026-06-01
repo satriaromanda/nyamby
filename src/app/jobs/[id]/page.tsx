@@ -287,7 +287,7 @@ export default function JobDetailPage() {
   if (!job) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
-        <div className="glass rounded-2xl p-16 text-center max-w-md">
+        <div className="glass rounded-xl p-16 text-center max-w-md">
           <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
           <h2
             className="text-xl font-bold mb-2 text-surface-900"
@@ -328,7 +328,7 @@ export default function JobDetailPage() {
       )}
 
       {/* Nav */}
-      <nav className="glass sticky top-0 z-50">
+      <nav role="navigation" aria-label="Main navigation" className="glass sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
@@ -361,7 +361,7 @@ export default function JobDetailPage() {
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <main role="main" className="max-w-5xl mx-auto px-6 py-8">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-surface-400 mb-6">
           <Link href="/jobs" className="hover:text-primary-600 transition-colors">
@@ -375,7 +375,7 @@ export default function JobDetailPage() {
           {/* ─── Main Content ────────────────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
             {/* Job Header */}
-            <div className="glass rounded-2xl p-8 animate-slide-up">
+            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8 animate-slide-up">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
@@ -486,7 +486,7 @@ export default function JobDetailPage() {
             {/* AI Match Card */}
             {isTalent && (
               <div
-                className="glass rounded-2xl p-6 animate-slide-up"
+                className="glass rounded-xl p-6 animate-slide-up"
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="flex items-center gap-2 mb-4">
@@ -583,7 +583,7 @@ export default function JobDetailPage() {
                       <button
                         onClick={handleApply}
                         disabled={applying}
-                        className="w-full btn-primary py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full btn-primary py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                       >
                         {applying ? (
                           <>
@@ -623,7 +623,7 @@ export default function JobDetailPage() {
                     <button
                       onClick={handleAnalyze}
                       disabled={analyzing || job.status !== "active"}
-                      className="w-full btn-primary py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="w-full btn-primary py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                     >
                       {analyzing ? (
                         <>
@@ -647,7 +647,7 @@ export default function JobDetailPage() {
             {/* Not logged in CTA */}
             {!user && (
               <div
-                className="glass rounded-2xl p-6 animate-slide-up"
+                className="glass rounded-xl p-6 animate-slide-up"
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="text-center">
@@ -677,7 +677,7 @@ export default function JobDetailPage() {
             {/* Client viewing */}
             {user?.role === "client" && (
               <div
-                className="glass rounded-2xl p-6 animate-slide-up"
+                className="glass rounded-xl p-6 animate-slide-up"
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="text-center">
@@ -697,7 +697,7 @@ export default function JobDetailPage() {
 
             {/* Quick Info Card */}
             <div
-              className="glass rounded-2xl p-6 animate-slide-up"
+              className="glass rounded-xl p-6 animate-slide-up"
               style={{ animationDelay: "0.2s" }}
             >
               <h3 className="text-sm font-bold text-surface-900 mb-4 flex items-center gap-2"><Icon name="briefcase" size={15} />Info Job</h3>
@@ -729,7 +729,7 @@ export default function JobDetailPage() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

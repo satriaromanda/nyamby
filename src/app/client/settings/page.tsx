@@ -142,7 +142,7 @@ export default function ClientSettingsPage() {
             </Link>
             <button
               onClick={handleLogout}
-              className="text-xs text-surface-400 hover:text-surface-700"
+              className="text-xs text-surface-400 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
             >
               Keluar
             </button>
@@ -166,7 +166,7 @@ export default function ClientSettingsPage() {
           {/* ─── Sidebar: Profile Preview & Stats ──────────── */}
           <div className="space-y-4">
             {/* Profile Card */}
-            <div className="glass rounded-2xl p-6 text-center animate-slide-up">
+            <div className="glass rounded-xl p-6 text-center animate-slide-up">
               <div className="w-20 h-20 mx-auto rounded-2xl gradient-primary flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg shadow-primary-500/20">
                 {profile.avatar_url ? (
                   <img
@@ -201,7 +201,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Stats Card */}
-            <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h3 className="font-bold text-sm mb-4 text-surface-900 flex items-center gap-2"><Icon name="chart" size={15} />Statistik</h3>
               <div className="space-y-3">
                 {[
@@ -229,7 +229,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h3 className="font-bold text-sm mb-3 text-surface-900"><Icon name="bolt" className="inline mr-1.5 text-action-500" size={15} />Aksi Cepat</h3>
               <div className="space-y-2">
                 <Link
@@ -257,7 +257,7 @@ export default function ClientSettingsPage() {
           {/* ─── Main: Edit Form ───────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
             {/* Editable Info */}
-            <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
+            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
                 style={{ fontFamily: "Outfit" }}
@@ -288,7 +288,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Account Info (read-only) */}
-            <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
                 style={{ fontFamily: "Outfit" }}
@@ -322,7 +322,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Platform Info */}
-            <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
                 style={{ fontFamily: "Outfit" }}
@@ -373,7 +373,7 @@ export default function ClientSettingsPage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="btn-primary px-8 py-3 text-sm disabled:opacity-50 flex items-center gap-2"
+                className="btn-primary px-8 py-3 text-sm disabled:opacity-50 flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
               >
                 {saving ? (
                   <>

@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #e8f0fe;
-  --color-primary-100: #d2e2fc;
-  --color-primary-200: #a5c5f9;
-  --color-primary-300: #78a8f6;
-  --color-primary-400: #3976e8;
-  --color-primary-500: #1A4EC7;
-  --color-primary-600: #153fa0;
-  --color-primary-700: #0D2661;
-  --color-primary-800: #0a1e4d;
-  --color-primary-900: #071439;
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #2563EB;
+  --color-primary-600: #1d4ed8;
+  --color-primary-700: #1e40af;
+  --color-primary-800: #1e3a8a;
+  --color-primary-900: #172554;
 
   --color-accent-400: #34d399;
   --color-accent-500: #10b981;
@@ -72,11 +72,11 @@ body {
 /* ─── Glass Effects (Light Mode) ─────────────────────────────── */
 
 .glass {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  background: white;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid #EEF2F7;
+  box-shadow: 0 20px 60px -20px rgba(15, 23, 42, 0.18);
 }
 
 .glass-light {
@@ -86,14 +86,23 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+/* ─── Nav Styles ──────────────────────────────────────────────── */
+
+.nav-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid #E2E8F0;
+}
+
 /* ─── Gradients ───────────────────────────────────────────────── */
 
 .gradient-primary {
-  background: linear-gradient(135deg, #1A4EC7, #008EF1, #1CCEFD);
+  background: linear-gradient(135deg, #12378C, #0054F8);
 }
 
 .gradient-hero {
-  background: linear-gradient(135deg, #f8fafc 0%, #e8f0fe 40%, #d2e2fc 70%, #a5c5f9 100%);
+  background: #F8FAFC;
 }
 
 .gradient-card {
@@ -105,14 +114,14 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #1A4EC7, #1CCEFD);
+  background: linear-gradient(135deg, #12378C 0%, #0054F8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-glow {
-  background: radial-gradient(ellipse at center, rgba(26, 78, 199, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
 }
 
 /* ─── Animations ──────────────────────────────────────────────── */
@@ -261,7 +270,7 @@ body {
 
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 0 30px rgba(26, 78, 199, 0.06);
+  box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.25);
 }
 
 /* ─── Status Badges ───────────────────────────────────────────── */
@@ -281,47 +290,43 @@ body {
 /* ─── Button Styles ───────────────────────────────────────────── */
 
 .btn-primary {
-  background: linear-gradient(135deg, #1A4EC7, #1CCEFD);
+  background: #0251EB;
   color: white;
   font-weight: 600;
-  padding: 10px 24px;
-  border-radius: 12px;
+  padding: 16px 28px;
+  border-radius: 16px;
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(26, 78, 199, 0.3);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.25), 0 8px 10px -6px rgba(37, 99, 235, 0.25);
 }
 
 .btn-secondary {
   background: white;
-  color: #334155;
-  font-weight: 500;
-  padding: 10px 24px;
-  border-radius: 12px;
+  color: #0F172A;
+  font-weight: 600;
+  padding: 16px 28px;
+  border-radius: 16px;
   transition: all 0.3s ease;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #E2E8F0;
   cursor: pointer;
 }
 
 .btn-secondary:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  transform: translateY(-2px);
 }
 
 /* ─── Input Styles ────────────────────────────────────────────── */
 
 .input-dark {
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #E2E8F0;
   border-radius: 12px;
   padding: 12px 16px;
   color: #0f172a;
@@ -332,8 +337,8 @@ body {
 
 .input-dark:focus {
   outline: none;
-  border-color: #1A4EC7;
-  box-shadow: 0 0 0 3px rgba(26, 78, 199, 0.1);
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .input-dark::placeholder {

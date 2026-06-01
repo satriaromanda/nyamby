@@ -55,13 +55,13 @@ function RegisterForm() {
 
   return (
     <div className="min-h-screen gradient-hero flex items-center justify-center px-6">
-      <div className="w-full max-w-md">
+      <main role="main" className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
           <Logo height={36} />
         </Link>
 
-        <div className="glass rounded-2xl p-8 animate-scale-in">
+        <div className="glass rounded-xl p-8 animate-scale-in">
           <h1 className="text-2xl font-bold text-center mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
             Buat Akun Baru
           </h1>
@@ -101,6 +101,7 @@ function RegisterForm() {
                 type="text"
                 className="input-dark"
                 placeholder="Contoh: Raka Pratama"
+                autoComplete="name"
                 value={form.full_name}
                 onChange={(e) => setForm({ ...form, full_name: e.target.value })}
                 required
@@ -113,6 +114,7 @@ function RegisterForm() {
                 type="email"
                 className="input-dark"
                 placeholder="email@contoh.com"
+                autoComplete="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
@@ -125,6 +127,7 @@ function RegisterForm() {
                 type="password"
                 className="input-dark"
                 placeholder="Minimal 8 karakter"
+                autoComplete="new-password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 required
@@ -141,7 +144,7 @@ function RegisterForm() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full py-3.5 text-base disabled:opacity-50"
+              className="btn-primary w-full py-3.5 text-base disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -167,7 +170,7 @@ function RegisterForm() {
             </Link>
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

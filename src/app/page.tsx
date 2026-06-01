@@ -1,21 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+
 import { Icon, Logo } from "@/components/icons";
 
 export default function LandingPage() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   return (
     <div className="min-h-screen overflow-hidden">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-primary-600 focus:rounded-lg focus:shadow-lg">Skip to content</a>
       {/* ─── Navigation ─────────────────────────────────────────── */}
-      <nav className="fixed top-0 w-full z-50 glass">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <nav className="fixed top-0 w-full z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
+        <div className="max-w-[1280px] mx-auto px-8 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={36} />
           </Link>
@@ -40,54 +36,56 @@ export default function LandingPage() {
             >
               Masuk
             </Link>
-            <Link href="/register" className="btn-primary text-sm">
-              Daftar Gratis
+            <Link href="/register" className="btn-primary text-sm inline-flex items-center gap-1.5">
+              <Icon name="spark" size={14} />
+              Mulai Gratis
             </Link>
           </div>
         </div>
       </nav>
 
       {/* ─── Hero Section ───────────────────────────────────────── */}
-      <section className="gradient-hero relative min-h-screen flex items-center pt-20">
-        {/* Background Effects */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-400/10 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-400/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
-          <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-accent-400/8 rounded-full blur-3xl animate-float" style={{ animationDelay: "4s" }} />
+      <section id="main-content" className="relative overflow-hidden min-h-screen flex items-center" style={{ background: "#F8FAFC" }}>
+
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-32 -left-24 w-[520px] h-[520px] rounded-full blur-3xl opacity-40"
+            style={{ background: "radial-gradient(circle, #BFDBFE 0%, transparent 70%)" }} />
+          <div className="absolute top-40 -right-32 w-[600px] h-[600px] rounded-full blur-3xl opacity-50"
+            style={{ background: "radial-gradient(circle, #DBEAFE 0%, transparent 70%)" }} />
+          <div className="absolute bottom-0 left-1/3 w-[420px] h-[420px] rounded-full blur-3xl opacity-30"
+            style={{ background: "radial-gradient(circle, #FEF3C7 0%, transparent 70%)" }} />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-16 items-center">
-          <div className={`space-y-8 ${isVisible ? "animate-slide-up" : "opacity-0"}`}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-primary-600">
-              <span className="w-2 h-2 rounded-full bg-accent-500 animate-pulse" />
-              Digdaya X Hackathon 2026
+          <div className="space-y-8 animate-slide-up">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur border border-slate-200 text-sm" style={{ color: "#0F172A", fontWeight: 600, fontSize: 16 }}>
+              <span className="w-2 h-2 rounded-full bg-green-500" />
+              AI Career Companion #1 di Indonesia
             </div>
 
-            <h1 className="text-5xl lg:text-7xl font-extrabold leading-tight text-surface-900" style={{ fontFamily: "Outfit" }}>
-              Dari{" "}
-              <span className="gradient-text">Nyambi</span>
-              <br />
-              ke Karir
-              <br />
-              Profesional
+            <h1 className="mt-8" style={{ color: "#0F172A" }}>
+              <span className="block" style={{ fontSize: 64, lineHeight: "76px", fontWeight: 800, letterSpacing: "-1.44px" }}>
+                Nyambungin Skill,
+              </span>
+              <span className="block" style={{ fontSize: 88, lineHeight: "103px", fontWeight: 800, letterSpacing: "-1.97px", background: "linear-gradient(135deg, #12378C 0%, #0054F8 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                Nyambungin Masa Depan.
+              </span>
             </h1>
 
-            <p className="text-lg text-surface-500 max-w-lg leading-relaxed">
-              Platform <strong className="text-surface-800">AI-powered</strong> yang menghubungkan
-              talenta digital Indonesia dengan klien yang tepat — lewat{" "}
-              <strong className="text-primary-600">smart matching</strong> dan{" "}
-              <strong className="text-accent-600">career growth insights</strong>.
+            <p className="mt-7 max-w-[560px]" style={{ fontSize: 20, lineHeight: "31px", color: "#475569", fontWeight: 400 }}>
+              AI Career Companion yang membantu talenta Indonesia menemukan peluang
+              terbaik, mengembangkan skill, dan bertumbuh lebih tinggi.
             </p>
 
-            <div className="flex flex-wrap gap-4">
-              <Link href="/register?role=talent" className="btn-primary text-base px-8 py-3.5 flex items-center gap-2">
-                <Icon name="spark" size={20} />
-                Daftar sebagai Talenta
+            <div className="mt-9 flex flex-wrap gap-4">
+              <Link href="/register?role=talent" className="btn-primary text-base inline-flex items-center gap-2 group">
+                Mulai Perjalanan
+                <Icon name="arrowRight" size={20} />
               </Link>
-              <Link href="/register?role=client" className="btn-secondary text-base px-8 py-3.5">
+              <Link href="/register?role=client" className="btn-secondary text-base">
                 Cari Talenta / Post Job
               </Link>
-              <Link href="/talents" className="btn-secondary text-base px-8 py-3.5">
+              <Link href="/talents" className="btn-secondary text-base">
                 Browse Talenta
               </Link>
             </div>
@@ -110,9 +108,7 @@ export default function LandingPage() {
           </div>
 
           {/* Hero Visual — AI Matching Card */}
-          <div
-            className={`hidden lg:block ${isVisible ? "animate-slide-in-right" : "opacity-0"}`}
-            style={{ animationDelay: "0.3s" }}
+          <div className="hidden lg:block animate-slide-in-right" style={{ animationDelay: "0.3s" }}
           >
             <div className="relative">
               <div className="absolute -inset-4 gradient-glow rounded-3xl" />
@@ -124,8 +120,8 @@ export default function LandingPage() {
                     <div className="font-semibold text-sm text-surface-900">AI Job Matching</div>
                     <div className="text-xs text-surface-400">Powered by GPT-4o</div>
                   </div>
-                  <div className="ml-auto px-3 py-1 rounded-full bg-accent-500/10 text-accent-600 text-xs font-medium">
-                    Live
+                  <div className="ml-auto px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-semibold">
+                    AI Live
                   </div>
                 </div>
 
@@ -180,7 +176,7 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Talent Side */}
-            <div className="glass rounded-2xl p-8 card-hover">
+            <div className="glass rounded-xl p-8 card-hover">
               <div className="w-14 h-14 rounded-2xl bg-primary-500/10 flex items-center justify-center text-2xl mb-6">
                 <Icon name="user" className="text-primary-600" size={28} /></div>
               <h3 className="text-2xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>
@@ -206,7 +202,7 @@ export default function LandingPage() {
             </div>
 
             {/* Client Side */}
-            <div className="glass rounded-2xl p-8 card-hover">
+            <div className="glass rounded-xl p-8 card-hover">
               <div className="w-14 h-14 rounded-2xl bg-accent-500/10 flex items-center justify-center text-2xl mb-6">
                 <Icon name="target" className="text-accent-600" size={28} /></div>
               <h3 className="text-2xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>
@@ -260,7 +256,7 @@ export default function LandingPage() {
                 title: "AI Bekerja Untukmu",
                 desc: "Untuk talenta: AI analisis skill gap-mu. Untuk client: AI matching talent pool otomatis.",
                 icon: "ai" as const,
-                color: "from-purple-500/10 to-purple-600/5",
+                color: "from-primary-500/10 to-primary-600/5",
               },
               {
                 step: "03",
@@ -274,7 +270,7 @@ export default function LandingPage() {
                 {i < 2 && (
                   <div className="hidden md:block absolute top-12 left-full w-full h-px bg-gradient-to-r from-surface-200 to-transparent -translate-x-8" />
                 )}
-                <div className="glass rounded-2xl p-8 card-hover h-full">
+                <div className="glass rounded-xl p-8 card-hover h-full">
                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center text-3xl mb-6`}>
                     <Icon name={item.icon} size={30} />
                   </div>
@@ -306,7 +302,7 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* AI Matching Card */}
-            <div className="glass rounded-2xl p-8">
+            <div className="glass rounded-xl p-8">
               <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
                 <Icon name="target" className="text-primary-600" size={20} /> AI Job Matching
               </h3>
@@ -330,7 +326,7 @@ export default function LandingPage() {
             </div>
 
             {/* Skill Gap Card */}
-            <div className="glass rounded-2xl p-8">
+            <div className="glass rounded-xl p-8">
               <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
                 <Icon name="chart" className="text-primary-600" size={20} /> AI Skill Gap Analysis
               </h3>
