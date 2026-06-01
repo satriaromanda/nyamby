@@ -41,6 +41,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       data: {
+        profile_id: profile.id,
         user_id: user.id,
         email: user.email,
         full_name: user.fullName,
@@ -53,6 +54,10 @@ export async function GET() {
         availability: profile.availability,
         location: profile.location,
         portfolio_url: profile.portfolioUrl,
+        portfolio_file: profile.portfolioFile,
+        cv_file: profile.cvFile,
+        cv_text: profile.cvText,
+        portfolio_context: profile.portfolioContext,
         skills: profile.talentSkills.map((ts) => ({
           id: ts.skillId,
           name: ts.skill.name,
@@ -85,7 +90,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { bio, rate_per_hour, rate_per_project, availability, location, portfolio_url } = body;
+    const { bio, rate_per_hour, rate_per_project, availability, location, portfolio_url, cv_text, portfolio_context } = body;
 
     const profile = await prisma.talentProfile.findUnique({
       where: { userId: session.userId },
@@ -107,6 +112,8 @@ export async function PATCH(request: NextRequest) {
         ...(availability !== undefined && { availability }),
         ...(location !== undefined && { location }),
         ...(portfolio_url !== undefined && { portfolioUrl: portfolio_url }),
+        ...(cv_text !== undefined && { cvText: cv_text }),
+        ...(portfolio_context !== undefined && { portfolioContext: portfolio_context }),
       },
     });
 

@@ -62,7 +62,11 @@ export async function POST(request: NextRequest) {
       avg_budget: data.count > 0 ? Math.round(data.totalBudget / data.count) : 0,
     }));
 
-    const result = await generateSkillGapAnalysis(skillNames, profile.category, marketDemand);
+    const result = await generateSkillGapAnalysis(skillNames, profile.category, marketDemand, {
+      bio: profile.bio,
+      cv_text: profile.cvText,
+      portfolio_context: profile.portfolioContext,
+    });
 
     // Mark old analyses as not latest
     await prisma.skillGapAnalysis.updateMany({
@@ -76,6 +80,7 @@ export async function POST(request: NextRequest) {
         talentProfileId: talent_profile_id,
         recommendedSkills: result.recommendations,
         summary: result.summary,
+        profileCompletenessScore: result.profile_completeness_score ?? null,
         isLatest: true,
       },
     });
@@ -85,6 +90,7 @@ export async function POST(request: NextRequest) {
       data: {
         recommendations: result.recommendations,
         summary: result.summary,
+        profile_completeness_score: result.profile_completeness_score,
       },
     });
   } catch (error) {

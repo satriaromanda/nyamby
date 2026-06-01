@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { Icon } from "@/components/icons";
 
 interface ClientProfile {
   id: string;
@@ -77,7 +78,7 @@ export default function ClientSettingsPage() {
       });
       const d = await res.json();
       if (d.success) {
-        showToast("Profil berhasil disimpan! ✅");
+        showToast("Profil berhasil disimpan!");
         fetchProfile();
       } else {
         showToast(d.message || "Gagal menyimpan", "error");
@@ -163,7 +164,7 @@ export default function ClientSettingsPage() {
             className="text-3xl font-bold mb-2 text-surface-900"
             style={{ fontFamily: "Outfit" }}
           >
-            Pengaturan Profil ⚙️
+            Pengaturan Profil
           </h1>
           <p className="text-surface-500">Kelola profil dan preferensi akun client-mu.</p>
         </div>
@@ -191,7 +192,7 @@ export default function ClientSettingsPage() {
                 {profile.full_name}
               </h3>
               <div className="flex items-center justify-center gap-1.5 mt-1 mb-2">
-                <span className="text-sm">👔</span>
+                <Icon name="user" className="text-primary-600" size={15} />
                 <span className="text-sm text-surface-500">Client</span>
               </div>
               <p className="text-xs text-surface-400">{profile.email}</p>
@@ -208,19 +209,19 @@ export default function ClientSettingsPage() {
 
             {/* Stats Card */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-              <h3 className="font-bold text-sm mb-4 text-surface-900">📊 Statistik</h3>
+              <h3 className="font-bold text-sm mb-4 text-surface-900 flex items-center gap-2"><Icon name="chart" size={15} />Statistik</h3>
               <div className="space-y-3">
                 {[
-                  { label: "Total Job Diposting", value: profile.stats.total_jobs, icon: "📝" },
-                  { label: "Job Aktif", value: profile.stats.active_jobs, icon: "🟢" },
-                  { label: "Job Selesai", value: profile.stats.completed_jobs, icon: "✅" },
+                  { label: "Total Job Diposting", value: profile.stats.total_jobs, icon: "file" as const },
+                  { label: "Job Aktif", value: profile.stats.active_jobs, icon: "check" as const },
+                  { label: "Job Selesai", value: profile.stats.completed_jobs, icon: "check" as const },
                 ].map((stat, i) => (
                   <div
                     key={i}
                     className="flex items-center justify-between p-3 rounded-xl bg-surface-50 border border-surface-200"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-sm">{stat.icon}</span>
+                      <Icon name={stat.icon} className="text-primary-600" size={15} />
                       <span className="text-xs text-surface-500">{stat.label}</span>
                     </div>
                     <span
@@ -342,17 +343,17 @@ export default function ClientSettingsPage() {
               <div className="space-y-3">
                 {[
                   {
-                    icon: "🤖",
+                    icon: "ai" as const,
                     title: "AI Job Matching",
                     desc: "Setiap kali kamu post job, AI kami otomatis mencocokkan dengan talenta terbaik di platform.",
                   },
                   {
-                    icon: "💳",
+                    icon: "money" as const,
                     title: "Escrow Payment",
                     desc: "Dana ditahan secara aman dan dirilis ke talenta setelah pekerjaan disetujui.",
                   },
                   {
-                    icon: "🔒",
+                    icon: "lock" as const,
                     title: "Keamanan Data",
                     desc: "Semua data dienkripsi dan disimpan dengan standar keamanan tinggi.",
                   },
@@ -361,7 +362,7 @@ export default function ClientSettingsPage() {
                     key={i}
                     className="flex items-start gap-3 p-3 rounded-xl bg-surface-50 border border-surface-200"
                   >
-                    <span className="text-lg shrink-0">{item.icon}</span>
+                    <Icon name={item.icon} className="shrink-0 text-primary-600" size={18} />
                     <div>
                       <div className="text-sm font-medium text-surface-900">{item.title}</div>
                       <div className="text-xs text-surface-400">{item.desc}</div>
@@ -387,7 +388,7 @@ export default function ClientSettingsPage() {
                     Menyimpan...
                   </>
                 ) : (
-                  "💾 Simpan Perubahan"
+                  <span className="inline-flex items-center gap-2"><Icon name="check" size={15} />Simpan Perubahan</span>
                 )}
               </button>
             </div>

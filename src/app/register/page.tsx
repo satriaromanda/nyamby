@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { Icon } from "@/components/icons";
 
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultRole = searchParams.get("role") || "talent";
+  const redirectTo = searchParams.get("redirect");
 
   const [form, setForm] = useState({
     full_name: "",
@@ -37,8 +39,9 @@ function RegisterForm() {
         return;
       }
 
-      // Redirect based on role
-      if (form.role === "talent") {
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else if (form.role === "talent") {
         router.push("/talent/onboarding");
       } else {
         router.push("/client/dashboard");
@@ -74,8 +77,8 @@ function RegisterForm() {
           {/* Role Selector */}
           <div className="grid grid-cols-2 gap-2 p-1 bg-surface-100 rounded-xl mb-6">
             {[
-              { value: "talent", label: "🚀 Talenta", desc: "Cari job & grow" },
-              { value: "client", label: "🎯 Client", desc: "Cari talenta" },
+              { value: "talent", label: "Talenta", icon: "spark" as const, desc: "Cari job & grow" },
+              { value: "client", label: "Client", icon: "target" as const, desc: "Cari talenta" },
             ].map((r) => (
               <button
                 key={r.value}
@@ -87,7 +90,10 @@ function RegisterForm() {
                     : "hover:bg-white text-surface-500"
                 }`}
               >
-                <div className="text-sm font-semibold">{r.label}</div>
+                <div className="text-sm font-semibold inline-flex items-center justify-center gap-2">
+                  <Icon name={r.icon} size={14} />
+                  {r.label}
+                </div>
                 <div className="text-xs mt-0.5 opacity-70">{r.desc}</div>
               </button>
             ))}
@@ -158,7 +164,10 @@ function RegisterForm() {
 
           <p className="text-center text-sm text-surface-500 mt-6">
             Sudah punya akun?{" "}
-            <Link href="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+            <Link
+              href={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"}
+              className="text-primary-600 hover:text-primary-700 font-medium"
+            >
               Masuk di sini
             </Link>
           </p>

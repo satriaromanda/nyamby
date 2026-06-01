@@ -73,6 +73,7 @@ export async function GET() {
           ? {
               recommendations: skillGap.recommendedSkills,
               summary: skillGap.summary,
+              profile_completeness_score: skillGap.profileCompletenessScore,
               generated_at: skillGap.generatedAt,
             }
           : null,
@@ -86,6 +87,7 @@ export async function GET() {
           strengths: jm.strengths,
           gaps: jm.gaps,
           reasoning: jm.reasoning,
+          portfolio_evidence: jm.portfolioEvidence,
           recommendation: jm.recommendation,
           match_status: jm.status,
           budget_min: jm.job.budgetMin,

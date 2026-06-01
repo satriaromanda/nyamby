@@ -64,43 +64,46 @@ enum EscrowStatus {
 // ─── Models ─────────────────────────────────────────────────────────────────
 
 model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  passwordHash  String   @map("password_hash")
-  role          Role
-  fullName      String   @map("full_name")
-  avatarUrl     String?  @map("avatar_url")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role
+  fullName     String   @map("full_name")
+  avatarUrl    String?  @map("avatar_url")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   // Relations
-  talentProfile       TalentProfile?
-  postedJobs          Job[]               @relation("ClientJobs")
-  escrowsAsClient     EscrowTransaction[] @relation("EscrowClient")
-  escrowsAsTalent     EscrowTransaction[] @relation("EscrowTalent")
-  notifications       Notification[]
+  talentProfile   TalentProfile?
+  postedJobs      Job[]               @relation("ClientJobs")
+  escrowsAsClient EscrowTransaction[] @relation("EscrowClient")
+  escrowsAsTalent EscrowTransaction[] @relation("EscrowTalent")
+  notifications   Notification[]
 
   @@map("users")
 }
 
 model TalentProfile {
-  id              String         @id @default(uuid())
-  userId          String         @unique @map("user_id")
-  bio             String?
-  category        TalentCategory
-  ratePerHour     Decimal?       @map("rate_per_hour") @db.Decimal(10, 2)
-  ratePerProject  Decimal?       @map("rate_per_project") @db.Decimal(10, 2)
-  availability    Availability   @default(available)
-  location        String?
-  portfolioUrl    String?        @map("portfolio_url")
-  portfolioFile   String?        @map("portfolio_file")
-  createdAt       DateTime       @default(now()) @map("created_at")
+  id               String         @id @default(uuid())
+  userId           String         @unique @map("user_id")
+  bio              String?
+  category         TalentCategory
+  ratePerHour      Decimal?       @map("rate_per_hour") @db.Decimal(10, 2)
+  ratePerProject   Decimal?       @map("rate_per_project") @db.Decimal(10, 2)
+  availability     Availability   @default(available)
+  location         String?
+  portfolioUrl     String?        @map("portfolio_url")
+  portfolioFile    String?        @map("portfolio_file")
+  cvFile           String?        @map("cv_file")
+  cvText           String?        @map("cv_text")
+  portfolioContext String?        @map("portfolio_context")
+  createdAt        DateTime       @default(now()) @map("created_at")
 
   // Relations
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  talentSkills      TalentSkill[]
-  skillGapAnalyses  SkillGapAnalysis[]
-  jobMatches        JobMatch[]
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  talentSkills     TalentSkill[]
+  skillGapAnalyses SkillGapAnalysis[]
+  jobMatches       JobMatch[]
 
   @@map("talent_profiles")
 }
@@ -118,9 +121,9 @@ model Skill {
 }
 
 model TalentSkill {
-  id              String       @id @default(uuid())
-  talentProfileId String       @map("talent_profile_id")
-  skillId         String       @map("skill_id")
+  id              String     @id @default(uuid())
+  talentProfileId String     @map("talent_profile_id")
+  skillId         String     @map("skill_id")
   level           SkillLevel
 
   // Relations
@@ -132,12 +135,13 @@ model TalentSkill {
 }
 
 model SkillGapAnalysis {
-  id                String   @id @default(uuid())
-  talentProfileId   String   @map("talent_profile_id")
-  recommendedSkills Json     @map("recommended_skills") @db.JsonB
-  summary           String
-  generatedAt       DateTime @default(now()) @map("generated_at")
-  isLatest          Boolean  @default(true) @map("is_latest")
+  id                       String   @id @default(uuid())
+  talentProfileId          String   @map("talent_profile_id")
+  recommendedSkills        Json     @map("recommended_skills") @db.JsonB
+  summary                  String
+  profileCompletenessScore Int?     @map("profile_completeness_score")
+  generatedAt              DateTime @default(now()) @map("generated_at")
+  isLatest                 Boolean  @default(true) @map("is_latest")
 
   // Relations
   talentProfile TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
@@ -146,16 +150,16 @@ model SkillGapAnalysis {
 }
 
 model Job {
-  id             String    @id @default(uuid())
-  clientUserId   String    @map("client_user_id")
-  title          String
-  description    String
-  category       TalentCategory
-  budgetMin      Decimal?  @map("budget_min") @db.Decimal(12, 2)
-  budgetMax      Decimal?  @map("budget_max") @db.Decimal(12, 2)
-  deadline       DateTime? @db.Date
-  status         JobStatus @default(active)
-  createdAt      DateTime  @default(now()) @map("created_at")
+  id           String         @id @default(uuid())
+  clientUserId String         @map("client_user_id")
+  title        String
+  description  String
+  category     TalentCategory
+  budgetMin    Decimal?       @map("budget_min") @db.Decimal(12, 2)
+  budgetMax    Decimal?       @map("budget_max") @db.Decimal(12, 2)
+  deadline     DateTime?      @db.Date
+  status       JobStatus      @default(active)
+  createdAt    DateTime       @default(now()) @map("created_at")
 
   // Relations
   client            User               @relation("ClientJobs", fields: [clientUserId], references: [id])
@@ -188,6 +192,7 @@ model JobMatch {
   strengths       Json                @db.JsonB
   gaps            Json                @db.JsonB
   reasoning       String
+  portfolioEvidence String?           @map("portfolio_evidence")
   recommendation  MatchRecommendation
   status          MatchStatus         @default(recommended)
   generatedAt     DateTime            @default(now()) @map("generated_at")
@@ -201,15 +206,15 @@ model JobMatch {
 }
 
 model EscrowTransaction {
-  id            String       @id @default(uuid())
-  jobId         String       @unique @map("job_id")
-  clientUserId  String       @map("client_user_id")
-  talentUserId  String       @map("talent_user_id")
-  amount        Decimal      @map("amount") @db.Decimal(12, 2)
-  platformFee   Decimal      @map("platform_fee") @db.Decimal(12, 2)
-  status        EscrowStatus @default(held)
-  heldAt        DateTime?    @map("held_at")
-  releasedAt    DateTime?    @map("released_at")
+  id           String       @id @default(uuid())
+  jobId        String       @unique @map("job_id")
+  clientUserId String       @map("client_user_id")
+  talentUserId String       @map("talent_user_id")
+  amount       Decimal      @map("amount") @db.Decimal(12, 2)
+  platformFee  Decimal      @map("platform_fee") @db.Decimal(12, 2)
+  status       EscrowStatus @default(held)
+  heldAt       DateTime?    @map("held_at")
+  releasedAt   DateTime?    @map("released_at")
 
   // Relations
   job    Job  @relation(fields: [jobId], references: [id])

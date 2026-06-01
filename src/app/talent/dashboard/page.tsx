@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Icon, RatingStars } from "@/components/icons";
 
 interface SkillGapRec {
   skill_name: string;
   priority: string;
   reason: string;
   estimated_impact: string;
+  evidence_basis?: "form" | "cv" | "portfolio";
 }
 
 interface RecommendedJob {
@@ -21,6 +23,7 @@ interface RecommendedJob {
   strengths: string[];
   gaps: string[];
   reasoning: string;
+  portfolio_evidence?: string | null;
   recommendation: string;
   match_status: string;
   budget_min: number;
@@ -41,6 +44,7 @@ interface DashboardData {
   skill_gap?: {
     recommendations: SkillGapRec[];
     summary: string;
+    profile_completeness_score?: number | null;
     generated_at: string;
   };
   recommended_jobs?: RecommendedJob[];
@@ -60,10 +64,10 @@ interface Notification {
 
 function JobStatusTracker({ status }: { status: string }) {
   const steps = [
-    { key: "active", label: "Posted", icon: "📝" },
-    { key: "matched", label: "Matched", icon: "🤖" },
-    { key: "in_progress", label: "In Progress", icon: "⚙️" },
-    { key: "completed", label: "Selesai", icon: "✅" },
+    { key: "active", label: "Posted", icon: "file" as const },
+    { key: "matched", label: "Matched", icon: "ai" as const },
+    { key: "in_progress", label: "In Progress", icon: "settings" as const },
+    { key: "completed", label: "Selesai", icon: "check" as const },
   ];
 
   const statusOrder: Record<string, number> = {
@@ -79,7 +83,7 @@ function JobStatusTracker({ status }: { status: string }) {
   if (status === "cancelled") {
     return (
       <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
-        <span className="text-sm">❌</span>
+        <Icon name="x" className="text-red-600" size={14} />
         <span className="text-xs text-red-600 font-medium">Dibatalkan</span>
       </div>
     );
@@ -102,7 +106,7 @@ function JobStatusTracker({ status }: { status: string }) {
                       : "bg-surface-100 text-surface-400"
                 }`}
               >
-                {isActive && i < currentIndex ? "✓" : step.icon}
+                {isActive && i < currentIndex ? <Icon name="check" size={13} /> : <Icon name={step.icon} size={13} />}
               </div>
               <span
                 className={`text-[8px] mt-1 font-medium transition-colors ${
@@ -175,12 +179,12 @@ function NotificationBell() {
     setUnreadCount((prev) => Math.max(0, prev - 1));
   };
 
-  const typeIcons: Record<string, string> = {
-    new_match: "🎯",
-    job_accepted: "✅",
-    job_rejected: "❌",
-    payment_held: "💰",
-    payment_released: "🎉",
+  const typeIcons: Record<string, "target" | "check" | "x" | "money" | "spark"> = {
+    new_match: "target",
+    job_accepted: "check",
+    job_rejected: "x",
+    payment_held: "money",
+    payment_released: "spark",
   };
 
   const timeAgo = (dateStr: string) => {
@@ -200,9 +204,7 @@ function NotificationBell() {
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-xl hover:bg-surface-100 transition-colors"
       >
-        <svg className="w-5 h-5 text-surface-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-        </svg>
+        <Icon name="bell" className="text-surface-500" size={20} />
         {unreadCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full gradient-primary flex items-center justify-center text-[10px] font-bold text-white animate-pulse">
             {unreadCount > 9 ? "9+" : unreadCount}
@@ -234,9 +236,7 @@ function NotificationBell() {
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <span className="text-lg shrink-0 mt-0.5">
-                      {typeIcons[notif.type] || "🔔"}
-                    </span>
+                    <Icon name={typeIcons[notif.type] || "bell"} className="shrink-0 mt-0.5 text-primary-600" size={18} />
                     <div className="flex-1 min-w-0">
                       <p className={`text-xs leading-relaxed ${!notif.is_read ? "text-surface-900" : "text-surface-500"}`}>
                         {notif.message}
@@ -253,7 +253,7 @@ function NotificationBell() {
               ))
             ) : (
               <div className="p-8 text-center">
-                <div className="text-2xl mb-2">🔔</div>
+                <Icon name="bell" className="mx-auto mb-2 text-surface-300" size={26} />
                 <p className="text-xs text-surface-400">Belum ada notifikasi</p>
               </div>
             )}
@@ -354,7 +354,7 @@ export default function TalentDashboard() {
               <span className="text-sm font-medium hidden md:block text-surface-900">{data.profile.full_name}</span>
             </div>
             <Link href="/talent/settings" className="text-sm text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
-              ⚙️
+              <Icon name="settings" size={18} />
             </Link>
             <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
               Keluar
@@ -367,27 +367,27 @@ export default function TalentDashboard() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-            Halo, {data.profile.full_name.split(" ")[0]}! 👋
+            Halo, {data.profile.full_name.split(" ")[0]}!
           </h1>
           <p className="text-surface-500">
-            Dashboard karirmu — lihat insight AI dan job yang cocok untukmu.
+            Dashboard karirmu - lihat insight AI dan job yang cocok untukmu.
           </p>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Skills", value: data.profile.skills.length, icon: "⚡" },
-            { label: "Job Match", value: data.recommended_jobs?.length || 0, icon: "🎯" },
-            { label: "Active Jobs", value: data.active_jobs?.length || 0, icon: "💼" },
+            { label: "Skills", value: data.profile.skills.length, icon: "spark" as const },
+            { label: "Job Match", value: data.recommended_jobs?.length || 0, icon: "target" as const },
+            { label: "Active Jobs", value: data.active_jobs?.length || 0, icon: "briefcase" as const },
             {
               label: "Status",
               value: data.profile.availability === "available" ? "Available" : data.profile.availability,
-              icon: "🟢",
+              icon: "check" as const,
             },
           ].map((stat, i) => (
             <div key={i} className="glass rounded-xl p-4 card-hover">
-              <div className="text-lg mb-1">{stat.icon}</div>
+              <Icon name={stat.icon} className="mb-1 text-primary-600" size={20} />
               <div className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
                 {stat.value}
               </div>
@@ -402,7 +402,7 @@ export default function TalentDashboard() {
             <div className="glass rounded-2xl p-6 card-hover">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-sm">
-                  📊
+              <Icon name="settings" size={18} />
                 </div>
                 <div>
                   <h2 className="font-bold text-sm text-surface-900">Insight Karir AI</h2>
@@ -415,6 +415,17 @@ export default function TalentDashboard() {
                   <p className="text-xs text-surface-500 mb-4 leading-relaxed">
                     {data.skill_gap.summary}
                   </p>
+                  {data.skill_gap.profile_completeness_score !== null &&
+                    data.skill_gap.profile_completeness_score !== undefined && (
+                      <div className="mb-4 p-3 rounded-xl bg-[#FAEEDA] border border-amber-100">
+                        <div className="text-[10px] text-[#854F0B] font-medium mb-1">
+                          AI enrichment completeness
+                        </div>
+                        <div className="text-lg font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
+                          {data.skill_gap.profile_completeness_score}%
+                        </div>
+                      </div>
+                    )}
 
                   <div className="space-y-3">
                     {(data.skill_gap.recommendations as unknown as SkillGapRec[]).map((rec, i) => {
@@ -428,7 +439,7 @@ export default function TalentDashboard() {
                             </span>
                           </div>
                           <p className="text-xs text-surface-500 mb-1">{rec.reason}</p>
-                          <p className="text-xs text-accent-600">💡 {rec.estimated_impact}</p>
+                          <p className="text-xs text-accent-600"><Icon name="spark" className="inline mr-1" size={12} />{rec.estimated_impact}</p>
                         </div>
                       );
                     })}
@@ -455,7 +466,7 @@ export default function TalentDashboard() {
           {/* ─── Recommended Jobs ────────────────────────────────── */}
           <div className="lg:col-span-2">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-              🎯 Job Untukmu
+              <Icon name="target" className="text-primary-600" size={20} />Job Untukmu
               <span className="text-xs font-normal text-surface-500 bg-surface-100 px-2 py-1 rounded-full">
                 AI Matched
               </span>
@@ -471,12 +482,12 @@ export default function TalentDashboard() {
                           <h3 className="font-bold text-surface-900">{job.title}</h3>
                           {job.recommendation === "highly_recommended" && (
                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-accent-600">
-                              ⭐ Top Match
+                              Top Match
                             </span>
                           )}
                         </div>
                         <p className="text-sm text-surface-500 mb-3">
-                          oleh {job.client_name} · {job.category === "web_dev" ? "Web Dev" : "Design"}
+                          oleh {job.client_name} - {job.category === "web_dev" ? "Web Dev" : "Design"}
                         </p>
 
                         <div className="flex flex-wrap gap-1.5 mb-3">
@@ -489,17 +500,22 @@ export default function TalentDashboard() {
 
                         <div className="flex gap-4 text-xs text-surface-400">
                           {job.budget_max && (
-                            <span>💰 Rp {Number(job.budget_max).toLocaleString("id-ID")}</span>
+                            <span className="inline-flex items-center gap-1"><Icon name="money" size={13} />Rp {Number(job.budget_max).toLocaleString("id-ID")}</span>
                           )}
                           {job.deadline && (
-                            <span>📅 {new Date(job.deadline).toLocaleDateString("id-ID")}</span>
+                            <span className="inline-flex items-center gap-1"><Icon name="calendar" size={13} />{new Date(job.deadline).toLocaleDateString("id-ID")}</span>
                           )}
                         </div>
 
                         {/* AI Reasoning */}
                         <div className="mt-3 p-3 rounded-lg bg-primary-50 border border-primary-100">
-                          <div className="text-[10px] text-primary-600 font-medium mb-1">🤖 AI Insight</div>
+                          <div className="text-[10px] text-primary-600 font-medium mb-1 inline-flex items-center gap-1"><Icon name="ai" size={12} />AI Insight</div>
                           <p className="text-xs text-surface-500">{job.reasoning}</p>
+                          {job.portfolio_evidence && (
+                            <div className="mt-2 text-[10px] text-[#854F0B]">
+                              Evidence: {job.portfolio_evidence}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -530,7 +546,7 @@ export default function TalentDashboard() {
               </div>
             ) : (
               <div className="glass rounded-xl p-12 text-center">
-                <div className="text-4xl mb-4">🔍</div>
+                <Icon name="search" className="mx-auto mb-4 text-surface-300" size={40} />
                 <p className="text-surface-500">
                   Belum ada job yang cocok. Job baru akan muncul saat client posting.
                 </p>
@@ -541,7 +557,7 @@ export default function TalentDashboard() {
             {data.active_jobs && data.active_jobs.length > 0 && (
               <div className="mt-8">
                 <h2 className="text-xl font-bold mb-4 text-surface-900" style={{ fontFamily: "Outfit" }}>
-                  💼 Job Aktif
+                  <Icon name="briefcase" className="inline mr-2 text-primary-600" size={20} />Job Aktif
                 </h2>
                 <div className="space-y-3">
                   {data.active_jobs.map((job) => (
@@ -556,6 +572,11 @@ export default function TalentDashboard() {
                         </span>
                       </div>
                       <JobStatusTracker status={job.status} />
+                      {job.status === "completed" && (
+                        <div className="mt-4 pt-4 border-t border-surface-200">
+                          <RatingStars rating={4.8} reviewCount={3} size={14} />
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

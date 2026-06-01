@@ -37,7 +37,7 @@ export async function GET(
       );
     }
 
-    // If talent is viewing, only show their own match
+    // Public job details are visible, but match reasoning is scoped.
     let matchedTalents = job.jobMatches;
     if (session?.role === "talent") {
       const profile = await prisma.talentProfile.findUnique({
@@ -48,6 +48,10 @@ export async function GET(
           (m) => m.talentProfileId === profile.id
         );
       }
+    } else if (session?.role === "client" && session.userId === job.clientUserId) {
+      matchedTalents = job.jobMatches;
+    } else {
+      matchedTalents = [];
     }
 
     return NextResponse.json({
@@ -78,6 +82,7 @@ export async function GET(
           strengths: m.strengths,
           gaps: m.gaps,
           reasoning: m.reasoning,
+          portfolio_evidence: m.portfolioEvidence,
           recommendation: m.recommendation,
           status: m.status,
           skills: m.talentProfile.talentSkills.map((ts) => ({

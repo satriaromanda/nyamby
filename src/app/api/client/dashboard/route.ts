@@ -52,6 +52,7 @@ export async function GET() {
             full_name: m.talentProfile.user.fullName,
             avatar_url: m.talentProfile.user.avatarUrl,
             match_score: m.matchScore,
+            portfolio_evidence: m.portfolioEvidence,
             recommendation: m.recommendation,
             status: m.status,
           })),

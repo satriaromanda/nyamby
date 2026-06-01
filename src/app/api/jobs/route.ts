@@ -79,6 +79,8 @@ export async function POST(request: NextRequest) {
         category: t.category,
         rate: Number(t.ratePerHour || 0),
         bio: t.bio || "",
+        cv_text: t.cvText,
+        portfolio_context: t.portfolioContext,
       }));
 
       const matches = await generateJobMatches(jobData, talentData);
@@ -97,6 +99,7 @@ export async function POST(request: NextRequest) {
             strengths: match.strengths,
             gaps: match.gaps,
             reasoning: match.reasoning,
+            portfolioEvidence: match.portfolio_evidence || null,
             recommendation: match.recommendation,
           },
           create: {
@@ -106,6 +109,7 @@ export async function POST(request: NextRequest) {
             strengths: match.strengths,
             gaps: match.gaps,
             reasoning: match.reasoning,
+            portfolioEvidence: match.portfolio_evidence || null,
             recommendation: match.recommendation,
           },
         });

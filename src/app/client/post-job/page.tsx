@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Icon } from "@/components/icons";
 
 interface Skill {
   id: string;
@@ -109,8 +110,7 @@ export default function PostJobPage() {
       <div className="min-h-screen gradient-hero flex items-center justify-center">
         <div className="text-center animate-scale-in">
           <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-accent flex items-center justify-center text-4xl text-white animate-pulse-glow">
-            🤖
-          </div>
+            <Icon name="ai" size={40} /></div>
           <h2 className="text-2xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>
             AI sedang mencarikan talenta terbaik...
           </h2>
@@ -139,14 +139,14 @@ export default function PostJobPage() {
             <span className="font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>Nyamby</span>
           </Link>
           <Link href="/client/dashboard" className="text-sm text-surface-500 hover:text-surface-900">
-            ← Kembali ke Dashboard
+            <span className="inline-flex items-center gap-1"><Icon name="arrowLeft" size={14} />Kembali ke Dashboard</span>
           </Link>
         </div>
       </nav>
 
       <div className="max-w-2xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-          Post Job Baru ✨
+          Post Job Baru
         </h1>
         <p className="text-surface-500 mb-8">
           Deskripsikan kebutuhanmu dan AI akan mencarikan talenta terbaik.
@@ -180,8 +180,8 @@ export default function PostJobPage() {
             <label className="block text-sm text-surface-600 mb-2">Kategori *</label>
             <div className="grid grid-cols-2 gap-3">
               {[
-                { value: "web_dev", label: "💻 Web Development" },
-                { value: "graphic_designer", label: "🎨 Graphic Design" },
+                { value: "web_dev", label: "Web Development", icon: "code" as const },
+                { value: "graphic_designer", label: "Graphic Design", icon: "design" as const },
               ].map((cat) => (
                 <button
                   key={cat.value}
@@ -193,7 +193,7 @@ export default function PostJobPage() {
                       : "bg-white border border-surface-200 text-surface-600 hover:border-primary-200"
                   }`}
                 >
-                  {cat.label}
+                  <span className="inline-flex items-center justify-center gap-2"><Icon name={cat.icon} size={15} />{cat.label}</span>
                 </button>
               ))}
             </div>
@@ -268,7 +268,7 @@ export default function PostJobPage() {
             disabled={loading || !form.title || !form.description || form.required_skills.length === 0}
             className="btn-primary w-full py-3.5 text-base disabled:opacity-30"
           >
-            {loading ? "Posting..." : "🤖 Post Job & Trigger AI Matching"}
+            {loading ? "Posting..." : <span className="inline-flex items-center justify-center gap-2"><Icon name="ai" size={16} />Post Job & Trigger AI Matching</span>}
           </button>
         </form>
       </div>

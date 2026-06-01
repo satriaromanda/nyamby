@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { generateSkillGapAnalysis } from "@/lib/openai";
+import { extractCvText, extractPortfolioContext, truncateText } from "@/lib/enrichment";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,8 +14,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
-    const { bio, category, rate_per_hour, rate_per_project, availability, location, portfolio_url, skills } = body;
+    const contentType = request.headers.get("content-type") || "";
+    const body = contentType.includes("multipart/form-data")
+      ? await readMultipartOnboarding(request)
+      : await request.json();
+    const {
+      bio,
+      category,
+      rate_per_hour,
+      rate_per_project,
+      availability,
+      location,
+      portfolio_url,
+      portfolio_file,
+      cv_file,
+      cv_text,
+      portfolio_context,
+      upload_warning,
+      skills,
+    } = body;
 
     if (!category || !skills || skills.length === 0) {
       return NextResponse.json(
@@ -45,6 +63,10 @@ export async function POST(request: NextRequest) {
         availability: availability || "available",
         location: location || null,
         portfolioUrl: portfolio_url || null,
+        portfolioFile: portfolio_file || null,
+        cvFile: cv_file || null,
+        cvText: truncateText(cv_text, 3000),
+        portfolioContext: truncateText(portfolio_context, 1000),
       },
     });
 
@@ -72,6 +94,7 @@ export async function POST(request: NextRequest) {
 
     // Get market demand (count skills in active jobs)
     const activeJobs = await prisma.jobRequiredSkill.findMany({
+      where: { job: { status: "active", category } },
       include: { skill: true, job: true },
     });
 
@@ -89,13 +112,23 @@ export async function POST(request: NextRequest) {
       avg_budget: data.count > 0 ? Math.round(data.totalBudget / data.count) : 0,
     }));
 
-    const skillGapResult = await generateSkillGapAnalysis(skillNames, category, marketDemand);
+    const skillGapResult = await generateSkillGapAnalysis(skillNames, category, marketDemand, {
+      bio: profile.bio,
+      cv_text: profile.cvText,
+      portfolio_context: profile.portfolioContext,
+    });
+
+    await prisma.skillGapAnalysis.updateMany({
+      where: { talentProfileId: profile.id, isLatest: true },
+      data: { isLatest: false },
+    });
 
     const analysis = await prisma.skillGapAnalysis.create({
       data: {
         talentProfileId: profile.id,
         recommendedSkills: skillGapResult.recommendations,
         summary: skillGapResult.summary,
+        profileCompletenessScore: skillGapResult.profile_completeness_score ?? null,
         isLatest: true,
       },
     });
@@ -107,6 +140,8 @@ export async function POST(request: NextRequest) {
         data: {
           talent_profile_id: profile.id,
           skill_gap_analysis_id: analysis.id,
+          profile_completeness_score: skillGapResult.profile_completeness_score,
+          upload_warning: upload_warning || null,
         },
       },
       { status: 201 }
@@ -121,4 +156,43 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+async function readMultipartOnboarding(request: NextRequest) {
+  const formData = await request.formData();
+  const portfolioUrl = stringValue(formData.get("portfolio_url"));
+  const cvFile = fileValue(formData.get("cv_file"));
+  const portfolioFile = fileValue(formData.get("portfolio_file"));
+  const cvResult = cvFile ? await extractCvText(cvFile) : null;
+  const portfolioResult = await extractPortfolioContext(portfolioFile, portfolioUrl);
+  const warning = [cvResult?.warning, portfolioResult.warning].filter(Boolean).join(" ");
+
+  return {
+    bio: stringValue(formData.get("bio")),
+    category: stringValue(formData.get("category")),
+    rate_per_hour: numberValue(formData.get("rate_per_hour")),
+    rate_per_project: numberValue(formData.get("rate_per_project")),
+    availability: stringValue(formData.get("availability")),
+    location: stringValue(formData.get("location")),
+    portfolio_url: portfolioUrl,
+    portfolio_file: portfolioResult.fileName,
+    cv_file: cvResult?.fileName || null,
+    cv_text: cvResult?.text || null,
+    portfolio_context: portfolioResult.context,
+    upload_warning: warning || null,
+    skills: JSON.parse(stringValue(formData.get("skills")) || "[]"),
+  };
+}
+
+function stringValue(value: FormDataEntryValue | null) {
+  return typeof value === "string" ? value : "";
+}
+
+function numberValue(value: FormDataEntryValue | null) {
+  const rawValue = stringValue(value);
+  return rawValue ? Number(rawValue) : null;
+}
+
+function fileValue(value: FormDataEntryValue | null) {
+  return value instanceof File && value.size > 0 ? value : null;
 }

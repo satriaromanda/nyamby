@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
           strengths: existingMatch.strengths,
           gaps: existingMatch.gaps,
           reasoning: existingMatch.reasoning,
+          portfolio_evidence: existingMatch.portfolioEvidence,
           recommendation: existingMatch.recommendation,
           status: existingMatch.status,
         },
@@ -106,6 +107,8 @@ export async function POST(request: NextRequest) {
         category: profile.category,
         rate: Number(profile.ratePerHour || 0),
         bio: profile.bio || "",
+        cv_text: profile.cvText,
+        portfolio_context: profile.portfolioContext,
       },
     ];
 
@@ -128,6 +131,7 @@ export async function POST(request: NextRequest) {
         strengths: matchResult.strengths,
         gaps: matchResult.gaps,
         reasoning: matchResult.reasoning,
+        portfolioEvidence: matchResult.portfolio_evidence || null,
         recommendation: matchResult.recommendation,
         status: "recommended",
       },
@@ -142,6 +146,7 @@ export async function POST(request: NextRequest) {
         strengths: savedMatch.strengths,
         gaps: savedMatch.gaps,
         reasoning: savedMatch.reasoning,
+        portfolio_evidence: savedMatch.portfolioEvidence,
         recommendation: savedMatch.recommendation,
         status: savedMatch.status,
       },

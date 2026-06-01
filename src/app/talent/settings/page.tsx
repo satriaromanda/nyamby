@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { Icon } from "@/components/icons";
 
 interface ProfileData {
+  profile_id: string;
   user_id: string;
   email: string;
   full_name: string;
@@ -90,7 +92,7 @@ export default function TalentSettingsPage() {
       });
       const d = await res.json();
       if (d.success) {
-        showToast("Profil berhasil disimpan! ✅");
+        showToast("Profil berhasil disimpan!");
       } else {
         showToast(d.message || "Gagal menyimpan", "error");
       }
@@ -117,7 +119,7 @@ export default function TalentSettingsPage() {
   if (!profile) return null;
 
   const categoryLabel = profile.category === "web_dev" ? "Web Developer" : "Graphic Designer";
-  const categoryIcon = profile.category === "web_dev" ? "💻" : "🎨";
+  const categoryIcon = profile.category === "web_dev" ? "code" : "design";
 
   return (
     <div className="min-h-screen bg-surface-50">
@@ -178,7 +180,7 @@ export default function TalentSettingsPage() {
             className="text-3xl font-bold mb-2 text-surface-900"
             style={{ fontFamily: "Outfit" }}
           >
-            Pengaturan Profil ⚙️
+            Pengaturan Profil
           </h1>
           <p className="text-surface-500">Kelola profil dan preferensi akunmu.</p>
         </div>
@@ -203,7 +205,7 @@ export default function TalentSettingsPage() {
                 {profile.full_name}
               </h3>
               <div className="flex items-center justify-center gap-1.5 mt-1 mb-2">
-                <span className="text-sm">{categoryIcon}</span>
+                <Icon name={categoryIcon} className="text-primary-600" size={15} />
                 <span className="text-sm text-surface-500">{categoryLabel}</span>
               </div>
               <p className="text-xs text-surface-400">{profile.email}</p>
@@ -220,13 +222,13 @@ export default function TalentSettingsPage() {
 
             {/* Skills Display */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-              <h3 className="font-bold text-sm mb-3 text-surface-900">⚡ Skill-mu</h3>
+              <h3 className="font-bold text-sm mb-3 text-surface-900 flex items-center gap-2"><Icon name="spark" size={15} />Skill-mu</h3>
               <div className="flex flex-wrap gap-2">
                 {profile.skills.map((s, i) => (
                   <span key={i} className={`skill-badge skill-badge-${s.level}`}>
                     {s.name}
                     <span className="opacity-60 text-[10px] ml-1">
-                      {s.level === "expert" ? "★★★" : s.level === "intermediate" ? "★★" : "★"}
+                      {s.level}
                     </span>
                   </span>
                 ))}
@@ -238,12 +240,12 @@ export default function TalentSettingsPage() {
 
             {/* Public Profile Link */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
-              <h3 className="font-bold text-sm mb-2 text-surface-900">🔗 Profil Publik</h3>
+              <h3 className="font-bold text-sm mb-2 text-surface-900 flex items-center gap-2"><Icon name="link" size={15} />Profil Publik</h3>
               <Link
-                href={`/talent/profile/${profile.user_id}`}
+                href={`/talents/${profile.profile_id}`}
                 className="text-xs text-primary-600 hover:text-primary-700 underline transition-colors"
               >
-                Lihat profil publik →
+                Lihat profil publik
               </Link>
             </div>
           </div>
@@ -253,7 +255,7 @@ export default function TalentSettingsPage() {
             {/* Bio */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" style={{ fontFamily: "Outfit" }}>
-                📝 Informasi Profil
+                Informasi Profil
               </h2>
               <p className="text-xs text-surface-400 mb-5">Informasi ini akan terlihat oleh client.</p>
 
@@ -275,7 +277,7 @@ export default function TalentSettingsPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-surface-600 mb-2">
-                    📍 Lokasi
+                    Lokasi
                   </label>
                   <input
                     type="text"
@@ -288,7 +290,7 @@ export default function TalentSettingsPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-surface-600 mb-2">
-                    🔗 Portfolio URL
+                    Portfolio URL
                   </label>
                   <input
                     type="url"
@@ -304,7 +306,7 @@ export default function TalentSettingsPage() {
             {/* Rate & Availability */}
             <div className="glass rounded-2xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" style={{ fontFamily: "Outfit" }}>
-                💰 Rate & Ketersediaan
+                Rate & Ketersediaan
               </h2>
               <p className="text-xs text-surface-400 mb-5">
                 Atur rate dan statusmu agar client tahu kapan kamu bisa dihubungi.
@@ -444,7 +446,7 @@ export default function TalentSettingsPage() {
                     Menyimpan...
                   </>
                 ) : (
-                  "💾 Simpan Perubahan"
+                  <span className="inline-flex items-center gap-2"><Icon name="check" size={15} />Simpan Perubahan</span>
                 )}
               </button>
             </div>

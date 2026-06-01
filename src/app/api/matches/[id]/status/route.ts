@@ -32,6 +32,21 @@ export async function PATCH(
       );
     }
 
+    const isTalentOwner = session.role === "talent" && session.userId === match.talentProfile.userId;
+    const isClientOwner = session.role === "client" && session.userId === match.job.clientUserId;
+    if (status === "applied" && !isTalentOwner) {
+      return NextResponse.json(
+        { success: false, message: "Hanya talenta pemilik match yang bisa melamar" },
+        { status: 403 }
+      );
+    }
+    if ((status === "accepted" || status === "rejected") && !isClientOwner) {
+      return NextResponse.json(
+        { success: false, message: "Hanya client pemilik job yang bisa mengubah status ini" },
+        { status: 403 }
+      );
+    }
+
     await prisma.jobMatch.update({
       where: { id },
       data: { status },

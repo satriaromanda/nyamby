@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -28,8 +31,9 @@ export default function LoginPage() {
         return;
       }
 
-      // Redirect based on role
-      if (data.data.user.role === "talent") {
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else if (data.data.user.role === "talent") {
         router.push("/talent/dashboard");
       } else {
         router.push("/client/dashboard");
@@ -135,12 +139,23 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-surface-500 mt-6">
             Belum punya akun?{" "}
-            <Link href="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+            <Link
+              href={redirectTo ? `/register?redirect=${encodeURIComponent(redirectTo)}` : "/register"}
+              className="text-primary-600 hover:text-primary-700 font-medium"
+            >
               Daftar sekarang
             </Link>
           </p>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen gradient-hero flex items-center justify-center"><div className="animate-spin w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full" /></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

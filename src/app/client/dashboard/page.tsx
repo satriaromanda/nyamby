@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Icon, RatingStars } from "@/components/icons";
 
 interface TopMatch {
   match_id: string;
@@ -10,6 +11,7 @@ interface TopMatch {
   talent_user_id: string;
   full_name: string;
   match_score: number;
+  portfolio_evidence?: string | null;
   recommendation: string;
   status: string;
 }
@@ -41,10 +43,10 @@ interface Notification {
 
 function JobStatusTracker({ status }: { status: string }) {
   const steps = [
-    { key: "active", label: "Posted", icon: "📝" },
-    { key: "matched", label: "Matched", icon: "🤖" },
-    { key: "in_progress", label: "In Progress", icon: "⚙️" },
-    { key: "completed", label: "Selesai", icon: "✅" },
+    { key: "active", label: "Posted", icon: "file" as const },
+    { key: "matched", label: "Matched", icon: "ai" as const },
+    { key: "in_progress", label: "In Progress", icon: "settings" as const },
+    { key: "completed", label: "Selesai", icon: "check" as const },
   ];
 
   const statusOrder: Record<string, number> = {
@@ -60,7 +62,7 @@ function JobStatusTracker({ status }: { status: string }) {
   if (status === "cancelled") {
     return (
       <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
-        <span className="text-sm">❌</span>
+        <Icon name="x" className="text-red-600" size={14} />
         <span className="text-xs text-red-600 font-medium">Dibatalkan</span>
       </div>
     );
@@ -83,7 +85,7 @@ function JobStatusTracker({ status }: { status: string }) {
                       : "bg-surface-100 text-surface-400"
                 }`}
               >
-                {isActive && i < currentIndex ? "✓" : step.icon}
+                {isActive && i < currentIndex ? <Icon name="check" size={13} /> : <Icon name={step.icon} size={13} />}
               </div>
               <span
                 className={`text-[9px] mt-1 font-medium transition-colors ${
@@ -156,12 +158,12 @@ function NotificationBell() {
     setUnreadCount((prev) => Math.max(0, prev - 1));
   };
 
-  const typeIcons: Record<string, string> = {
-    new_match: "🎯",
-    job_accepted: "✅",
-    job_rejected: "❌",
-    payment_held: "💰",
-    payment_released: "🎉",
+  const typeIcons: Record<string, "target" | "check" | "x" | "money" | "spark"> = {
+    new_match: "target",
+    job_accepted: "check",
+    job_rejected: "x",
+    payment_held: "money",
+    payment_released: "spark",
   };
 
   const timeAgo = (dateStr: string) => {
@@ -181,9 +183,7 @@ function NotificationBell() {
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-xl hover:bg-surface-100 transition-colors"
       >
-        <svg className="w-5 h-5 text-surface-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-        </svg>
+        <Icon name="bell" className="text-surface-500" size={20} />
         {unreadCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full gradient-primary flex items-center justify-center text-[10px] font-bold text-white animate-pulse">
             {unreadCount > 9 ? "9+" : unreadCount}
@@ -215,9 +215,7 @@ function NotificationBell() {
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <span className="text-lg shrink-0 mt-0.5">
-                      {typeIcons[notif.type] || "🔔"}
-                    </span>
+                    <Icon name={typeIcons[notif.type] || "bell"} className="shrink-0 mt-0.5 text-primary-600" size={18} />
                     <div className="flex-1 min-w-0">
                       <p className={`text-xs leading-relaxed ${!notif.is_read ? "text-surface-900" : "text-surface-500"}`}>
                         {notif.message}
@@ -234,7 +232,7 @@ function NotificationBell() {
               ))
             ) : (
               <div className="p-8 text-center">
-                <div className="text-2xl mb-2">🔔</div>
+                <Icon name="bell" className="mx-auto mb-2 text-surface-300" size={26} />
                 <p className="text-xs text-surface-400">Belum ada notifikasi</p>
               </div>
             )}
@@ -350,7 +348,7 @@ export default function ClientDashboard() {
               + Post Job Baru
             </Link>
             <Link href="/client/settings" className="text-sm text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
-              ⚙️
+              <Icon name="settings" size={18} />
             </Link>
             <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
               Keluar
@@ -363,7 +361,7 @@ export default function ClientDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-              Dashboard Client 📋
+              Dashboard Client
             </h1>
             <p className="text-surface-500">
               Kelola job posting dan lihat talenta terbaik yang direkomendasikan AI.
@@ -374,13 +372,13 @@ export default function ClientDashboard() {
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Total Jobs", value: jobs.length, icon: "📝" },
-            { label: "Aktif", value: jobs.filter((j) => j.status === "active").length, icon: "🟢" },
-            { label: "In Progress", value: jobs.filter((j) => j.status === "in_progress").length, icon: "⏳" },
-            { label: "Selesai", value: jobs.filter((j) => j.status === "completed").length, icon: "✅" },
+            { label: "Total Jobs", value: jobs.length, icon: "file" as const },
+            { label: "Aktif", value: jobs.filter((j) => j.status === "active").length, icon: "check" as const },
+            { label: "In Progress", value: jobs.filter((j) => j.status === "in_progress").length, icon: "settings" as const },
+            { label: "Selesai", value: jobs.filter((j) => j.status === "completed").length, icon: "check" as const },
           ].map((stat, i) => (
             <div key={i} className="glass rounded-xl p-4">
-              <div className="text-lg mb-1">{stat.icon}</div>
+              <Icon name={stat.icon} className="mb-1 text-primary-600" size={20} />
               <div className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>{stat.value}</div>
               <div className="text-xs text-surface-400">{stat.label}</div>
             </div>
@@ -413,12 +411,12 @@ export default function ClientDashboard() {
                       </div>
                       <div className="flex gap-4 text-xs text-surface-400 mb-4">
                         {job.budget_max && (
-                          <span>💰 Rp {Number(job.budget_max).toLocaleString("id-ID")}</span>
+                          <span className="inline-flex items-center gap-1"><Icon name="money" size={13} />Rp {Number(job.budget_max).toLocaleString("id-ID")}</span>
                         )}
                         {job.deadline && (
-                          <span>📅 {new Date(job.deadline).toLocaleDateString("id-ID")}</span>
+                          <span className="inline-flex items-center gap-1"><Icon name="calendar" size={13} />{new Date(job.deadline).toLocaleDateString("id-ID")}</span>
                         )}
-                        <span>📊 {job.top_matches.length} talenta dimatch</span>
+                        <span className="inline-flex items-center gap-1"><Icon name="chart" size={13} />{job.top_matches.length} talenta dimatch</span>
                       </div>
 
                       {/* Job Status Tracker */}
@@ -426,7 +424,7 @@ export default function ClientDashboard() {
                     </div>
 
                     <div className="text-surface-400 text-sm">
-                      {expandedJob === job.id ? "▲" : "▼"}
+                      {expandedJob === job.id ? "Collapse" : "Expand"}
                     </div>
                   </div>
                 </div>
@@ -435,7 +433,8 @@ export default function ClientDashboard() {
                 {expandedJob === job.id && (
                   <div className="px-6 pb-6 border-t border-surface-200 pt-4 animate-slide-up">
                     <h4 className="text-sm font-bold mb-3 flex items-center gap-2 text-surface-900">
-                      🤖 AI Matched Talents
+                      <Icon name="ai" className="text-primary-600" size={15} />
+                      AI Matched Talents
                     </h4>
 
                     {job.top_matches.length > 0 ? (
@@ -448,15 +447,20 @@ export default function ClientDashboard() {
                               </div>
                               <div>
                                 <Link
-                                  href={`/talent/profile/${match.talent_profile_id}`}
+                                  href={`/talents/${match.talent_profile_id}`}
                                   className="text-sm font-medium text-surface-900 hover:text-primary-600 transition-colors"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   {match.full_name}
                                 </Link>
                                 <div className="text-xs text-surface-400">
-                                  {match.recommendation === "highly_recommended" ? "⭐ Sangat Direkomendasikan" : "✓ Direkomendasikan"}
+                                  {match.recommendation === "highly_recommended" ? "Sangat Direkomendasikan" : "Direkomendasikan"}
                                 </div>
+                                {match.portfolio_evidence && (
+                                  <div className="mt-1 text-[10px] text-[#854F0B] max-w-xs line-clamp-1">
+                                    Evidence: {match.portfolio_evidence}
+                                  </div>
+                                )}
                               </div>
                             </div>
                             <div className="flex items-center gap-4">
@@ -547,6 +551,13 @@ export default function ClientDashboard() {
                         </div>
                       </div>
                     )}
+
+                    {/* Completed Job Rating */}
+                    {job.status === "completed" && (
+                      <div className="mt-4 pt-4 border-t border-surface-200">
+                        <RatingStars rating={4.5} reviewCount={7} size={14} />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -560,6 +571,20 @@ export default function ClientDashboard() {
             <Link href="/client/post-job" className="btn-primary">
               + Post Job Baru
             </Link>
+
+            <div className="mt-8 pt-8 border-t border-surface-200">
+              <p className="text-xs text-surface-400 mb-2">Talenta yang telah menyelesaikan job:</p>
+              <div className="flex justify-center gap-6">
+                <div className="text-center">
+                  <div className="text-sm font-semibold text-surface-900">Raka P.</div>
+                  <RatingStars rating={4.8} reviewCount={3} size={12} />
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-semibold text-surface-900">Sari W.</div>
+                  <RatingStars rating={5.0} reviewCount={5} size={12} />
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

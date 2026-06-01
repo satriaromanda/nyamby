@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Icon } from "@/components/icons";
 
 interface Skill {
   id: string;
@@ -16,6 +17,9 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [error, setError] = useState("");
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [portfolioFile, setPortfolioFile] = useState<File | null>(null);
+  const [uploadWarning, setUploadWarning] = useState("");
 
   const [form, setForm] = useState({
     bio: "",
@@ -76,15 +80,24 @@ export default function OnboardingPage() {
 
     try {
       setAiLoading(true);
+      const payload = new FormData();
+      payload.set("bio", form.bio);
+      payload.set("category", form.category);
+      payload.set("rate_per_hour", form.rate_per_hour);
+      payload.set("rate_per_project", form.rate_per_project);
+      payload.set("availability", form.availability);
+      payload.set("location", form.location);
+      payload.set("portfolio_url", form.portfolio_url);
+      payload.set(
+        "skills",
+        JSON.stringify(form.skills.map((s) => ({ skill_id: s.skill_id, level: s.level })))
+      );
+      if (cvFile) payload.set("cv_file", cvFile);
+      if (portfolioFile) payload.set("portfolio_file", portfolioFile);
+
       const res = await fetch("/api/talent/onboarding", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          rate_per_hour: form.rate_per_hour ? Number(form.rate_per_hour) : null,
-          rate_per_project: form.rate_per_project ? Number(form.rate_per_project) : null,
-          skills: form.skills.map((s) => ({ skill_id: s.skill_id, level: s.level })),
-        }),
+        body: payload,
       });
       const data = await res.json();
 
@@ -93,6 +106,7 @@ export default function OnboardingPage() {
         setAiLoading(false);
         return;
       }
+      if (data.data?.upload_warning) setUploadWarning(data.data.upload_warning);
 
       // Show AI loading animation for a moment
       setTimeout(() => {
@@ -112,7 +126,7 @@ export default function OnboardingPage() {
       <div className="min-h-screen gradient-hero flex items-center justify-center">
         <div className="text-center animate-scale-in">
           <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center text-4xl text-white animate-pulse-glow">
-            🤖
+            <Icon name="ai" size={40} />
           </div>
           <h2 className="text-2xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>
             AI sedang menganalisis profilmu...
@@ -144,7 +158,7 @@ export default function OnboardingPage() {
                     : "bg-white border border-surface-200 text-surface-400"
                 }`}
               >
-                {step > s ? "✓" : s}
+                {step > s ? <Icon name="check" size={14} /> : s}
               </div>
               {s < 3 && (
                 <div className={`w-12 h-0.5 ${step > s ? "bg-primary-500" : "bg-surface-200"}`} />
@@ -166,8 +180,8 @@ export default function OnboardingPage() {
 
               <div className="grid grid-cols-2 gap-4 mb-8">
                 {[
-                  { value: "web_dev", label: "Web Developer", icon: "💻", desc: "Frontend, Backend, Full-stack" },
-                  { value: "graphic_designer", label: "Graphic Designer", icon: "🎨", desc: "UI/UX, Branding, Visual" },
+                  { value: "web_dev", label: "Web Developer", icon: "code" as const, desc: "Frontend, Backend, Full-stack" },
+                  { value: "graphic_designer", label: "Graphic Designer", icon: "design" as const, desc: "UI/UX, Branding, Visual" },
                 ].map((cat) => (
                   <button
                     key={cat.value}
@@ -179,7 +193,7 @@ export default function OnboardingPage() {
                         : "bg-white border border-surface-200 hover:border-primary-200 hover:shadow-md"
                     }`}
                   >
-                    <div className="text-3xl mb-3">{cat.icon}</div>
+                    <Icon name={cat.icon} className="mb-3" size={30} />
                     <div className={`font-bold mb-1 ${form.category === cat.value ? "text-white" : "text-surface-900"}`}>{cat.label}</div>
                     <div className="text-xs opacity-70">{cat.desc}</div>
                   </button>
@@ -191,7 +205,7 @@ export default function OnboardingPage() {
                 disabled={!form.category}
                 className="btn-primary w-full py-3 disabled:opacity-30"
               >
-                Lanjut →
+                <span className="inline-flex items-center justify-center gap-2">Lanjut<Icon name="arrowRight" size={16} /></span>
               </button>
             </div>
           )}
@@ -222,7 +236,7 @@ export default function OnboardingPage() {
                           <div className={`w-5 h-5 rounded flex items-center justify-center text-xs ${
                             selected ? "bg-primary-500 text-white" : "border border-surface-300"
                           }`}>
-                            {selected && "✓"}
+                            {selected && <Icon name="check" size={12} />}
                           </div>
                           <div>
                             <div className="text-sm font-medium text-surface-900">{skill.name}</div>
@@ -262,14 +276,14 @@ export default function OnboardingPage() {
 
               <div className="flex gap-3">
                 <button onClick={() => setStep(1)} className="btn-secondary flex-1 py-3">
-                  ← Kembali
+                  <span className="inline-flex items-center justify-center gap-2"><Icon name="arrowLeft" size={16} />Kembali</span>
                 </button>
                 <button
                   onClick={() => form.skills.length > 0 && setStep(3)}
                   disabled={form.skills.length === 0}
                   className="btn-primary flex-1 py-3 disabled:opacity-30"
                 >
-                  Lanjut →
+                  <span className="inline-flex items-center justify-center gap-2">Lanjut<Icon name="arrowRight" size={16} /></span>
                 </button>
               </div>
             </div>
@@ -331,7 +345,13 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-surface-600 mb-2">Portfolio URL</label>
+                  <label className="flex items-center gap-2 text-sm text-surface-600 mb-2">
+                    <Icon name="link" className="text-[#0F6E56]" size={15} />
+                    Portfolio URL
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-[#FAEEDA] text-[#854F0B]">
+                      AI enrichment
+                    </span>
+                  </label>
                   <input
                     type="url"
                     className="input-dark"
@@ -339,6 +359,60 @@ export default function OnboardingPage() {
                     value={form.portfolio_url}
                     onChange={(e) => setForm({ ...form, portfolio_url: e.target.value })}
                   />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-white border border-surface-200">
+                    <label className="flex items-center justify-between gap-2 text-sm text-surface-700 mb-3">
+                      <span className="flex items-center gap-2">
+                        <Icon name="upload" className="text-[#0F6E56]" size={15} />
+                        CV PDF
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#FAEEDA] text-[#854F0B]">
+                        AI enrichment
+                      </span>
+                    </label>
+                    <input
+                      type="file"
+                      accept="application/pdf,.pdf"
+                      className="block w-full text-xs text-surface-500 file:mr-3 file:rounded-lg file:border-0 file:bg-surface-100 file:px-3 file:py-2 file:text-xs file:font-medium file:text-surface-700"
+                      onChange={(event) => setCvFile(event.target.files?.[0] || null)}
+                    />
+                    <p className="mt-2 text-[10px] text-surface-400">
+                      Opsional, maksimal 5MB. Dipakai sebagai bukti pengalaman.
+                    </p>
+                    {cvFile && (
+                      <div className="mt-2 text-[10px] text-[#3B6D11]">
+                        CV siap diproses: {cvFile.name}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-white border border-surface-200">
+                    <label className="flex items-center justify-between gap-2 text-sm text-surface-700 mb-3">
+                      <span className="flex items-center gap-2">
+                        <Icon name="upload" className="text-[#0F6E56]" size={15} />
+                        Portfolio File
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#FAEEDA] text-[#854F0B]">
+                        AI enrichment
+                      </span>
+                    </label>
+                    <input
+                      type="file"
+                      accept="application/pdf,.pdf,application/zip,.zip"
+                      className="block w-full text-xs text-surface-500 file:mr-3 file:rounded-lg file:border-0 file:bg-surface-100 file:px-3 file:py-2 file:text-xs file:font-medium file:text-surface-700"
+                      onChange={(event) => setPortfolioFile(event.target.files?.[0] || null)}
+                    />
+                    <p className="mt-2 text-[10px] text-surface-400">
+                      Opsional, PDF/ZIP maksimal 10MB. Bisa digabung dengan URL.
+                    </p>
+                    {portfolioFile && (
+                      <div className="mt-2 text-[10px] text-[#3B6D11]">
+                        Portofolio siap diproses: {portfolioFile.name}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div>
@@ -359,7 +433,7 @@ export default function OnboardingPage() {
                             : "bg-white border border-surface-200 hover:border-surface-300"
                         }`}
                       >
-                        <span className={a.color}>●</span> {a.label}
+                        <span className={`inline-block w-2 h-2 rounded-full ${a.color.replace("text-", "bg-")}`} /> {a.label}
                       </button>
                     ))}
                   </div>
@@ -371,17 +445,22 @@ export default function OnboardingPage() {
                   {error}
                 </div>
               )}
+              {uploadWarning && (
+                <div className="mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-sm">
+                  {uploadWarning}
+                </div>
+              )}
 
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setStep(2)} className="btn-secondary flex-1 py-3">
-                  ← Kembali
+                  <span className="inline-flex items-center justify-center gap-2"><Icon name="arrowLeft" size={16} />Kembali</span>
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={loading}
                   className="btn-primary flex-1 py-3 disabled:opacity-50"
                 >
-                  {loading ? "Menyimpan..." : "🤖 Simpan & Analisis AI"}
+                  {loading ? "Menyimpan..." : <span className="inline-flex items-center justify-center gap-2"><Icon name="ai" size={16} />Simpan & Analisis AI</span>}
                 </button>
               </div>
             </div>

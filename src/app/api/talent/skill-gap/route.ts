@@ -41,6 +41,7 @@ export async function GET() {
         generated_at: analysis.generatedAt,
         recommendations: analysis.recommendedSkills,
         summary: analysis.summary,
+        profile_completeness_score: analysis.profileCompletenessScore,
       },
     });
   } catch (error) {

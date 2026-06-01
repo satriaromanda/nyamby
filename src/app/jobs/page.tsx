@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Icon } from "@/components/icons";
 
 interface Job {
   id: string;
@@ -35,7 +36,6 @@ export default function JobsPage() {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [myMatches, setMyMatches] = useState<MyMatch[]>([]);
 
-  // Fetch session
   useEffect(() => {
     fetch("/api/auth/session")
       .then((r) => r.json())
@@ -45,7 +45,6 @@ export default function JobsPage() {
       .catch(() => {});
   }, []);
 
-  // Fetch talent's existing matches to show inline scores
   useEffect(() => {
     if (user?.role === "talent") {
       fetch("/api/talent/dashboard")
@@ -99,6 +98,9 @@ export default function JobsPage() {
                 >
                   Dashboard
                 </Link>
+                <Link href="/talents" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
+                  Talenta
+                </Link>
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-full gradient-primary flex items-center justify-center text-[10px] font-bold text-white">
                     {user.full_name[0]}
@@ -108,6 +110,7 @@ export default function JobsPage() {
               </>
             ) : (
               <>
+                <Link href="/talents" className="text-sm text-surface-500 hover:text-surface-900">Talenta</Link>
                 <Link href="/login" className="text-sm text-surface-500 hover:text-surface-900">Masuk</Link>
                 <Link href="/register" className="btn-primary text-xs px-4 py-2">Daftar</Link>
               </>
@@ -117,17 +120,17 @@ export default function JobsPage() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-          Job Aktif 💼
+        <h1 className="text-3xl font-bold mb-2 text-surface-900 flex items-center gap-3" style={{ fontFamily: "Outfit" }}>
+          <Icon name="briefcase" className="text-primary-600" size={28} />
+          Job Aktif
         </h1>
         <p className="text-surface-500 mb-8">Temukan project yang sesuai dengan keahlianmu.</p>
 
-        {/* Filters */}
         <div className="flex gap-2 mb-8">
           {[
-            { value: "", label: "Semua" },
-            { value: "web_dev", label: "💻 Web Dev" },
-            { value: "graphic_designer", label: "🎨 Design" },
+            { value: "", label: "Semua", icon: null },
+            { value: "web_dev", label: "Web Dev", icon: "code" as const },
+            { value: "graphic_designer", label: "Design", icon: "design" as const },
           ].map((f) => (
             <button
               key={f.value}
@@ -138,7 +141,10 @@ export default function JobsPage() {
                   : "bg-white border border-surface-200 text-surface-500 hover:border-primary-200"
               }`}
             >
-              {f.label}
+              <span className="inline-flex items-center gap-2">
+                {f.icon && <Icon name={f.icon} size={14} />}
+                {f.label}
+              </span>
             </button>
           ))}
         </div>
@@ -160,7 +166,7 @@ export default function JobsPage() {
                       <div className="flex-1">
                         <h3 className="text-lg font-bold mb-1 text-surface-900">{job.title}</h3>
                         <p className="text-sm text-surface-500 mb-3">
-                          oleh {job.client_name} · {job.category === "web_dev" ? "Web Development" : "Graphic Design"}
+                          oleh {job.client_name} - {job.category === "web_dev" ? "Web Development" : "Graphic Design"}
                         </p>
                         <p className="text-sm text-surface-400 mb-3 line-clamp-2">{job.description}</p>
                         <div className="flex flex-wrap gap-1.5 mb-3">
@@ -171,16 +177,22 @@ export default function JobsPage() {
                                 s.is_mandatory ? "bg-primary-50 text-primary-600" : "bg-surface-100 text-surface-500"
                               }`}
                             >
-                              {s.name} {s.is_mandatory && "★"}
+                              {s.name} {s.is_mandatory && <Icon name="spark" className="inline ml-1" size={10} />}
                             </span>
                           ))}
                         </div>
-                        <div className="flex gap-4 text-xs text-surface-400">
+                        <div className="flex flex-wrap gap-4 text-xs text-surface-400">
                           {job.budget_max && (
-                            <span>💰 Rp {Number(job.budget_min || 0).toLocaleString("id-ID")} – {Number(job.budget_max).toLocaleString("id-ID")}</span>
+                            <span className="inline-flex items-center gap-1">
+                              <Icon name="money" size={13} />
+                              Rp {Number(job.budget_min || 0).toLocaleString("id-ID")} - {Number(job.budget_max).toLocaleString("id-ID")}
+                            </span>
                           )}
                           {job.deadline && (
-                            <span>📅 Deadline: {new Date(job.deadline).toLocaleDateString("id-ID")}</span>
+                            <span className="inline-flex items-center gap-1">
+                              <Icon name="calendar" size={13} />
+                              Deadline: {new Date(job.deadline).toLocaleDateString("id-ID")}
+                            </span>
                           )}
                         </div>
                       </div>
@@ -205,7 +217,10 @@ export default function JobsPage() {
                           </>
                         ) : (
                           <span className="btn-primary text-xs px-4 py-2">
-                            {user?.role === "talent" ? "Lihat Detail →" : "Lamar →"}
+                            <span className="inline-flex items-center gap-1">
+                              {user?.role === "talent" ? "Lihat Detail" : "Lamar"}
+                              <Icon name="arrowRight" size={13} />
+                            </span>
                           </span>
                         )}
                       </div>
@@ -217,7 +232,7 @@ export default function JobsPage() {
           </div>
         ) : (
           <div className="glass rounded-2xl p-16 text-center">
-            <div className="text-5xl mb-4">🔍</div>
+            <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
             <h3 className="text-xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>Belum ada job aktif</h3>
             <p className="text-surface-400 text-sm">Job baru akan muncul saat client posting.</p>
           </div>

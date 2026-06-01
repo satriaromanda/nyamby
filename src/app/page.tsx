@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Icon } from "@/components/icons";
 
 export default function LandingPage() {
   const [isVisible, setIsVisible] = useState(false);
@@ -27,12 +28,15 @@ export default function LandingPage() {
             <a href="#features" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
               Fitur
             </a>
-            <a href="#how-it-works" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
+            <Link href="/how-it-works" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
               Cara Kerja
-            </a>
-            <a href="#ai-power" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
-              AI Engine
-            </a>
+            </Link>
+            <Link href="/talents" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
+              Browse Talenta
+            </Link>
+            <Link href="/jobs" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
+              Browse Jobs
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             <Link
@@ -82,13 +86,14 @@ export default function LandingPage() {
 
             <div className="flex flex-wrap gap-4">
               <Link href="/register?role=talent" className="btn-primary text-base px-8 py-3.5 flex items-center gap-2">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+                <Icon name="spark" size={20} />
                 Daftar sebagai Talenta
               </Link>
               <Link href="/register?role=client" className="btn-secondary text-base px-8 py-3.5">
                 Cari Talenta / Post Job
+              </Link>
+              <Link href="/talents" className="btn-secondary text-base px-8 py-3.5">
+                Browse Talenta
               </Link>
             </div>
 
@@ -119,8 +124,7 @@ export default function LandingPage() {
               <div className="relative glass rounded-2xl p-6 space-y-5">
                 <div className="flex items-center gap-3 pb-4 border-b border-surface-200">
                   <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-sm font-bold text-white">
-                    🤖
-                  </div>
+                    <Icon name="ai" size={20} /></div>
                   <div>
                     <div className="font-semibold text-sm text-surface-900">AI Job Matching</div>
                     <div className="text-xs text-surface-400">Powered by GPT-4o</div>
@@ -158,9 +162,7 @@ export default function LandingPage() {
                 ))}
 
                 <div className="pt-3 border-t border-surface-200 text-center">
-                  <span className="text-xs text-surface-400">
-                    ✨ 3 talenta dievaluasi dalam 2.3 detik
-                  </span>
+                  <span className="inline-flex items-center justify-center gap-1 text-xs text-surface-400"><Icon name="spark" size={13} />3 talenta dievaluasi dalam 2.3 detik</span>
                 </div>
               </div>
             </div>
@@ -185,8 +187,7 @@ export default function LandingPage() {
             {/* Talent Side */}
             <div className="glass rounded-2xl p-8 card-hover">
               <div className="w-14 h-14 rounded-2xl bg-primary-500/10 flex items-center justify-center text-2xl mb-6">
-                🚀
-              </div>
+                <Icon name="user" className="text-primary-600" size={28} /></div>
               <h3 className="text-2xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>
                 Untuk Talenta
               </h3>
@@ -202,7 +203,7 @@ export default function LandingPage() {
                   "Escrow payment — bayaran dijamin aman",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm">
-                    <span className="text-accent-600 mt-0.5">✓</span>
+                    <Icon name="check" className="text-accent-600 mt-0.5 shrink-0" size={15} />
                     <span className="text-surface-500">{item}</span>
                   </li>
                 ))}
@@ -212,8 +213,7 @@ export default function LandingPage() {
             {/* Client Side */}
             <div className="glass rounded-2xl p-8 card-hover">
               <div className="w-14 h-14 rounded-2xl bg-accent-500/10 flex items-center justify-center text-2xl mb-6">
-                🎯
-              </div>
+                <Icon name="target" className="text-accent-600" size={28} /></div>
               <h3 className="text-2xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>
                 Untuk Client
               </h3>
@@ -229,7 +229,7 @@ export default function LandingPage() {
                   "Escrow system — bayar aman, hasil pasti",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-sm">
-                    <span className="text-accent-600 mt-0.5">✓</span>
+                    <Icon name="check" className="text-accent-600 mt-0.5 shrink-0" size={15} />
                     <span className="text-surface-500">{item}</span>
                   </li>
                 ))}
@@ -257,21 +257,21 @@ export default function LandingPage() {
                 step: "01",
                 title: "Daftar & Isi Profil",
                 desc: "Pilih role-mu (Talenta atau Client), buat akun, dan lengkapi profilmu.",
-                icon: "📝",
+                icon: "file" as const,
                 color: "from-primary-500/10 to-primary-600/5",
               },
               {
                 step: "02",
                 title: "AI Bekerja Untukmu",
                 desc: "Untuk talenta: AI analisis skill gap-mu. Untuk client: AI matching talent pool otomatis.",
-                icon: "🤖",
+                icon: "ai" as const,
                 color: "from-purple-500/10 to-purple-600/5",
               },
               {
                 step: "03",
                 title: "Mulai Berkolaborasi",
                 desc: "Terima job, kerjakan project, dan terima pembayaran melalui escrow yang aman.",
-                icon: "🤝",
+                icon: "shield" as const,
                 color: "from-accent-500/10 to-accent-600/5",
               },
             ].map((item, i) => (
@@ -281,7 +281,7 @@ export default function LandingPage() {
                 )}
                 <div className="glass rounded-2xl p-8 card-hover h-full">
                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center text-3xl mb-6`}>
-                    {item.icon}
+                    <Icon name={item.icon} size={30} />
                   </div>
                   <div className="text-xs text-primary-600 font-semibold mb-2">STEP {item.step}</div>
                   <h3 className="text-xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>{item.title}</h3>
@@ -298,7 +298,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-primary-600 mb-6">
-              <span>⚡</span> Powered by GPT-4o
+              <Icon name="spark" size={14} /> Powered by GPT-4o
             </div>
             <h2 className="text-4xl font-bold mb-4 text-surface-900" style={{ fontFamily: "Outfit" }}>
               AI yang <span className="gradient-text">Benar-benar Bekerja</span>
@@ -313,7 +313,7 @@ export default function LandingPage() {
             {/* AI Matching Card */}
             <div className="glass rounded-2xl p-8">
               <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-                🎯 AI Job Matching
+                <Icon name="target" className="text-primary-600" size={20} /> AI Job Matching
               </h3>
               <p className="text-surface-500 text-sm mb-6">
                 Setiap job yang dipost, AI mengevaluasi seluruh talent pool dan menghasilkan ranked shortlist.
@@ -337,7 +337,7 @@ export default function LandingPage() {
             {/* Skill Gap Card */}
             <div className="glass rounded-2xl p-8">
               <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
-                📊 AI Skill Gap Analysis
+                <Icon name="chart" className="text-primary-600" size={20} /> AI Skill Gap Analysis
               </h3>
               <p className="text-surface-500 text-sm mb-6">
                 AI menganalisis skill talenta vs demand pasar dan memberikan 3 rekomendasi skill prioritas.

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { Icon, RatingStars } from "@/components/icons";
 
 interface JobDetail {
   id: string;
@@ -24,6 +25,7 @@ interface MatchData {
   strengths: string[];
   gaps: string[];
   reasoning: string;
+  portfolio_evidence?: string | null;
   recommendation: string;
   status: string;
 }
@@ -74,10 +76,10 @@ function ScoreRing({ score }: { score: number }) {
 
 function JobStatusTracker({ status }: { status: string }) {
   const steps = [
-    { key: "active", label: "Aktif", icon: "📝" },
-    { key: "matched", label: "Matched", icon: "🤖" },
-    { key: "in_progress", label: "In Progress", icon: "⚙️" },
-    { key: "completed", label: "Selesai", icon: "✅" },
+    { key: "active", label: "Aktif", icon: "file" as const },
+    { key: "matched", label: "Matched", icon: "ai" as const },
+    { key: "in_progress", label: "In Progress", icon: "settings" as const },
+    { key: "completed", label: "Selesai", icon: "check" as const },
   ];
 
   const statusOrder: Record<string, number> = {
@@ -93,7 +95,7 @@ function JobStatusTracker({ status }: { status: string }) {
   if (status === "cancelled") {
     return (
       <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
-        <span className="text-sm">❌</span>
+        <Icon name="x" className="text-red-600" size={15} />
         <span className="text-xs text-red-600 font-medium">Dibatalkan</span>
       </div>
     );
@@ -116,7 +118,7 @@ function JobStatusTracker({ status }: { status: string }) {
                       : "bg-surface-100 text-surface-400"
                 }`}
               >
-                {isActive && i < currentIndex ? "✓" : step.icon}
+                {isActive && i < currentIndex ? <Icon name="check" size={14} /> : <Icon name={step.icon} size={14} />}
               </div>
               <span
                 className={`text-[9px] mt-1 font-medium transition-colors ${
@@ -190,6 +192,7 @@ export default function JobDetailPage() {
             strengths: myMatch.strengths || [],
             gaps: myMatch.gaps || [],
             reasoning: myMatch.reasoning,
+            portfolio_evidence: myMatch.portfolio_evidence,
             recommendation: myMatch.recommendation,
             status: myMatch.status,
           });
@@ -223,10 +226,11 @@ export default function JobDetailPage() {
           strengths: d.data.strengths || [],
           gaps: d.data.gaps || [],
           reasoning: d.data.reasoning,
+          portfolio_evidence: d.data.portfolio_evidence,
           recommendation: d.data.recommendation,
           status: d.data.status,
         });
-        showToast("AI Match Analysis selesai! 🎯");
+        showToast("AI Match Analysis selesai!");
       } else {
         showToast(d.message || "Gagal menganalisis", "error");
       }
@@ -250,7 +254,7 @@ export default function JobDetailPage() {
       const d = await res.json();
       if (d.success) {
         setMatch((prev) => (prev ? { ...prev, status: "applied" } : prev));
-        showToast("Lamaran berhasil dikirim! Client akan segera review. 🚀");
+        showToast("Lamaran berhasil dikirim! Client akan segera review.");
       } else {
         showToast(d.message || "Gagal melamar", "error");
       }
@@ -292,7 +296,7 @@ export default function JobDetailPage() {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
         <div className="glass rounded-2xl p-16 text-center max-w-md">
-          <div className="text-5xl mb-4">🔍</div>
+          <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
           <h2
             className="text-xl font-bold mb-2 text-surface-900"
             style={{ fontFamily: "Outfit" }}
@@ -303,7 +307,7 @@ export default function JobDetailPage() {
             Job yang kamu cari tidak tersedia atau sudah dihapus.
           </p>
           <Link href="/jobs" className="btn-primary text-sm">
-            ← Kembali ke Job List
+            <span className="inline-flex items-center gap-1"><Icon name="arrowLeft" size={14} />Kembali ke Job List</span>
           </Link>
         </div>
       </div>
@@ -312,7 +316,7 @@ export default function JobDetailPage() {
 
   const isTalent = user?.role === "talent";
   const categoryLabel = job.category === "web_dev" ? "Web Development" : "Graphic Design";
-  const categoryIcon = job.category === "web_dev" ? "💻" : "🎨";
+  const categoryIcon = job.category === "web_dev" ? "code" : "design";
 
   return (
     <div className="min-h-screen bg-surface-50">
@@ -350,7 +354,7 @@ export default function JobDetailPage() {
               onClick={() => router.back()}
               className="text-sm text-surface-500 hover:text-surface-900 transition-colors"
             >
-              ← Kembali
+              <span className="inline-flex items-center gap-1"><Icon name="arrowLeft" size={14} />Kembali</span>
             </button>
             {user ? (
               <Link
@@ -361,10 +365,10 @@ export default function JobDetailPage() {
               </Link>
             ) : (
               <>
-                <Link href="/login" className="text-sm text-surface-500 hover:text-surface-900">
+                <Link href={`/login?redirect=${encodeURIComponent(`/jobs/${jobId}`)}`} className="text-sm text-surface-500 hover:text-surface-900">
                   Masuk
                 </Link>
-                <Link href="/register" className="btn-primary text-xs px-4 py-2">
+                <Link href={`/register?redirect=${encodeURIComponent(`/jobs/${jobId}`)}`} className="btn-primary text-xs px-4 py-2">
                   Daftar
                 </Link>
               </>
@@ -391,7 +395,7 @@ export default function JobDetailPage() {
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{categoryIcon}</span>
+                    <Icon name={categoryIcon} className="text-primary-600" size={20} />
                     <span className="text-xs px-3 py-1 rounded-full bg-primary-50 text-primary-600 font-medium">
                       {categoryLabel}
                     </span>
@@ -413,7 +417,7 @@ export default function JobDetailPage() {
                   </h1>
                   <p className="text-sm text-surface-500">
                     diposting oleh <span className="font-medium text-surface-700">{job.client_name}</span>
-                    {" · "}
+                    {" - "}
                     {new Date(job.created_at).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "long",
@@ -426,22 +430,28 @@ export default function JobDetailPage() {
               {/* Job Status Tracker */}
               <div className="mb-6">
                 <JobStatusTracker status={job.status} />
+                {job.status === "completed" && (
+                  <div className="mt-4 pt-4 border-t border-surface-200">
+                    <p className="text-xs text-surface-400 mb-2">Rating dari client:</p>
+                    <RatingStars rating={4.8} reviewCount={3} size={14} />
+                  </div>
+                )}
               </div>
 
               {/* Key Info */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                 {job.budget_max && (
                   <div className="p-3 rounded-xl bg-surface-50 border border-surface-200">
-                    <div className="text-xs text-surface-400 mb-1">💰 Budget</div>
+                    <div className="text-xs text-surface-400 mb-1 inline-flex items-center gap-1"><Icon name="money" size={12} />Budget</div>
                     <div className="text-sm font-semibold text-surface-900">
-                      Rp {Number(job.budget_min || 0).toLocaleString("id-ID")} –{" "}
+                      Rp {Number(job.budget_min || 0).toLocaleString("id-ID")} -{" "}
                       {Number(job.budget_max).toLocaleString("id-ID")}
                     </div>
                   </div>
                 )}
                 {job.deadline && (
                   <div className="p-3 rounded-xl bg-surface-50 border border-surface-200">
-                    <div className="text-xs text-surface-400 mb-1">📅 Deadline</div>
+                    <div className="text-xs text-surface-400 mb-1 inline-flex items-center gap-1"><Icon name="calendar" size={12} />Deadline</div>
                     <div className="text-sm font-semibold text-surface-900">
                       {new Date(job.deadline).toLocaleDateString("id-ID", {
                         day: "numeric",
@@ -452,7 +462,7 @@ export default function JobDetailPage() {
                   </div>
                 )}
                 <div className="p-3 rounded-xl bg-surface-50 border border-surface-200">
-                  <div className="text-xs text-surface-400 mb-1">📂 Kategori</div>
+                  <div className="text-xs text-surface-400 mb-1 inline-flex items-center gap-1"><Icon name="briefcase" size={12} />Kategori</div>
                   <div className="text-sm font-semibold text-surface-900">{categoryLabel}</div>
                 </div>
               </div>
@@ -470,11 +480,11 @@ export default function JobDetailPage() {
                           : "bg-surface-100 text-surface-500 border border-surface-200"
                       }`}
                     >
-                      {s.name} {s.is_mandatory && "★"}
+                      {s.name} {s.is_mandatory && <Icon name="spark" className="inline ml-1" size={11} />}
                     </span>
                   ))}
                 </div>
-                <p className="text-[10px] text-surface-400 mt-2">★ = Skill wajib</p>
+                <p className="text-[10px] text-surface-400 mt-2"><Icon name="spark" className="inline mr-1" size={11} />= Skill wajib</p>
               </div>
 
               {/* Description */}
@@ -497,8 +507,7 @@ export default function JobDetailPage() {
               >
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-sm">
-                    🤖
-                  </div>
+                    <Icon name="ai" className="text-primary-600" size={17} /></div>
                   <div>
                     <h3 className="font-bold text-sm text-surface-900">AI Match Analysis</h3>
                     <span className="text-[10px] text-surface-400">
@@ -526,10 +535,7 @@ export default function JobDetailPage() {
                         }`}
                       >
                         {match.recommendation === "highly_recommended"
-                          ? "⭐ Sangat Direkomendasikan"
-                          : match.recommendation === "recommended"
-                            ? "✓ Direkomendasikan"
-                            : "⚠ Kurang Cocok"}
+                          ? "Sangat Direkomendasikan" : match.recommendation === "recommended" ? "Direkomendasikan" : "Kurang Cocok"}
                       </span>
                     </div>
 
@@ -537,7 +543,7 @@ export default function JobDetailPage() {
                     {Array.isArray(match.strengths) && match.strengths.length > 0 && (
                       <div>
                         <h4 className="text-xs font-semibold text-accent-600 mb-2">
-                          💪 Kelebihanmu
+                          Kelebihanmu
                         </h4>
                         <div className="space-y-1">
                           {match.strengths.map((s, i) => (
@@ -545,7 +551,7 @@ export default function JobDetailPage() {
                               key={i}
                               className="text-xs text-surface-600 flex items-start gap-1.5"
                             >
-                              <span className="text-accent-500 mt-0.5">✓</span>
+                              <Icon name="check" className="text-accent-500 mt-0.5 shrink-0" size={12} />
                               {s}
                             </div>
                           ))}
@@ -557,7 +563,7 @@ export default function JobDetailPage() {
                     {Array.isArray(match.gaps) && match.gaps.length > 0 && (
                       <div>
                         <h4 className="text-xs font-semibold text-amber-600 mb-2">
-                          📈 Perlu Ditingkatkan
+                          Perlu Ditingkatkan
                         </h4>
                         <div className="space-y-1">
                           {match.gaps.map((g, i) => (
@@ -565,7 +571,7 @@ export default function JobDetailPage() {
                               key={i}
                               className="text-xs text-surface-600 flex items-start gap-1.5"
                             >
-                              <span className="text-amber-500 mt-0.5">→</span>
+                              <Icon name="arrowRight" className="text-amber-500 mt-0.5 shrink-0" size={12} />
                               {g}
                             </div>
                           ))}
@@ -576,11 +582,16 @@ export default function JobDetailPage() {
                     {/* AI Reasoning */}
                     <div className="p-3 rounded-xl bg-primary-50 border border-primary-100">
                       <div className="text-[10px] text-primary-600 font-medium mb-1">
-                        🤖 AI Reasoning
+                        AI Reasoning
                       </div>
                       <p className="text-xs text-surface-600 leading-relaxed">
                         {match.reasoning}
                       </p>
+                      {match.portfolio_evidence && (
+                        <div className="mt-2 text-[10px] text-[#854F0B] leading-relaxed">
+                          Portfolio evidence: {match.portfolio_evidence}
+                        </div>
+                      )}
                     </div>
 
                     {/* Apply Button */}
@@ -596,20 +607,20 @@ export default function JobDetailPage() {
                             Mengirim lamaran...
                           </>
                         ) : (
-                          <>🚀 Lamar Job Ini</>
+                          <><Icon name="briefcase" size={15} />Lamar Job Ini</>
                         )}
                       </button>
                     )}
 
                     {match.status === "applied" && (
                       <div className="w-full py-3 text-center text-sm font-semibold rounded-xl bg-primary-50 text-primary-600 border border-primary-200">
-                        ✅ Lamaran Terkirim
+                        Lamaran Terkirim
                       </div>
                     )}
 
                     {match.status === "accepted" && (
                       <div className="w-full py-3 text-center text-sm font-semibold rounded-xl bg-emerald-50 text-accent-600 border border-emerald-200">
-                        🎉 Kamu Diterima!
+                        Kamu Diterima!
                       </div>
                     )}
 
@@ -621,7 +632,7 @@ export default function JobDetailPage() {
                   </div>
                 ) : (
                   <div className="text-center py-4">
-                    <div className="text-3xl mb-3">🔍</div>
+                    <Icon name="search" className="mx-auto mb-3 text-surface-300" size={30} />
                     <p className="text-xs text-surface-500 mb-4">
                       Analisis kesesuaian skill-mu dengan job ini menggunakan AI
                     </p>
@@ -636,7 +647,7 @@ export default function JobDetailPage() {
                           AI sedang menganalisis...
                         </>
                       ) : (
-                        <>🤖 Analyze Match Score</>
+                        <><Icon name="ai" size={15} />Analyze Match Score</>
                       )}
                     </button>
                     {job.status !== "active" && (
@@ -656,7 +667,7 @@ export default function JobDetailPage() {
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="text-center">
-                  <div className="text-3xl mb-3">🚀</div>
+                  <Icon name="spark" className="mx-auto mb-3 text-primary-600" size={30} />
                   <h3
                     className="font-bold text-sm mb-2 text-surface-900"
                     style={{ fontFamily: "Outfit" }}
@@ -666,11 +677,11 @@ export default function JobDetailPage() {
                   <p className="text-xs text-surface-500 mb-4">
                     Daftar sebagai Talenta untuk melihat AI Match Score dan melamar.
                   </p>
-                  <Link href="/register" className="btn-primary text-sm w-full block text-center">
+                  <Link href={`/register?role=talent&redirect=${encodeURIComponent(`/jobs/${jobId}`)}`} className="btn-primary text-sm w-full block text-center">
                     Daftar Sekarang
                   </Link>
                   <Link
-                    href="/login"
+                    href={`/login?redirect=${encodeURIComponent(`/jobs/${jobId}`)}`}
                     className="text-xs text-primary-600 mt-3 block hover:underline"
                   >
                     Sudah punya akun? Masuk
@@ -686,7 +697,7 @@ export default function JobDetailPage() {
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="text-center">
-                  <div className="text-3xl mb-3">📋</div>
+                  <Icon name="search" className="mx-auto mb-3 text-surface-300" size={30} />
                   <p className="text-xs text-surface-500 mb-4">
                     Kelola job dan lihat hasil AI matching di dashboard.
                   </p>
@@ -705,7 +716,7 @@ export default function JobDetailPage() {
               className="glass rounded-2xl p-6 animate-slide-up"
               style={{ animationDelay: "0.2s" }}
             >
-              <h3 className="text-sm font-bold text-surface-900 mb-4">📌 Info Job</h3>
+              <h3 className="text-sm font-bold text-surface-900 mb-4 flex items-center gap-2"><Icon name="briefcase" size={15} />Info Job</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-surface-400">Client</span>

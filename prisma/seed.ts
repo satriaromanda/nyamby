@@ -78,6 +78,9 @@ async function main() {
       availability: "available",
       location: "Bandung",
       portfolioUrl: "https://github.com/raka-demo",
+      cvFile: "raka-cv-demo.pdf",
+      cvText: "Raka Pratama - Web Developer. Pengalaman 2 tahun membangun landing page, dashboard, dan aplikasi Next.js untuk UMKM. Terbiasa React, Tailwind CSS, Git, dan integrasi REST API.",
+      portfolioContext: "GitHub portfolio raka-demo: project landing page UMKM, dashboard analytics, dan komponen React reusable. Bukti penggunaan Next.js, Tailwind CSS, dan REST API.",
     },
   });
 
@@ -134,6 +137,9 @@ async function main() {
       availability: "available",
       location: "Jakarta",
       portfolioUrl: "https://behance.net/sari-demo",
+      cvFile: "sari-cv-demo.pdf",
+      cvText: "Sari Wulandari - Graphic Designer. Pengalaman menangani brand identity dan UI/UX untuk 20+ proyek UMKM, termasuk logo, social media kit, dan prototype Figma.",
+      portfolioContext: "Behance portfolio sari-demo: brand identity, Figma prototype, UI kit, dan desain campaign untuk UMKM.",
     },
   });
 
@@ -188,6 +194,9 @@ async function main() {
       availability: "busy",
       location: "Surabaya",
       portfolioUrl: "https://github.com/andi-demo",
+      cvFile: "andi-cv-demo.pdf",
+      cvText: "Andi Setiawan - Full-stack developer. Pengalaman Vue.js, Node.js, REST API, PostgreSQL, dan dashboard SaaS.",
+      portfolioContext: "GitHub portfolio andi-demo: SaaS dashboard, REST API service, dan integrasi PostgreSQL dengan Node.js.",
     },
   });
 
