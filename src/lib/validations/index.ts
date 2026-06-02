@@ -1,10 +1,20 @@
 import { z } from "zod";
 
-export const registerSchema = z.object({
+export const registerTalentSchema = z.object({
   email: z.string().email({ message: "Format email tidak valid" }),
   password: z.string().min(8, { message: "Password minimal 8 karakter" }),
   full_name: z.string().min(1, { message: "Nama lengkap wajib diisi" }),
-  role: z.enum(["talent", "client"], { message: "Role harus talent atau client" }),
+  role: z.literal("talent"),
+});
+
+export const registerClientSchema = z.object({
+  email: z.string().email({ message: "Format email tidak valid" }),
+  password: z.string().min(8, { message: "Password minimal 8 karakter" }),
+  full_name: z.string().min(1, { message: "Nama PIC wajib diisi" }),
+  company_name: z.string().min(1, { message: "Nama Perusahaan wajib diisi" }),
+  industry: z.string().min(1, { message: "Industri wajib diisi" }),
+  whatsapp_number: z.string().min(1, { message: "No WhatsApp wajib diisi" }),
+  role: z.literal("client"),
 });
 
 export const loginSchema = z.object({
