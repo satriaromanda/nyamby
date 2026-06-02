@@ -1,0 +1,752 @@
+# NYAMBY
+<!-- PRD v1.2 -->
+## Product Requirements Document (PRD)
+### MVP — Hackathon Digdaya X 2026
+*AI-Powered Freelance Career Platform for Indonesian Talent*
+
+---
+
+| Versi | 1.2 — MVP Hackathon (Updated) |
+|---|---|
+| Author | Satria Romanda |
+| Tanggal | Mei 2026 |
+| Status | **DRAFT — Internal** |
+| Konteks | Digdaya X Hackathon 2026 |
+
+---
+
+## Daftar Isi
+
+1. [Overview Produk](#1-overview-produk)
+2. [User Personas](#2-user-personas)
+3. [Daftar Fitur MVP](#3-daftar-fitur-mvp)
+4. [3B. Flow Upload CV & Portofolio](#3b-flow-upload-cv--portofolio-new-v11)
+5. [User Flow](#4-user-flow)
+6. [Database Schema](#5-database-schema)
+7. [API Endpoints](#6-api-endpoints-nextjs-route-handlers)
+8. [Spesifikasi Prompt AI](#7-spesifikasi-prompt-ai-updated-v11)
+9. [Tech Stack & Arsitektur](#8-tech-stack--arsitektur)
+10. [Timeline Build — 14 Hari](#9-timeline-build--14-hari-updated-v11)
+11. [Demo Script untuk Pitching](#10-demo-script-untuk-pitching)
+12. [Design System Guidelines](#11-design-system-guidelines--icon--ui-new-v11)
+
+---
+
+## 1. Overview Produk
+
+### 1.1 Visi & Misi
+
+Nyamby adalah platform AI-powered dua dimensi yang membantu talenta Indonesia bertransisi dari sekadar melakukan pekerjaan sampingan ("nyambi") menjadi memiliki karir profesional yang mapan.
+
+| Dimensi | Deskripsi |
+|---|---|
+| **Supply** | Pemberdayaan talenta digital: skill mapping, AI job matching, career growth tracking |
+| **Demand** | Pemenuhan kebutuhan klien/industri: job posting, AI-matched talent shortlist, escrow payment |
+
+### 1.2 Scope MVP Hackathon
+
+Fokus Phase 1 sesuai Nyamby Concept v2.0: Digital Services untuk Web Developer & Graphic Designer di pasar Indonesia. MVP ini dirancang untuk:
+
+- Dapat didemonstrasikan secara live di depan juri dalam < 10 menit
+- Memperlihatkan AI bekerja secara nyata (bukan hanya slide)
+- Menceritakan journey lengkap dari sisi Talenta DAN Client
+
+### 1.3 Dua "WOW Moment" AI untuk Demo
+
+| Fitur AI | Input | Output yang Terlihat |
+|---|---|---|
+| **AI Job Matching** | Skill talenta + Job requirements dari client | Match Score (%) + reasoning + ranked list talenta/job |
+| **AI Skill Gap Analysis** | Skill talenta saat ini + demand job di platform | 3 skill rekomendasi + alasan relevansi pasar |
+
+> Keduanya dijalankan via satu API call GPT-4o dengan prompt engineering yang terstruktur — tidak memerlukan ML pipeline terpisah untuk MVP.
+
+---
+
+## 2. User Personas
+
+### 2.1 Persona Talenta — "Raka"
+
+| Atribut | Detail |
+|---|---|
+| **Profil** | Mahasiswa tingkat akhir, Web Developer, Bandung |
+| **Pain Point** | Sulit dapat klien pertama, tidak tahu skill apa yang perlu ditingkatkan, tidak punya portofolio terstruktur |
+| **Goal** | Monetisasi skill, bangun reputasi, transisi ke freelancer profesional |
+| **Behaviour** | Aktif di komunitas Telegram/Discord, mencari side-job di sosial media, rate masih rendah |
+
+### 2.2 Persona Client — "Budi"
+
+| Atribut | Detail |
+|---|---|
+| **Profil** | Pemilik UKM, Jakarta, butuh landing page & branding kit |
+| **Pain Point** | Susah menemukan talenta terpercaya, sering ghosting, tidak ada jaminan kualitas, takut tipu-tipu |
+| **Goal** | Dapat freelancer qualified dengan cepat, bayar aman, hasil sesuai ekspektasi |
+| **Behaviour** | Pernah pakai Sribulancer/Projects.co.id, kecewa dengan pengalaman matching manual |
+
+---
+
+## 3. Daftar Fitur MVP
+
+### 3.1 Layer 1 — MUST HAVE (Wajib untuk Demo)
+
+| # | Fitur | AI? | Deskripsi Singkat | Status |
+|---|---|---|---|---|
+| 1 | **Landing Page** | — | Value proposition, CTA utama, social proof (dummy), navigasi ke register | — |
+| 2 | **Auth — Register & Login (2 role)** | — | Role: Talenta & Client. Email+password, session management | — |
+| 3 | **Onboarding Form Talenta** | — | Form wajib: skill tags, level, kategori, bio, rate. Upload opsional: CV (PDF) + portofolio file/URL sebagai AI enrichment | `UPDATE v1.1` |
+| 4 | **Profil Talenta** | — | Halaman publik: skill map, rate, portofolio, availability status | — |
+| 5 | **AI Skill Gap Analysis** | ✅ GPT-4o | Berdasarkan skill talenta + enrichment CV/portfolio → rekomendasikan 3 skill yang perlu ditingkatkan | `UPDATE v1.1` |
+| 6 | **Client: Post Job** | — | Form: judul, deskripsi, kategori, required skills, budget, deadline | — |
+| 7 | **Job Listing Page** | — | Daftar job aktif, filter by kategori & skill. **Aksesibel tanpa login.** | `UPDATE v1.1` |
+| 8 | **AI Job Matching** | ✅ GPT-4o | Match Score (%) per talenta + reasoning + ranked shortlist untuk client | — |
+| 9 | **Dashboard Talenta** | — | Job rekomendasi, skill gap insight card, status job aktif | — |
+| 10 | **Dashboard Client** | — | Job yang dipost, matched talent shortlist per job, status | — |
+| 11 | **Mock Escrow UI** | — | Status visual: Dana Ditahan → In Progress → Released. Tidak perlu payment gateway live | — |
+| 12 | **Job Status Tracker** | — | Progress: Posted → Matched → In Progress → Completed | — |
+| 13 | **Browse Talenta Page** | — | Direktori talenta publik `/talents` — card grid, filter skill/kategori, aksesibel tanpa login | `NEW v1.1` |
+| 14 | **Talent Public Profile Page** | — | Halaman profil read-only publik `/talents/[id]`. AI Match Score di-blur untuk non-login. | `NEW v1.1` |
+| 15 | **Job Detail Page** | — | Halaman detail job publik `/jobs/[id]`. CTA "Lamar" trigger auth-gate jika belum login. | `NEW v1.1` |
+
+### 3.2 Layer 2 — SHOULD HAVE (Perkuat Kredibilitas)
+
+| # | Fitur | Catatan |
+|---|---|---|
+| 16 | **In-App Notifikasi Match** | "Job baru cocok untukmu" — badge/toast UI, tidak perlu push notif real |
+| 17 | **Accept/Reject Job oleh Talenta** | Simple CTA di card job. Data feedback ini juga input untuk AI matching improvement story |
+| 18 | **Rating Dummy Post-Job** | Hardcode bintang 4–5 sebagai visual. Cukup untuk demo, tidak perlu form rating live |
+| 19 | **How It Works Page** | `NEW v1.1` Halaman statis `/how-it-works` — trust building sebelum sign-up. Jelaskan mekanisme AI, escrow, dan journey |
+
+### 3.3 Layer 3 — OUT OF SCOPE (Skip untuk MVP)
+
+> Fitur-fitur berikut sengaja tidak dibangun di MVP. Akan disampaikan sebagai roadmap saat pitching.
+
+- Rating & Review system (form interaktif live)
+- Dispute & mediasi system
+- Escrow release otomatis + payment gateway live (Midtrans/Xendit)
+- Portfolio Analyzer AI
+- Physical Mode (Phase 2)
+- Email / push notification real
+- Referral system
+
+---
+
+## 3B. Flow Upload CV & Portofolio `NEW v1.1`
+
+> Bagian ini mendefinisikan pendekatan **hybrid onboarding**: form wajib sebagai data struktural + upload opsional sebagai AI enrichment. Builder harus mengimplementasikan kedua layer ini di endpoint `POST /api/talent/onboarding`.
+
+### 3B.1 Pendekatan: Hybrid Form + Upload
+
+| Layer | Komponen | Status | Tujuan |
+|---|---|---|---|
+| **Layer 1 — Form Wajib** | Skill tags, level, kategori, bio, rate | **WAJIB** | Data struktural untuk AI & matching |
+| **Layer 2 — Upload CV** | PDF maks 5MB → extract teks | Opsional | Enrichment: pengalaman & riwayat kerja |
+| **Layer 2 — Upload Portofolio** | PDF/ZIP maks 10MB + URL Behance/GitHub | Opsional | Enrichment: bukti konkret hasil kerja |
+| **Layer 3 — Payload Builder** | Gabung form data + parsed enrichment | Sistem | 1 payload → GPT-4o |
+
+### 3B.2 Upload CV — Spesifikasi Teknis
+
+| Aspek | Detail |
+|---|---|
+| **Format diterima** | PDF saja. Tidak menerima .doc, .docx, image |
+| **Ukuran maks** | 5 MB per file |
+| **Storage** | Cloudinary atau Supabase Storage. Simpan path/URL ke kolom `cv_file` di `talent_profiles` |
+| **Parser (MVP)** | npm package `pdf-parse` — extract plain text dari PDF. Tidak butuh OCR untuk MVP |
+| **Output parsing** | `cv_text: string` (plain text hasil extract, maks 3000 karakter untuk context window) |
+| **Error handling** | Jika parsing gagal, lanjutkan onboarding dengan form data saja. Tampilkan warning: *"CV tidak dapat dibaca, analisis menggunakan data form"* |
+| **UX** | Upload zone drag & drop + klik. Tampilkan nama file + ukuran setelah upload berhasil. Badge konfirmasi hijau. |
+
+### 3B.3 Upload Portofolio — Spesifikasi Teknis
+
+| Aspek | Detail |
+|---|---|
+| **Format diterima** | PDF (maks 10MB) atau ZIP (maks 10MB). Bisa juga URL link. |
+| **URL yang didukung** | Behance, GitHub, Dribbble, personal website |
+| **Parser URL** | Ambil `<title>` + `<meta description>` halaman. Untuk GitHub: gunakan GitHub API untuk ambil repo language stats dan README snippet. |
+| **Output URL parsing** | `portfolio_context: string` (metadata singkat, maks 1000 karakter) |
+| **Prioritas AI** | Ketika `portfolio_context` tersedia, AI diminta memprioritaskan bukti konkret dari portofolio di atas self-report skill dari form. |
+| **Kombinasi diizinkan** | User boleh upload file DAN isi URL sekaligus. Keduanya digabung ke `portfolio_context`. |
+
+### 3B.4 Talent Context Builder — Struktur Payload ke AI
+
+Sebelum memanggil GPT-4o, backend harus menggabungkan semua data menjadi satu payload terstruktur:
+
+| Field | Sumber | Keterangan |
+|---|---|---|
+| `skills[]` | Form wajib | Array skill tags yang dipilih talenta |
+| `level` | Form wajib | beginner / intermediate / expert |
+| `category` | Form wajib | web_dev / graphic_designer |
+| `bio` | Form wajib | Teks bebas dari form, maks 500 karakter |
+| `cv_text` | Parsed dari CV PDF | **Optional.** Plain text hasil pdf-parse, maks 3000 karakter |
+| `portfolio_context` | Parsed dari file/URL | **Optional.** Metadata portofolio, maks 1000 karakter |
+| `market_demand[]` | Data dari DB jobs | Skill yang paling banyak diminta di job aktif platform |
+
+> `cv_text` dan `portfolio_context` adalah **NULLABLE**. Jika null/kosong, AI tetap berjalan dengan form data saja. Tambahkan instruksi di system prompt: *"Jika cv_text tersedia, gunakan sebagai bukti pengalaman. Jika portfolio_context tersedia, jadikan sebagai validasi skill yang diklaim."*
+
+---
+
+## 4. User Flow
+
+### 4.1 Flow A — Journey Talenta (Raka)
+
+| Step | Aktor | Aksi | Output / System Response |
+|---|---|---|---|
+| 1 | Raka | Buka landing page → klik "Daftar sebagai Talenta" | Redirect ke halaman register |
+| 2 | Raka | Isi form registrasi: nama, email, password, pilih role "Talenta" | Akun dibuat, redirect ke onboarding form |
+| 3 | Raka | Isi Onboarding Form (Layer 1): kategori, skill tags, level, rate, bio. Opsional: upload CV PDF dan/atau portofolio file/URL. | Profil tersimpan di database. Backend jalankan CV parser dan portfolio scraper jika ada file. |
+| 4 | System | 🤖 AI Skill Gap Analysis dijalankan otomatis. Input: form data + `cv_text` (jika ada) + `portfolio_context` (jika ada) + `market_demand` dari DB jobs. | 3 rekomendasi skill muncul di Dashboard dengan reasoning yang diperkaya data portofolio. |
+| 5 | Raka | Masuk Dashboard → lihat "Insight Karir" (Skill Gap) dan "Job Untukmu" (rekomendasi matching) | Raka melihat AI bekerja untuk kepentingannya |
+| 6 | Raka | Klik salah satu job rekomendasi → lihat detail job + Match Score | Halaman detail job dengan AI Match Score & breakdown skill |
+| 7 | Raka | Klik "Lamar Job" → konfirmasi | Status job: Applied. Client mendapat notifikasi |
+| 8 | Client | Client setuju → konfirmasi & trigger mock escrow "Dana Ditahan" | Status job berubah: In Progress. Raka dapat notifikasi |
+| 9 | Raka | Kerjakan job → submit deliverable (upload file atau link) | Job status: Submitted for Review |
+| 10 | Client | Client approve hasil kerja → trigger "Dana Dirilis" | Status: Completed. Mock escrow: Released |
+
+### 4.2 Flow B — Journey Client (Budi)
+
+| Step | Aktor | Aksi | Output / System Response |
+|---|---|---|---|
+| 1 | Budi | Buka landing page → klik "Cari Talenta / Post Job" | Redirect ke halaman register Client |
+| 2 | Budi | Isi form registrasi: nama, email, password, pilih role "Client" | Akun dibuat, redirect ke dashboard client |
+| 3 | Budi | Klik "Post Job Baru" → isi form: judul, deskripsi, kategori, required skills, budget, deadline | Job tersimpan, status: Active |
+| 4 | System | 🤖 AI Job Matching dijalankan: bandingkan required skills job vs profil semua talenta (termasuk data CV dan portofolio yang di-parse) | Ranked shortlist talenta + Match Score (%) + reasoning per talenta |
+| 5 | Budi | Lihat halaman "Hasil Matching" → shortlist talenta terurut dari Match Score tertinggi | Budi melihat AI merekomendasikan talenta terbaik untuknya |
+| 6 | Budi | Klik profil talenta → lihat portofolio, skill, rate, availability, AI Match breakdown | Halaman profil talenta + match reasoning |
+| 7 | Budi | Pilih talenta → klik "Hubungi & Konfirmasi" | Talenta mendapat notifikasi job offer |
+| 8 | Budi | Talenta accept → Budi konfirmasi & lakukan "mock pembayaran" ke escrow | Status: In Progress. Dana: Ditahan |
+| 9 | System | Talenta submit deliverable | Budi mendapat notifikasi untuk review |
+| 10 | Budi | Review hasil → klik "Approve & Rilis Dana" | Status: Completed. Mock escrow: Released |
+
+### 4.3 Public Exploration Flow — Sebelum Login `NEW v1.1`
+
+> Prinsip: **biarkan user jatuh cinta dengan konten dulu, baru minta komitmen (daftar).**
+
+| Halaman / Aksi | Route | Butuh Login? | Treatment |
+|---|---|---|---|
+| Browse talenta | `/talents` | ❌ Tidak | Fully public. Card grid talenta dengan skill tags, rate, availability. |
+| Lihat profil talenta | `/talents/[id]` | ❌ Tidak | Public. AI Match badge di-blur untuk user non-login dengan CTA "Login untuk lihat Match Score". |
+| Browse job listing | `/jobs` | ❌ Tidak | Fully public. Filter by kategori dan skill. |
+| Lihat detail job | `/jobs/[id]` | ❌ Tidak | Public. CTA "Lamar Job" trigger auth-gate jika belum login. |
+| Cara kerja platform | `/how-it-works` | ❌ Tidak | Static page. Trust building sebelum sign-up. |
+| Lamar job | CTA di `/jobs/[id]` | ✅ Ya | Modal "Daftar untuk melamar" + redirect kembali ke job yang sama setelah register. |
+| Hire / kontak talenta | CTA di `/talents/[id]` | ✅ Ya | Modal "Daftar untuk menghubungi" + redirect back. |
+| Post job | `/jobs/new` | ✅ Ya | Redirect ke register client. |
+
+> **Implementasi:** Auth-gate menggunakan `?redirect` parameter di URL. Contoh: `/register?redirect=/jobs/abc-123`. Setelah berhasil register dan login, sistem redirect ke URL tersebut otomatis.
+
+### 4.4 Titik Integrasi AI — Ringkasan `Updated v1.1`
+
+| Fitur AI | Trigger | Input ke GPT-4o | Output Ditampilkan |
+|---|---|---|---|
+| **Skill Gap Analysis** | Auto setelah onboarding selesai | `skills[]`, `level`, `category`, `bio`, `cv_text` (optional), `portfolio_context` (optional), `market_demand[]` | 3 rekomendasi skill + reasoning diperkaya data portofolio |
+| **Job Matching** | Auto setelah client post job | `required_skills` job + profil semua talenta (termasuk `cv_text` & `portfolio_context` jika ada) | Ranked shortlist + Match Score + reasoning per talenta |
+
+---
+
+## 5. Database Schema
+
+> Tech stack: PostgreSQL. ORM: Prisma (Next.js). Semua tabel menggunakan UUID sebagai primary key untuk skalabilitas.
+
+### Tabel: users
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key, auto-generated |
+| `email` | VARCHAR(255) | UNIQUE, NOT NULL | Email untuk login |
+| `password_hash` | TEXT | NOT NULL | Bcrypt hash password |
+| `role` | ENUM('talent','client') | NOT NULL | Role pengguna di platform |
+| `full_name` | VARCHAR(255) | NOT NULL | Nama lengkap |
+| `avatar_url` | TEXT | NULLABLE | URL foto profil (opsional) |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | Waktu registrasi |
+| `updated_at` | TIMESTAMP | AUTO UPDATE | Waktu update terakhir |
+
+### Tabel: talent_profiles `Updated v1.1`
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key |
+| `user_id` | UUID | FK → users.id | Relasi ke tabel users (1-to-1) |
+| `bio` | TEXT | NULLABLE | Deskripsi diri singkat |
+| `category` | ENUM('web_dev','graphic_designer') | NOT NULL | Kategori utama talenta (Phase 1) |
+| `rate_per_hour` | DECIMAL(10,2) | NULLABLE | Rate per jam dalam IDR |
+| `rate_per_project` | DECIMAL(10,2) | NULLABLE | Rate per project dalam IDR |
+| `availability` | ENUM('available','busy','unavailable') | DEFAULT 'available' | Status ketersediaan |
+| `location` | VARCHAR(255) | NULLABLE | Kota/lokasi talenta |
+| `portfolio_url` | TEXT | NULLABLE | Link Behance, GitHub, dll |
+| `portfolio_file` | TEXT | NULLABLE | Path file portofolio yang diupload |
+| `cv_file` | TEXT | NULLABLE | **[NEW]** Path CV PDF yang diupload ke storage |
+| `cv_text` | TEXT | NULLABLE | **[NEW]** Plain text hasil parse CV (maks 3000 karakter) |
+| `portfolio_context` | TEXT | NULLABLE | **[NEW]** Metadata portofolio dari file/URL (maks 1000 karakter) |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | Waktu pembuatan profil |
+
+### Tabel: skills
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key |
+| `name` | VARCHAR(100) | UNIQUE, NOT NULL | Nama skill (cth: React, Figma, Tailwind) |
+| `category` | VARCHAR(100) | NOT NULL | Kelompok skill (cth: Frontend, Design Tool) |
+
+### Tabel: talent_skills
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key |
+| `talent_profile_id` | UUID | FK → talent_profiles.id | Relasi ke profil talenta |
+| `skill_id` | UUID | FK → skills.id | Relasi ke master skill |
+| `level` | ENUM('beginner','intermediate','expert') | NOT NULL | Level kemampuan di skill ini |
+
+### Tabel: skill_gap_analyses
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key |
+| `talent_profile_id` | UUID | FK → talent_profiles.id | Relasi ke profil talenta |
+| `recommended_skills` | JSONB | NOT NULL | Array JSON: `[{skill, reason, priority}]` |
+| `generated_at` | TIMESTAMP | DEFAULT NOW() | Waktu analisis dijalankan |
+| `is_latest` | BOOLEAN | DEFAULT true | Flag untuk analisis terbaru (hanya 1 aktif per talenta) |
+
+### Tabel: jobs
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key |
+| `client_user_id` | UUID | FK → users.id | Client yang memposting job |
+| `title` | VARCHAR(255) | NOT NULL | Judul job |
+| `description` | TEXT | NOT NULL | Deskripsi lengkap kebutuhan |
+| `category` | ENUM('web_dev','graphic_designer') | NOT NULL | Kategori job |
+| `budget_min` | DECIMAL(12,2) | NULLABLE | Budget minimum dalam IDR |
+| `budget_max` | DECIMAL(12,2) | NULLABLE | Budget maksimum dalam IDR |
+| `deadline` | DATE | NULLABLE | Target selesai |
+| `status` | ENUM('active','matched','in_progress','completed','cancelled') | DEFAULT 'active' | Status job saat ini |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | Waktu post job |
+
+### Tabel: job_required_skills
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key |
+| `job_id` | UUID | FK → jobs.id | Relasi ke job |
+| `skill_id` | UUID | FK → skills.id | Skill yang dibutuhkan |
+| `is_mandatory` | BOOLEAN | DEFAULT true | True = wajib, False = nice-to-have |
+
+### Tabel: job_matches
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key |
+| `job_id` | UUID | FK → jobs.id | Job yang dimatching |
+| `talent_profile_id` | UUID | FK → talent_profiles.id | Talenta yang direkomendasikan |
+| `match_score` | DECIMAL(5,2) | NOT NULL | Skor kesesuaian 0–100 dari AI |
+| `reasoning` | TEXT | NOT NULL | Penjelasan AI mengapa cocok/tidak |
+| `status` | ENUM('recommended','applied','accepted','rejected') | DEFAULT 'recommended' | Status match ini |
+| `generated_at` | TIMESTAMP | DEFAULT NOW() | Waktu AI menjalankan matching |
+
+### Tabel: escrow_transactions
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key |
+| `job_id` | UUID | FK → jobs.id, UNIQUE | Satu job punya satu escrow (1-to-1) |
+| `client_user_id` | UUID | FK → users.id | Client yang membayar |
+| `talent_user_id` | UUID | FK → users.id | Talenta yang menerima |
+| `amount` | DECIMAL(12,2) | NOT NULL | Nilai transaksi dalam IDR |
+| `platform_fee` | DECIMAL(12,2) | NOT NULL | Fee platform (10–15% dari amount) |
+| `status` | ENUM('held','released','refunded') | DEFAULT 'held' | Status dana escrow |
+| `held_at` | TIMESTAMP | NULLABLE | Waktu dana ditahan |
+| `released_at` | TIMESTAMP | NULLABLE | Waktu dana dirilis ke talenta |
+
+### Tabel: notifications
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key |
+| `user_id` | UUID | FK → users.id | Penerima notifikasi |
+| `type` | VARCHAR(100) | NOT NULL | Tipe: 'new_match', 'job_accepted', 'payment_held', dll |
+| `message` | TEXT | NOT NULL | Isi pesan notifikasi |
+| `is_read` | BOOLEAN | DEFAULT false | Status baca |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | Waktu notifikasi dibuat |
+
+> **Total: 9 tabel core** + 3 field baru di `talent_profiles` untuk support upload CV & Portfolio. Semua field baru NULLABLE untuk backward compatibility.
+
+---
+
+## 6. API Endpoints (Next.js Route Handlers)
+
+### 6.1 Auth
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| `POST` | `/api/auth/register` | Register user baru (talent/client) |
+| `POST` | `/api/auth/login` | Login, return JWT session token |
+| `POST` | `/api/auth/logout` | Invalidate session |
+
+### 6.2 Talent
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| `POST` | `/api/talent/onboarding` | Simpan data onboarding form. Jika ada file CV/portfolio, parse dan simpan `cv_text` & `portfolio_context`. Trigger AI Skill Gap. |
+| `POST` | `/api/talent/upload-cv` | **[NEW]** Upload CV PDF ke storage → parse → update `cv_text` di talent_profiles |
+| `POST` | `/api/talent/upload-portfolio` | **[NEW]** Upload portfolio file ke storage → parse → update `portfolio_context` |
+| `GET` | `/api/talent/profile/:id` | Ambil profil talenta (publik, tanpa auth) |
+| `PATCH` | `/api/talent/profile` | Update profil talenta (auth required) |
+| `GET` | `/api/talent/dashboard` | Data dashboard: job matches + skill gap insight |
+| `GET` | `/api/talent/skill-gap` | Ambil hasil AI Skill Gap Analysis terbaru |
+| `GET` | `/api/talents` | **[NEW]** List semua talenta publik dengan filter skill/kategori |
+
+### 6.3 Jobs
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| `POST` | `/api/jobs` | Client buat job baru + trigger AI Matching |
+| `GET` | `/api/jobs` | List semua job aktif (public, tanpa auth, dengan filter) |
+| `GET` | `/api/jobs/:id` | Detail satu job + matched talents (public, tanpa auth) |
+| `PATCH` | `/api/jobs/:id/status` | Update status job (auth required) |
+
+### 6.4 Matching & AI
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| `POST` | `/api/ai/match-job` | 🤖 Jalankan AI Matching untuk job tertentu → simpan job_matches |
+| `POST` | `/api/ai/skill-gap` | 🤖 Jalankan AI Skill Gap (menggunakan payload lengkap termasuk `cv_text` & `portfolio_context`) → simpan hasil |
+| `PATCH` | `/api/matches/:id/status` | Talenta accept/reject job offer |
+
+### 6.5 Escrow & Notifikasi
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| `POST` | `/api/escrow/hold` | Client konfirmasi → dana ditahan (mock) |
+| `POST` | `/api/escrow/release` | Client approve → dana dirilis ke talenta (mock) |
+| `GET` | `/api/notifications` | Ambil notifikasi user yang login |
+| `PATCH` | `/api/notifications/:id/read` | Mark notifikasi sebagai dibaca |
+
+---
+
+## 7. Spesifikasi Prompt AI `Updated v1.1`
+
+> Kedua prompt dirancang untuk GPT-4o via OpenAI API. Output harus selalu dalam format JSON agar mudah di-parse dan ditampilkan di UI.
+
+### 7.1 Prompt: AI Job Matching
+
+| Elemen | Detail |
+|---|---|
+| **Trigger** | `POST /api/ai/match-job` dipanggil setelah client berhasil post job |
+| **System Prompt** | Kamu adalah mesin matching profesional untuk platform freelance Indonesia. Tugasmu adalah mengevaluasi kesesuaian setiap talenta terhadap job yang diberikan. Jika tersedia, gunakan data `cv_text` dan `portfolio_context` sebagai bukti konkret. Selalu respons dalam format JSON array. |
+| **Input** | `job: {title, description, required_skills[], category, budget_range}` `talents: [{id, name, skills[], category, rate, bio, cv_text?, portfolio_context?}]` |
+| **Output JSON** | `[{talent_id, match_score (0-100), strengths: [], gaps: [], reasoning: string, portfolio_evidence?: string, recommendation: "highly_recommended" \| "recommended" \| "not_recommended"}]` |
+| **Sortir** | Backend sort by `match_score DESC` sebelum simpan dan return ke client |
+
+### 7.2 Prompt: AI Skill Gap Analysis `Updated v1.1`
+
+| Elemen | Detail |
+|---|---|
+| **Trigger** | `POST /api/ai/skill-gap` dipanggil otomatis setelah onboarding talenta selesai |
+| **System Prompt** | Kamu adalah career advisor AI untuk platform freelance Indonesia. Analisis kesenjangan skill talenta berdasarkan demand pasar. Jika `cv_text` tersedia, gunakan sebagai bukti pengalaman kerja nyata. Jika `portfolio_context` tersedia, jadikan sebagai validasi skill yang diklaim. Prioritaskan bukti konkret di atas self-report. Respons dalam format JSON. |
+| **Input (Updated)** | `talent: {skills[], category, level, bio, cv_text?, portfolio_context?}` `market_demand: [{skill_name, frequency_in_jobs, avg_budget}]` |
+| **Output JSON** | `{recommendations: [{skill_name, priority: "high"\|"medium"\|"low", reason: string, estimated_impact: string, evidence_basis: "form"\|"cv"\|"portfolio"}], summary: string, profile_completeness_score: number}` |
+| **Batasan** | Maksimal 3 rekomendasi agar UI tetap fokus dan tidak overwhelm talenta |
+| **Field baru** | `evidence_basis`: menunjukkan dari mana AI mendapat basis analisis. Ditampilkan di UI sebagai indikator kualitas analisis. |
+
+---
+
+## 8. Tech Stack & Arsitektur
+
+| Layer | Teknologi | Alasan Pemilihan |
+|---|---|---|
+| **Frontend** | Next.js 14 (App Router) | SSR + API routes dalam satu project, developer experience terbaik untuk MVP cepat |
+| **Styling** | Tailwind CSS | Rapid styling, utility-first, tidak perlu custom CSS untuk MVP |
+| **Database** | PostgreSQL | Relational, cocok untuk schema yang sudah didefinisikan, gratis di Supabase/Railway |
+| **ORM** | Prisma | Type-safe, auto-generate client dari schema, mudah untuk migration |
+| **Auth** | NextAuth.js | Integrasi native dengan Next.js, JWT session, multi-provider ready |
+| **AI Engine** | GPT-4o via OpenAI API | Model terbaik untuk reasoning dan JSON output, latency acceptable untuk demo |
+| **File Upload & Parse** | Cloudinary / Supabase Storage + `pdf-parse` (npm) | Free tier cukup untuk MVP. `pdf-parse` untuk extract teks CV. GitHub API untuk portfolio context. |
+| **Deployment** | Vercel | Zero-config deploy Next.js, free tier, custom domain gratis, perfect untuk demo hackathon |
+
+---
+
+## 9. Timeline Build — 14 Hari `Updated v1.1`
+
+| Hari | Fokus | Target Output |
+|---|---|---|
+| **Hari 1–2** | Setup: Next.js, Prisma schema (+ 3 field baru), PostgreSQL, NextAuth | Project running, auth bisa login/register, DB terhubung |
+| **Hari 3–4** | Onboarding form talenta (hybrid: form wajib + upload CV/portfolio), halaman profil publik | Talenta bisa register, isi profil + upload CV, lihat profil publik |
+| **Hari 5** | Client: post job form + job listing page (public). Browse talenta page (public). | Client bisa posting job. Halaman `/jobs` dan `/talents` aksesibel tanpa login |
+| **Hari 6–7** | 🤖 AI Job Matching: prompt engineering + integrasi GPT-4o + tampilkan hasil dengan portfolio evidence | Match score muncul di dashboard client, ranked shortlist talenta |
+| **Hari 8–9** | 🤖 AI Skill Gap: prompt + API + UI card insight di dashboard talenta (termasuk `evidence_basis` indicator) | 3 rekomendasi skill muncul otomatis + indikator sumber analisis |
+| **Hari 10–11** | Dashboard talenta & client + job status tracker + mock escrow UI + auth-gate untuk aksi CTA | Full flow end-to-end bisa dijalankan |
+| **Hari 12–13** | Landing page + How It Works page + UI polish + edge case + loading states + icon system | Tampilan siap presentasi, icon filled 2D + label teks di semua komponen |
+| **Hari 14** | 🎯 Full demo rehearsal — simulasi live demo juri | Go / No-Go sebelum hari H pitching |
+
+> **Prinsip buffer:** Hari 13 adalah *"polish day"* — jangan tambah fitur baru. Hari 14 hanya untuk rehearsal dan perbaikan edge case yang ditemukan saat demo.
+
+---
+
+## 10. Demo Script untuk Pitching
+
+*Durasi target: 7–10 menit. Struktur: narasi → live demo → back to slide untuk roadmap.*
+
+### 10.1 Pembuka (1 menit)
+
+- *"Di Indonesia, ada 46 juta freelancer yang nyambi. Mereka punya skill, tapi tidak punya akses ke klien yang tepat dan tidak tahu harus berkembang ke mana."*
+- *"Nyamby hadir sebagai AI-powered career platform yang mengubah nyambi menjadi karir profesional yang terstruktur."*
+
+### 10.2 Demo Flow (5–6 menit)
+
+1. Buka sebagai Raka (Talenta) → register → isi onboarding form → upload CV → **[jeda]** *"Di sinilah AI bekerja untuk pertama kalinya — bukan hanya dari skill yang ia pilih, tapi dari CV dan portofolionya yang nyata"*
+2. Tunjukkan dashboard talenta → Skill Gap Analysis card: *"AI mendeteksi bahwa Raka perlu belajar TypeScript dan UI Testing — berdasarkan 23 job aktif di platform, diperkuat dengan analisis CV Raka"*
+3. Switch ke akun Budi (Client) → post job → **[jeda]** *"Setelah Budi post, AI langsung bekerja"*
+4. Tunjukkan hasil matching: *"Dalam hitungan detik, AI mengevaluasi seluruh talent pool dan merekomendasikan Raka dengan Match Score 87% — lengkap dengan reasoning yang merujuk portofolio Raka"*
+5. Klik profil Raka → confirm → mock escrow "Dana Ditahan" → job In Progress → approve → "Dana Dirilis"
+
+### 10.3 Penutup & Roadmap (1–2 menit)
+
+- *"Yang baru saja Anda lihat adalah Phase 1. Dalam 12 bulan ke depan: 500 talenta aktif, ekspansi ke Malaysia, dan launch Physical Mode untuk jasa lokal."*
+- *"Competitive moat kami bukan hanya AI-nya — tapi data rejection feedback loop yang proprietary, diperkuat dengan enrichment data CV dan portofolio nyata setiap talenta. Setiap penolakan membuat matching kami semakin akurat."*
+
+---
+
+## 11. Design System Guidelines — Icon & UI `NEW v1.1`
+
+> Bagian ini mendefinisikan standar visual yang harus diikuti oleh semua komponen UI Nyamby. Tujuan: konsistensi tampilan di seluruh halaman, terutama untuk demo hackathon.
+
+### 11.1 Icon Style: Filled 2D Solid
+
+| Aturan | Detail |
+|---|---|
+| **Style wajib** | Filled 2D solid (bukan outline/stroke). Semua icon menggunakan fill solid untuk area utama icon. |
+| **Library rekomendasi** | Heroicons Solid, Material Icons Filled, atau Phosphor Icons Bold. Konsisten dalam satu library. |
+| **Label teks wajib** | Setiap icon **SELALU** disertai label teks. Tidak ada icon tanpa teks, kecuali aksi universal (✕ tutup, ✓ konfirmasi). |
+| **Posisi label** | Navigasi bawah: teks di bawah icon. Form label: teks di samping kanan icon. Card/fitur utama: teks di bawah icon. |
+| **16px** | Inline teks — untuk icon di dalam baris teks atau badge kecil |
+| **20px** | Form label — untuk icon di sebelah label form atau list item |
+| **28px** | Section header — untuk icon di header section atau card title |
+| **40px** | Fitur utama — untuk icon di landing page atau halaman how-it-works |
+| **Jangan campur style** | Tidak boleh ada outline icon dan filled icon di halaman yang sama. Pilih satu, gunakan konsisten. |
+
+### 11.2 Warna Icon per Konteks Semantik
+
+| Kategori Fitur | Warna | Hex | Konteks Penggunaan |
+|---|---|---|---|
+| AI & Profil Talenta | Purple | `#534AB7` | Icon di semua touchpoint AI (skill gap, job matching, AI badge). Icon profil talenta, onboarding. |
+| Aksi & Upload | Teal | `#0F6E56` | Icon upload file, search, browse talenta, browse job, link/URL. Aksi-aksi utama platform. |
+| Harga & Rating | Amber | `#854F0B` | Icon rate/harga, rating bintang, budget. Elemen yang berhubungan dengan nilai/uang. |
+| Keamanan & Escrow | Coral | `#993C1D` | Icon kunci, escrow, pembayaran aman. Elemen yang berhubungan dengan kepercayaan & keamanan. |
+| Status Sukses | Green | `#3B6D11` | Icon centang, selesai, approve, konfirmasi. Status positif. |
+| Netral & Navigasi | Gray | `#5F5E5A` | Icon navigasi umum, pengaturan, menu. Elemen struktural tanpa konteks semantik khusus. |
+
+### 11.3 Badge "AI Enrichment"
+
+Setiap fitur atau field yang melibatkan AI harus ditandai dengan badge **"AI enrichment"** berwarna amber.
+
+| Elemen | Spesifikasi |
+|---|---|
+| **Background** | `#FAEEDA` (amber light) |
+| **Teks** | `#854F0B` (amber dark) |
+| **Label** | "AI enrichment" atau "AI-powered" tergantung konteks |
+| **Posisi di form** | Di samping label section header |
+| **Posisi di card** | Di pojok kanan atas card skill gap atau match result |
+| **Ukuran teks** | 12px, font-weight 500 |
+| **Border radius** | 12px (pill shape) |
+| **Penggunaan wajib** | Section upload CV, section upload portofolio, skill gap card, match score card, semua output AI |
+
+---
+
+*Nyamby PRD MVP v1.2 — Satria Romanda — Digdaya X Hackathon 2026*
+
+---
+
+## 4B. Flow Prioritas Tinggi `NEW v1.2`
+
+> Bagian ini mendefinisikan 6 flow tambahan yang harus diimplementasikan setelah flow inti selesai. Semua flow di sini berdampak langsung pada demo hackathon dan kelengkapan user journey.
+
+### 4B.1 Flow: Apply Job oleh Talenta
+
+Flow ini melengkapi journey Raka — dari menemukan job rekomendasi di dashboard hingga status "Applied" tercatat.
+
+| Step | Aktor | Aksi | Output / System Response |
+|---|---|---|---|
+| 1 | Raka | Buka dashboard → lihat section "Job Untukmu" | Daftar job rekomendasi berdasarkan AI matching, sorted by match score |
+| 2 | Raka | Klik satu job rekomendasi | Halaman `/jobs/[id]` terbuka |
+| 3 | System | Tampilkan personal match score Raka untuk job ini | Badge "Match Score: 87%" + breakdown skill match vs gap |
+| 4 | Raka | Baca deskripsi job, skill required, budget, deadline | User mengevaluasi apakah cocok |
+| 5 | Raka | Klik tombol **"Lamar Job Ini"** | Modal konfirmasi muncul: "Konfirmasi lamaran ke [nama job]?" |
+| 6 | Raka | Klik konfirmasi | `POST /api/matches/:id/status` dengan `status: "applied"` |
+| 7 | System | Update status match → `applied`. Buat notifikasi untuk client. | Toast sukses muncul: "Lamaran terkirim!" |
+| 8 | Client | Terima notifikasi: "Ada talenta baru melamar job kamu" | Badge notifikasi muncul di dashboard client |
+
+> **Catatan UX:** Tombol "Lamar Job Ini" hanya tampil jika match status masih `recommended`. Jika sudah `applied`, tampilkan badge "Sudah Dilamar" (disabled). Jika sudah `accepted`, tampilkan "Job Aktif".
+
+### 4B.2 Flow: Accept / Reject Job Offer oleh Talenta
+
+Flow ini mencakup sisi talenta ketika client memilih mereka dari shortlist dan mengirim offer.
+
+| Step | Aktor | Aksi | Output / System Response |
+|---|---|---|---|
+| 1 | Client | Klik profil talenta dari shortlist → klik **"Hire Talenta Ini"** | `PATCH /api/matches/:id/status` → status: `accepted` dari sisi client |
+| 2 | System | Buat notifikasi untuk talenta: "Kamu mendapat tawaran job dari [nama client]" | Notifikasi muncul, badge counter +1 |
+| 3 | Raka | Buka notifikasi → lihat detail job offer | Halaman detail offer: nama job, client, budget, deadline, brief |
+| 4 | Raka | **Pilihan A: Klik "Terima Tawaran"** | Status match → `accepted`. Trigger: client diminta konfirmasi escrow. |
+| 5 | Raka | **Pilihan B: Klik "Tolak Tawaran"** | Modal muncul: wajib isi alasan penolakan (dropdown + teks opsional) |
+| 6 | System (jika tolak) | Simpan alasan penolakan ke DB. Update match status → `rejected`. | Data penolakan masuk ke feedback loop AI matching. Notifikasi ke client. |
+| 7 | System (jika terima) | Notifikasi ke client: "Talenta menerima tawaran. Silakan konfirmasi pembayaran." | Client diarahkan ke halaman escrow hold. |
+
+> **Catatan AI:** Alasan penolakan (`rejection_reason`) adalah data emas untuk improving AI matching. Simpan di tabel `job_matches` dengan field tambahan `rejection_reason: TEXT NULLABLE`. Ini adalah competitive moat Nyamby.
+
+### 4B.3 Flow: Submit Deliverable & Review
+
+Flow ini menyelesaikan loop kerja — dari talenta submit hasil hingga dana dirilis.
+
+| Step | Aktor | Aksi | Output / System Response |
+|---|---|---|---|
+| 1 | Raka | Buka dashboard → lihat job dengan status `in_progress` | Card job aktif dengan CTA "Submit Hasil Kerja" |
+| 2 | Raka | Klik "Submit Hasil Kerja" → upload file atau paste URL | Modal upload: drag & drop file atau input URL (Google Drive, Notion, dll) |
+| 3 | Raka | Tambah catatan pengiriman (opsional) | Teks singkat untuk konteks hasil kerja |
+| 4 | Raka | Klik "Kirim ke Client" | `PATCH /api/jobs/:id/status` → `submitted_for_review`. Notifikasi ke client. |
+| 5 | Client | Terima notifikasi: "Talenta telah submit hasil kerja" | Budi membuka halaman review di dashboard client |
+| 6 | Client | **Pilihan A: Klik "Approve & Rilis Dana"** | Status → `completed`. `POST /api/escrow/release`. Dana mock dirilis. |
+| 7 | Client | **Pilihan B: Klik "Minta Revisi"** | Modal: isi feedback revisi. Status → `revision_requested`. Notifikasi ke talenta. |
+| 8 | Raka (jika revisi) | Terima notifikasi revisi → lihat feedback → kerjakan ulang | Kembali ke step 2, revisi ke-1 dan ke-2 gratis |
+| 9 | System (jika approved) | Update escrow status → `released`. Tambah ke riwayat transaksi. | Toast: "Dana telah dirilis ke talenta. Job selesai!" |
+
+> **Catatan escrow:** Untuk MVP, semua operasi escrow adalah mock (tidak ada payment gateway). Status berubah di DB, UI menampilkan perubahan status secara visual. Nilai amount bisa hardcode sesuai budget job.
+
+### 4B.4 Flow: Notifikasi In-App
+
+Flow teknikal yang mendefinisikan bagaimana sistem notifikasi bekerja end-to-end.
+
+| Step | Trigger Event | Notifikasi Dibuat Untuk | Tipe & Pesan |
+|---|---|---|---|
+| 1 | Talenta apply job | Client | `new_application` — "Ada talenta baru melamar [nama job]" |
+| 2 | Client hire talenta | Talenta | `job_offer` — "Kamu mendapat tawaran job dari [nama client]" |
+| 3 | Talenta accept offer | Client | `offer_accepted` — "Talenta menerima tawaran. Konfirmasi pembayaran." |
+| 4 | Talenta reject offer | Client | `offer_rejected` — "[Nama talenta] menolak tawaran job kamu" |
+| 5 | Escrow hold dikonfirmasi | Talenta | `payment_held` — "Dana telah ditahan. Mulai kerjakan job!" |
+| 6 | Talenta submit deliverable | Client | `work_submitted` — "[Nama talenta] telah submit hasil kerja untuk direview" |
+| 7 | Client request revisi | Talenta | `revision_requested` — "Client meminta revisi. Lihat feedback." |
+| 8 | Client approve job | Talenta | `payment_released` — "Selamat! Dana telah dirilis ke akunmu." |
+| 9 | AI matching selesai | Client | `matching_complete` — "AI telah menemukan [N] talenta untuk job kamu" |
+| 10 | AI skill gap selesai | Talenta | `skill_gap_ready` — "Analisis skill gap kamu sudah siap. Lihat rekomendasi." |
+
+**Implementasi UI notifikasi:**
+
+| Komponen | Spesifikasi |
+|---|---|
+| **Bell icon di navbar** | Badge merah dengan counter jumlah notifikasi belum dibaca |
+| **Dropdown panel** | List notifikasi terbaru (maks 10), klik → mark as read + navigate ke konteks |
+| **Toast** | Muncul di pojok kanan bawah untuk notifikasi real-time saat user sedang online, auto-dismiss 4 detik |
+| **Mark all read** | Button di header dropdown notifikasi |
+
+### 4B.5 Flow: AI API Error Handling
+
+Flow defensive yang memastikan platform tidak broken ketika GPT-4o lambat atau gagal.
+
+| Kondisi | Trigger | Handling | User Experience |
+|---|---|---|---|
+| **Normal** | API call < 10 detik | Tampilkan hasil langsung | Loading skeleton → hasil muncul |
+| **Slow response** | API call 10–30 detik | Tetap tunggu, tampilkan progress indicator | "AI sedang menganalisis... (estimasi 15 detik)" |
+| **Timeout** | API call > 30 detik | Cancel request, simpan status `pending` | "Analisis sedang diproses. Hasil akan muncul dalam beberapa menit." |
+| **API error (5xx)** | OpenAI return error | Retry 1x setelah 5 detik. Jika gagal lagi → fallback | Toast warning: "AI sedang sibuk. Mencoba ulang..." |
+| **Fallback (retry gagal)** | Setelah retry gagal | Simpan ke queue, mark untuk di-run ulang | "Analisis akan otomatis dijalankan ulang. Kamu akan dapat notifikasi." |
+| **Parsing error** | GPT-4o return invalid JSON | Log error, return graceful response | Tampilkan data partial jika ada, atau pesan "Hasil tidak lengkap" |
+
+> **Implementasi:** Gunakan `try/catch` di semua AI API call. Tambahkan field `status: ENUM('pending','processing','completed','failed')` di tabel `skill_gap_analyses` dan `job_matches`. Background retry bisa menggunakan Vercel Cron Jobs (gratis tier).
+
+### 4B.6 Flow: Update Profil Talenta (Post-Onboarding)
+
+Flow yang memungkinkan Raka memperbarui profilnya setelah onboarding awal selesai.
+
+| Step | Aktor | Aksi | Output / System Response |
+|---|---|---|---|
+| 1 | Raka | Buka halaman profil → klik **"Edit Profil"** | Form edit muncul, pre-filled dengan data existing |
+| 2 | Raka | Update skill tags — tambah atau hapus skill | Chip UI interaktif, perubahan belum tersimpan |
+| 3 | Raka | Update rate, bio, availability status | Field langsung bisa diedit |
+| 4 | Raka | Opsional: re-upload CV atau update portfolio URL | Sama seperti flow upload onboarding |
+| 5 | Raka | Klik **"Simpan Perubahan"** | `PATCH /api/talent/profile` dipanggil |
+| 6 | System | Simpan perubahan ke DB | Profile updated |
+| 7 | System | **Deteksi perubahan signifikan** — jika skill berubah, auto-trigger re-run AI skill gap | `POST /api/ai/skill-gap` dijalankan dengan data terbaru |
+| 8 | System | Notifikasi: "Profil diperbarui. AI sedang menganalisis skill gap terbaru kamu." | Toast sukses + loading indicator di skill gap card |
+
+> **Logika trigger re-run:** Re-run AI skill gap HANYA jika `skills[]` berubah (ditambah atau dihapus). Perubahan rate, bio, atau availability tidak perlu re-run — terlalu mahal untuk dipanggil setiap save.
+
+---
+
+## 12. Roadmap & Platform Vision `NEW v1.2`
+
+> Bagian ini mengintegrasikan visi jangka panjang dari Nyamby Concept v2.0 ke dalam dokumen PRD. Digunakan sebagai referensi untuk pitching roadmap kepada juri dan investor.
+
+### 12.1 Phase Overview
+
+| Phase | Timeline | Fokus | Market |
+|---|---|---|---|
+| **Phase 1** *(saat ini)* | 0–12 bulan | Digital Services — Web Dev & Graphic Designer | Indonesia |
+| **Phase 2** | 12–24 bulan | Ekspansi digital + Physical Mode launch | Indonesia + Malaysia (digital) |
+| **Phase 3** | 24–36 bulan | Full platform — Global digital + Physical ekspansi | SEA + kota besar Indonesia |
+
+### 12.2 Phase 1 — KPI Go/No-Go
+
+| Metrik | Target | Timeline |
+|---|---|---|
+| Talenta aktif (profil lengkap) | 500 talenta | Bulan ke-6 |
+| Job Completion Rate | > 70% | Bulan ke-6 |
+| Repeat Client Rate | > 40% | Bulan ke-9 |
+| AI Matching Accuracy | > 60% diterima dari rekomendasi | Ongoing |
+
+### 12.3 Phase 2 — Fitur Baru Digital
+
+| Fitur | Keterangan |
+|---|---|
+| **Portfolio Analyzer AI** | Scoring dan validasi kualitas portofolio berbasis AI — membutuhkan data training dari Phase 1 |
+| **Smart Pricing Guidance** | Rekomendasi rate berbasis skill level, tipe proyek, dan benchmark pasar regional |
+| **Talent Subscription** | Akses lebih banyak job match per bulan, boost profil di hasil pencarian |
+| **Client Freemium/Membership** | Posting unlimited, akses talent terverifikasi, prioritas matching |
+| **Ekspansi kategori** | Content Creator, Videografer masuk ke platform |
+| **Malaysia market** | Onboarding client dari Malaysia untuk outsourcing ke talenta Indonesia |
+
+### 12.4 Physical Mode — Coming in Phase 2
+
+> Ini adalah ekspansi terbesar Nyamby — membawa infrastruktur platform ke jasa tatap muka lokal. Semua fitur di bawah ini adalah **OUT OF SCOPE untuk MVP**, namun harus dikomunikasikan saat pitching sebagai competitive moat jangka panjang.
+
+**Kategori Jasa Fisik Phase 2 (prioritas):**
+
+| Kategori | Tipe | Contoh Layanan |
+|---|---|---|
+| **Home Services** | Fisik lokal | Kebersihan rumah, bantuan pindahan, tata ruang |
+| **Skill Sharing** | Fisik lokal | Les privat (akademik, bahasa, musik), kursus memasak |
+
+**Kategori Jasa Fisik Phase 3 (ekspansi):**
+
+| Kategori | Tipe | Contoh Layanan |
+|---|---|---|
+| **Casual & Sosial** | Fisik lokal | Teman olahraga (futsal, gym), teman jalan, teman nonton |
+| **Errands** | Fisik lokal | Titip beli, antar dokumen, antre, keperluan harian |
+
+**Safety & Trust Framework untuk Physical Mode:**
+
+| Layer | Komponen | Detail |
+|---|---|---|
+| **Layer 1 — Identitas** | Verifikasi KTP wajib | Selfie + liveness check, nomor HP terverifikasi |
+| **Layer 2 — Transaksi** | Escrow + QR check-in/out | Bayar via platform, scan QR saat tiba & selesai |
+| **Layer 3 — Komunitas** | Rating wajib + auto-suspend | Review publik terbuka, suspend otomatis jika 3 laporan |
+
+### 12.5 Model Monetisasi
+
+| Stream | Model | Tarif | Phase |
+|---|---|---|---|
+| **Komisi per job** | % dari nilai transaksi | 10–15% (dikenakan ke client) | Phase 1+ |
+| **Talent subscription** | Bulanan/tahunan | TBD | Phase 2 |
+| **Client membership** | Freemium → premium | TBD | Phase 2 |
+| **Featured listing** | Boost visibilitas penyedia jasa | TBD | Phase 2 (Physical) |
+| **Pelatihan & sertifikasi** | Pay-per-course | TBD | Phase 2+ |
+
+**Aturan revisi & pembatalan:**
+
+| Skenario | Aturan |
+|---|---|
+| Revisi ke-1 dan ke-2 | Gratis — termasuk dalam harga job |
+| Revisi ke-3+ | 10–15% dari nilai job per revisi (ditanggung client) |
+| Pembatalan 0–25% progres | Client refund penuh, talenta dapat 0% |
+| Pembatalan 26–75% progres | Talenta dapat 50%, client refund 50% |
+| Pembatalan 76–100% progres | Talenta dapat 100%, tidak ada refund |
+| Client tidak merespons 5 hari kerja | Dana auto-release ke talenta |
+
+---
+
+*Nyamby PRD MVP v1.2 — Satria Romanda — Digdaya X Hackathon 2026*
