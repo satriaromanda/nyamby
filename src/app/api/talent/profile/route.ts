@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { talentProfileUpdateSchema } from "@/lib/validations";
+import { triggerAiSkillGapUpdate } from "@/services/ai-skill-gap";
 
 // GET: Fetch current talent's own profile for editing
 export async function GET() {
+  // ... GET remains the same ...
   try {
     const session = await requireAuth();
     if (session.role !== "talent") {
@@ -78,7 +81,6 @@ export async function GET() {
   }
 }
 
-
 export async function PATCH(request: NextRequest) {
   try {
     const session = await requireAuth();
@@ -90,7 +92,16 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { bio, rate_per_hour, rate_per_project, availability, location, portfolio_url, cv_text, portfolio_context, skills } = body;
+    
+    // Zod Validation
+    const result = talentProfileUpdateSchema.safeParse(body);
+    if (!result.success) {
+      return NextResponse.json(
+        { success: false, message: result.error.issues[0].message },
+        { status: 400 }
+      );
+    }
+    const { bio, rate_per_hour, rate_per_project, availability, location, portfolio_url, cv_text, portfolio_context, skills } = result.data;
 
     const profile = await prisma.talentProfile.findUnique({
       where: { userId: session.userId },
@@ -152,64 +163,5 @@ export async function PATCH(request: NextRequest) {
       { success: false, message: "Internal server error" },
       { status: 500 }
     );
-  }
-}
-
-async function triggerAiSkillGapUpdate(
-  profileId: string, 
-  skills: any[], 
-  category: string, 
-  bio: string | null, 
-  cvText: string | null, 
-  portfolioContext: string | null
-) {
-  const { generateSkillGapAnalysis } = await import("@/lib/openai");
-  
-  // Set existing to not latest
-  await prisma.skillGapAnalysis.updateMany({
-    where: { talentProfileId: profileId, isLatest: true },
-    data: { isLatest: false },
-  });
-
-  // Create pending analysis
-  const pendingAnalysis = await prisma.skillGapAnalysis.create({
-    data: {
-      talentProfileId: profileId,
-      recommendedSkills: [],
-      summary: "AI sedang menganalisis skill gap kamu...",
-      isLatest: true,
-      aiStatus: "processing"
-    },
-  });
-
-  // Mock market demand
-  const mockMarketDemand = [
-    { skill_name: "React", frequency_in_jobs: 150, avg_budget: 5000000 },
-    { skill_name: "Node.js", frequency_in_jobs: 120, avg_budget: 6000000 },
-    { skill_name: "Figma", frequency_in_jobs: 200, avg_budget: 4500000 },
-  ];
-
-  try {
-    const aiResult = await generateSkillGapAnalysis(
-      skills.map(s => ({ name: s.name, level: s.level || "intermediate" })),
-      category,
-      mockMarketDemand,
-      { bio, cv_text: cvText, portfolio_context: portfolioContext }
-    );
-
-    await prisma.skillGapAnalysis.update({
-      where: { id: pendingAnalysis.id },
-      data: {
-        recommendedSkills: aiResult.recommendations,
-        summary: aiResult.summary,
-        profileCompletenessScore: aiResult.profile_completeness_score || 0,
-        aiStatus: "completed"
-      },
-    });
-  } catch (error) {
-    await prisma.skillGapAnalysis.update({
-      where: { id: pendingAnalysis.id },
-      data: { aiStatus: "failed" },
-    });
   }
 }

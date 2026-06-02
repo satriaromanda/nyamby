@@ -2,18 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { signToken, setSessionCookie } from "@/lib/auth";
+import { loginSchema } from "@/lib/validations";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password } = body;
-
-    if (!email || !password) {
+    
+    // Zod Validation
+    const result = loginSchema.safeParse(body);
+    if (!result.success) {
       return NextResponse.json(
-        { success: false, message: "Email dan password wajib diisi" },
+        { success: false, message: result.error.issues[0].message },
         { status: 400 }
       );
     }
+    
+    const { email, password } = result.data;
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {

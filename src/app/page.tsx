@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Icon, Logo } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
 export default function LandingPage() {
   return (
@@ -217,16 +218,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Footer ─────────────────────────────────────────────── */}
-      <footer className="bg-slate-900 text-slate-400 py-12 px-6">
-        <div className="max-w-[1280px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2 text-white">
-            <Logo height={32} />
-          </div>
-          <div className="text-sm">
-            © {new Date().getFullYear()} Nyamby. Dari nyambi menuju profesional.
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

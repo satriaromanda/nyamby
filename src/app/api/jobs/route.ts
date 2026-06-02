@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
-import { generateJobMatches } from "@/lib/openai";
+import { jobCreateSchema } from "@/lib/validations";
 
 // POST: Client creates a new job + triggers AI matching
 export async function POST(request: NextRequest) {
@@ -15,16 +15,18 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, description, category, budget_min, budget_max, deadline, required_skills } = body;
-
-    if (!title || !description || !category || !required_skills || required_skills.length === 0) {
+    
+    // 1. Zod Validation
+    const result = jobCreateSchema.safeParse(body);
+    if (!result.success) {
       return NextResponse.json(
-        { success: false, message: "Judul, deskripsi, kategori, dan minimal 1 skill wajib diisi" },
+        { success: false, message: result.error.issues[0].message },
         { status: 400 }
       );
     }
+    const { title, description, category, budget_min, budget_max, deadline, required_skills } = result.data;
 
-    // Create job
+    // 2. Create job
     const job = await prisma.job.create({
       data: {
         clientUserId: session.userId,
@@ -38,102 +40,26 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Link required skills
-    for (const sk of required_skills) {
-      await prisma.jobRequiredSkill.create({
-        data: {
-          jobId: job.id,
-          skillId: sk.skill_id,
-          isMandatory: sk.is_mandatory !== false,
-        },
-      });
-    }
-
-    // Trigger AI Job Matching
-    const jobWithSkills = await prisma.job.findUnique({
-      where: { id: job.id },
-      include: { requiredSkills: { include: { skill: true } } },
+    // 3. Bulk insert required skills (Fix N+1)
+    await prisma.jobRequiredSkill.createMany({
+      data: required_skills.map((sk) => ({
+        jobId: job.id,
+        skillId: sk.skill_id,
+        isMandatory: sk.is_mandatory !== false,
+      })),
     });
 
-    const allTalents = await prisma.talentProfile.findMany({
-      where: { category },
-      include: {
-        user: { select: { fullName: true } },
-        talentSkills: { include: { skill: true } },
-      },
+    // 4. Trigger AI Job Matching in Background (Prevent Timeout)
+    const { runAiJobMatching } = await import("@/services/ai-matching");
+    runAiJobMatching(job.id, category).catch((err) => {
+      console.error("Failed to run background AI matching", err);
     });
-
-    if (allTalents.length > 0 && jobWithSkills) {
-      const jobData = {
-        title: jobWithSkills.title,
-        description: jobWithSkills.description,
-        required_skills: jobWithSkills.requiredSkills.map((rs) => rs.skill.name),
-        category: jobWithSkills.category,
-        budget_range: `${jobWithSkills.budgetMin || 0} - ${jobWithSkills.budgetMax || "Negotiable"} IDR`,
-      };
-
-      const talentData = allTalents.map((t) => ({
-        id: t.id,
-        name: t.user.fullName,
-        skills: t.talentSkills.map((ts) => ({ name: ts.skill.name, level: ts.level })),
-        category: t.category,
-        rate: Number(t.ratePerHour || 0),
-        bio: t.bio || "",
-        cv_text: t.cvText,
-        portfolio_context: t.portfolioContext,
-      }));
-
-      const matches = await generateJobMatches(jobData, talentData);
-
-      // Save matches to DB
-      for (const match of matches) {
-        await prisma.jobMatch.upsert({
-          where: {
-            jobId_talentProfileId: {
-              jobId: job.id,
-              talentProfileId: match.talent_id,
-            },
-          },
-          update: {
-            matchScore: match.match_score,
-            strengths: match.strengths,
-            gaps: match.gaps,
-            reasoning: match.reasoning,
-            portfolioEvidence: match.portfolio_evidence || null,
-            recommendation: match.recommendation,
-          },
-          create: {
-            jobId: job.id,
-            talentProfileId: match.talent_id,
-            matchScore: match.match_score,
-            strengths: match.strengths,
-            gaps: match.gaps,
-            reasoning: match.reasoning,
-            portfolioEvidence: match.portfolio_evidence || null,
-            recommendation: match.recommendation,
-          },
-        });
-
-        // Send notification to matched talent
-        const talentProfile = allTalents.find((t) => t.id === match.talent_id);
-        if (talentProfile) {
-          await prisma.notification.create({
-            data: {
-              userId: talentProfile.userId,
-              type: "new_match",
-              message: `Ada job baru yang cocok untukmu: ${job.title} (${match.match_score}% match)`,
-              relatedJobId: job.id,
-            },
-          });
-        }
-      }
-    }
 
     return NextResponse.json(
       {
         success: true,
-        message: "Job berhasil diposting. AI sedang mencarikan talenta terbaik.",
-        data: { job_id: job.id, status: "active", matching_triggered: allTalents.length > 0 },
+        message: "Job berhasil diposting. AI sedang mencarikan talenta terbaik di background.",
+        data: { job_id: job.id, status: "active" },
       },
       { status: 201 }
     );
