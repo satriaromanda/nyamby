@@ -140,84 +140,25 @@ Respons dalam format JSON dengan recommendations, summary, dan profile_completen
 
 function generateMockMatches(talents: TalentForMatching[]): MatchResult[] {
   return talents.map((talent, index) => {
-    const enrichmentBonus = (talent.cv_text ? 3 : 0) + (talent.portfolio_context ? 4 : 0);
-    const score = Math.min(Math.max(95 - index * 12, 40) + Math.random() * 5 + enrichmentBonus, 99);
-
     return {
       talent_id: talent.id,
-      match_score: Math.round(score * 100) / 100,
+      match_score: 60,
       strengths: talent.skills.slice(0, 2).map((skill) => `${skill.name} (${skill.level})`),
-      gaps: ["Belum ada pengalaman TypeScript"],
-      reasoning: `Talenta ${talent.name} memiliki ${talent.skills.length} skill yang relevan. Rate kompetitif di ${talent.rate?.toLocaleString("id-ID")} IDR. ${talent.portfolio_context ? "Portofolio memberi bukti tambahan untuk skill yang diklaim. " : ""}${talent.bio || ""}`,
+      gaps: [],
+      reasoning: "Kecocokan diproses berdasarkan kategori umum.",
       portfolio_evidence: talent.portfolio_context
         ? talent.portfolio_context.slice(0, 220)
         : undefined,
-      recommendation:
-        score > 80
-          ? "highly_recommended"
-          : score > 60
-            ? "recommended"
-            : "not_recommended",
+      recommendation: "recommended",
     };
   });
 }
 
 function generateMockSkillGap(category: string): SkillGapResult {
-  const webDevRecs = [
-    {
-      skill_name: "TypeScript",
-      priority: "high" as const,
-      reason: "Banyak job web aktif meminta type safety dan maintainability. Bukti portofolio akan membuat klaim React/Next.js lebih kuat.",
-      estimated_impact: "Potensi rate naik 30-40%",
-      evidence_basis: "portfolio" as const,
-    },
-    {
-      skill_name: "Jest / Testing",
-      priority: "medium" as const,
-      reason: "Client yang membayar lebih tinggi mencari talenta yang bisa membuktikan kualitas lewat testing.",
-      estimated_impact: "Peluang diterima naik 25%",
-      evidence_basis: "form" as const,
-    },
-    {
-      skill_name: "Docker & CI/CD",
-      priority: "low" as const,
-      reason: "CV dan pengalaman deployment membantu membuka akses ke proyek web yang lebih serius.",
-      estimated_impact: "Akses ke proyek enterprise dengan budget 2x lipat",
-      evidence_basis: "cv" as const,
-    },
-  ];
-
-  const designRecs = [
-    {
-      skill_name: "Figma Prototyping",
-      priority: "high" as const,
-      reason: "Job desain makin sering meminta prototype interaktif, bukan hanya mockup statis.",
-      estimated_impact: "Potensi rate naik 35%",
-      evidence_basis: "portfolio" as const,
-    },
-    {
-      skill_name: "Motion Graphics",
-      priority: "medium" as const,
-      reason: "Demand micro-animation dan konten sosial meningkat untuk proyek UKM.",
-      estimated_impact: "Peluang diterima naik 30%",
-      evidence_basis: "form" as const,
-    },
-    {
-      skill_name: "Design System",
-      priority: "low" as const,
-      reason: "Bukti pengalaman sistem desain di CV/portofolio memberi sinyal profesional untuk client besar.",
-      estimated_impact: "Akses ke proyek jangka panjang",
-      evidence_basis: "cv" as const,
-    },
-  ];
-
   return {
-    recommendations: category === "web_dev" ? webDevRecs : designRecs,
-    summary:
-      category === "web_dev"
-        ? "Skill web kamu sudah kuat untuk MVP freelance. Tambahkan bukti portfolio dan upgrade TypeScript/testing agar match rate naik."
-        : "Skill desain dasarmu sudah baik. Pasar bergerak ke arah prototype, motion, dan bukti portofolio yang rapi.",
-    profile_completeness_score: 82,
+    recommendations: [],
+    summary: "Sistem AI sedang sibuk, kumpulkan bukti portfolio Anda secara manual.",
+    profile_completeness_score: 50,
   };
 }
 

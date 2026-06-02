@@ -38,6 +38,8 @@ enum JobStatus {
   active
   matched
   in_progress
+  submitted_for_review
+  revision_requested
   completed
   cancelled
 }
@@ -51,6 +53,7 @@ enum MatchRecommendation {
 enum MatchStatus {
   recommended
   applied
+  offered
   accepted
   rejected
 }
@@ -59,6 +62,13 @@ enum EscrowStatus {
   held
   released
   refunded
+}
+
+enum AiAnalysisStatus {
+  pending
+  processing
+  completed
+  failed
 }
 
 // ─── Models ─────────────────────────────────────────────────────────────────
@@ -142,6 +152,7 @@ model SkillGapAnalysis {
   profileCompletenessScore Int?     @map("profile_completeness_score")
   generatedAt              DateTime @default(now()) @map("generated_at")
   isLatest                 Boolean  @default(true) @map("is_latest")
+  aiStatus                 AiAnalysisStatus @default(completed) @map("ai_status")
 
   // Relations
   talentProfile TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
@@ -195,6 +206,8 @@ model JobMatch {
   portfolioEvidence String?           @map("portfolio_evidence")
   recommendation  MatchRecommendation
   status          MatchStatus         @default(recommended)
+  rejectionReason String?             @map("rejection_reason")
+  aiStatus        AiAnalysisStatus    @default(completed) @map("ai_status")
   generatedAt     DateTime            @default(now()) @map("generated_at")
 
   // Relations

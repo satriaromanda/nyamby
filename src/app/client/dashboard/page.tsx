@@ -53,6 +53,8 @@ function JobStatusTracker({ status }: { status: string }) {
     active: 0,
     matched: 1,
     in_progress: 2,
+    submitted_for_review: 2,
+    revision_requested: 2,
     completed: 3,
     cancelled: -1,
   };
@@ -251,6 +253,7 @@ export default function ClientDashboard() {
   const [jobs, setJobs] = useState<JobItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedJob, setExpandedJob] = useState<string | null>(null);
+  const [updatingJobId, setUpdatingJobId] = useState<string | null>(null);
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -272,43 +275,62 @@ export default function ClientDashboard() {
     fetchDashboard();
   }, [fetchDashboard]);
 
-  const handleAcceptTalent = async (matchId: string, jobId: string, talentName: string, talentUserId: string) => {
-    if (!confirm(`Pilih ${talentName} untuk job ini?`)) return;
+  const handleSendOffer = async (matchId: string, talentName: string) => {
+    if (!confirm(`Kirim tawaran job ke ${talentName}?`)) return;
 
     await fetch(`/api/matches/${matchId}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "accepted" }),
+      body: JSON.stringify({ status: "offered" }),
     });
-
-    // Find the job to get budget info
-    const job = jobs.find((j) => j.id === jobId);
-    if (job) {
-      // Create escrow — now using the correct talent_user_id
-      await fetch("/api/escrow/hold", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          job_id: jobId,
-          talent_user_id: talentUserId,
-          amount: Number(job.budget_max || job.budget_min || 1000000),
-        }),
-      });
-    }
 
     fetchDashboard();
   };
 
+  const handlePayEscrow = (jobId: string) => {
+    router.push(`/client/escrow/${jobId}`);
+  };
+
   const handleReleaseEscrow = async (jobId: string) => {
-    if (!confirm("Rilis dana ke talenta? Job akan ditandai selesai.")) return;
+    if (!confirm("Terima hasil kerja dan rilis dana ke talenta? Job akan ditandai selesai.")) return;
 
-    await fetch("/api/escrow/release", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ job_id: jobId }),
-    });
+    setUpdatingJobId(jobId);
+    try {
+      // First, mark job as completed
+      await fetch(`/api/jobs/${jobId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "completed" }),
+      });
 
-    fetchDashboard();
+      // Then, release escrow
+      await fetch("/api/escrow/release", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ job_id: jobId }),
+      });
+
+      fetchDashboard();
+    } finally {
+      setUpdatingJobId(null);
+    }
+  };
+
+  const handleRequestRevision = async (jobId: string) => {
+    const reason = prompt("Masukkan alasan revisi (contoh: 'Warna kurang sesuai'):");
+    if (!reason) return;
+
+    setUpdatingJobId(jobId);
+    try {
+      await fetch(`/api/jobs/${jobId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "revision_requested" }),
+      });
+      fetchDashboard();
+    } finally {
+      setUpdatingJobId(null);
+    }
   };
 
   const handleLogout = async () => {
@@ -328,6 +350,8 @@ export default function ClientDashboard() {
     active: "Aktif",
     matched: "Matched",
     in_progress: "In Progress",
+    submitted_for_review: "Menunggu Review",
+    revision_requested: "Revisi Diminta",
     completed: "Selesai",
     cancelled: "Dibatalkan",
   };
@@ -472,29 +496,45 @@ export default function ClientDashboard() {
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    handleAcceptTalent(match.match_id, job.id, match.full_name, match.talent_user_id);
+                                    handleSendOffer(match.match_id, match.full_name);
                                   }}
                                   className="btn-primary text-xs px-3 py-1.5 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                                 >
-                                  Pilih & Bayar
+                                  Kirim Tawaran
                                 </button>
                               )}
                               {match.status === "applied" && (
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    handleAcceptTalent(match.match_id, job.id, match.full_name, match.talent_user_id);
+                                    handleSendOffer(match.match_id, match.full_name);
                                   }}
                                   className="btn-primary text-xs px-3 py-1.5 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                                 >
-                                  Terima
+                                  Terima Lamaran
                                 </button>
                               )}
-                              {match.status === "accepted" && (
+                              {match.status === "offered" && (
+                                <span className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600">
+                                  Menunggu Jawaban
+                                </span>
+                              )}
+                              {match.status === "accepted" && !job.escrow ? (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handlePayEscrow(job.id);
+                                  }}
+                                  className="bg-trust-500 hover:bg-trust-600 text-white text-xs px-3 py-1.5 rounded-xl transition-all font-semibold flex items-center gap-1 shadow-md animate-pulse"
+                                >
+                                  <Icon name="shield" size={13} />
+                                  Bayar Escrow
+                                </button>
+                              ) : match.status === "accepted" ? (
                                 <span className="text-xs px-3 py-1 rounded-full bg-emerald-50 text-accent-600">
                                   Diterima
                                 </span>
-                              )}
+                              ) : null}
                             </div>
                           </div>
                         ))}
@@ -521,16 +561,34 @@ export default function ClientDashboard() {
                               </span>
                             </div>
                           </div>
-                          {job.escrow.status === "held" && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleReleaseEscrow(job.id);
-                              }}
-                              className="bg-accent-500 hover:bg-accent-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all"
-                            >
-                              <Icon name="check" size={14} /> Approve & Rilis Dana
-                            </button>
+                          {job.escrow.status === "held" && job.status === "submitted_for_review" && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRequestRevision(job.id);
+                                }}
+                                disabled={updatingJobId === job.id}
+                                className="bg-amber-100 hover:bg-amber-200 text-amber-700 text-xs font-semibold px-4 py-2 rounded-xl transition-all disabled:opacity-50"
+                              >
+                                Minta Revisi
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReleaseEscrow(job.id);
+                                }}
+                                disabled={updatingJobId === job.id}
+                                className="bg-accent-500 hover:bg-accent-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all disabled:opacity-50 flex items-center gap-1"
+                              >
+                                <Icon name="check" size={14} /> Terima Hasil & Rilis
+                              </button>
+                            </div>
+                          )}
+                          {job.escrow.status === "held" && job.status !== "submitted_for_review" && (
+                            <div className="text-xs text-surface-500 bg-surface-100 px-3 py-1.5 rounded-full">
+                              Job sedang dikerjakan
+                            </div>
                           )}
                         </div>
 

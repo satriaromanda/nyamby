@@ -159,6 +159,7 @@ export default function JobDetailPage() {
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [applying, setApplying] = useState(false);
+  const [showApplyModal, setShowApplyModal] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
@@ -254,6 +255,7 @@ export default function JobDetailPage() {
       const d = await res.json();
       if (d.success) {
         setMatch((prev) => (prev ? { ...prev, status: "applied" } : prev));
+        setShowApplyModal(false);
         showToast("Lamaran berhasil dikirim! Client akan segera review.");
       } else {
         showToast(d.message || "Gagal melamar", "error");
@@ -581,7 +583,7 @@ export default function JobDetailPage() {
                     {/* Apply Button */}
                     {match.status === "recommended" && job.status === "active" && (
                       <button
-                        onClick={handleApply}
+                        onClick={() => setShowApplyModal(true)}
                         disabled={applying}
                         className="w-full btn-primary py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                       >
@@ -730,6 +732,41 @@ export default function JobDetailPage() {
           </div>
         </div>
       </main>
+
+      {/* Apply Confirmation Modal */}
+      {showApplyModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-surface-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-slide-up">
+            <h3 className="text-lg font-bold text-surface-900 mb-2">Konfirmasi Lamaran</h3>
+            <p className="text-sm text-surface-600 mb-6">
+              Konfirmasi lamaran ke <span className="font-semibold text-surface-800">{job.title}</span>?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowApplyModal(false)}
+                className="px-4 py-2 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors"
+                disabled={applying}
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleApply}
+                disabled={applying}
+                className="btn-primary text-sm px-6 py-2 flex items-center justify-center gap-2"
+              >
+                {applying ? (
+                  <>
+                    <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                    Mengirim...
+                  </>
+                ) : (
+                  "Konfirmasi"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

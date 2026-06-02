@@ -74,6 +74,8 @@ function JobStatusTracker({ status }: { status: string }) {
     active: 0,
     matched: 1,
     in_progress: 2,
+    submitted_for_review: 2,
+    revision_requested: 2,
     completed: 3,
     cancelled: -1,
   };
@@ -272,6 +274,10 @@ export default function TalentDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [applyingId, setApplyingId] = useState<string | null>(null);
+  const [offerModalJob, setOfferModalJob] = useState<RecommendedJob | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [processingOffer, setProcessingOffer] = useState(false);
+  const [uploadingDeliverableId, setUploadingDeliverableId] = useState<string | null>(null);
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -307,6 +313,48 @@ export default function TalentDashboard() {
       fetchDashboard();
     } finally {
       setApplyingId(null);
+    }
+  };
+
+  const handleRespondOffer = async (status: "accepted" | "rejected") => {
+    if (!offerModalJob) return;
+    if (status === "rejected" && !rejectReason.trim()) {
+      alert("Harap isi alasan penolakan");
+      return;
+    }
+    setProcessingOffer(true);
+    try {
+      await fetch(`/api/matches/${offerModalJob.match_id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          status,
+          rejection_reason: status === "rejected" ? rejectReason : undefined 
+        }),
+      });
+      setOfferModalJob(null);
+      setRejectReason("");
+      fetchDashboard();
+    } finally {
+      setProcessingOffer(false);
+    }
+  };
+
+  const handleUploadDeliverable = async (jobId: string) => {
+    const link = prompt("Masukkan link Google Drive / Figma / file hasil kerja Anda:");
+    if (!link) return;
+
+    setUploadingDeliverableId(jobId);
+    try {
+      await fetch(`/api/jobs/${jobId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "submitted_for_review" }),
+      });
+      // In a real app we'd save the link. For now we just update status.
+      fetchDashboard();
+    } finally {
+      setUploadingDeliverableId(null);
     }
   };
 
@@ -526,11 +574,18 @@ export default function TalentDashboard() {
 
                         {job.match_status === "recommended" ? (
                           <button
-                            onClick={() => handleApply(job.match_id)}
+                            onClick={(e) => { e.preventDefault(); handleApply(job.match_id); }}
                             disabled={applyingId === job.match_id}
-                            className="btn-primary text-xs px-4 py-2 disabled:opacity-50"
+                            className="btn-primary text-xs px-4 py-2 disabled:opacity-50 relative z-10"
                           >
                             {applyingId === job.match_id ? "..." : "Lamar"}
+                          </button>
+                        ) : job.match_status === "offered" ? (
+                          <button
+                            onClick={(e) => { e.preventDefault(); setOfferModalJob(job); }}
+                            className="bg-accent-500 hover:bg-accent-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-md relative z-10 animate-pulse"
+                          >
+                            Lihat Tawaran
                           </button>
                         ) : (
                           <span className={`text-xs px-3 py-1 rounded-full status-${job.match_status}`}>
@@ -566,15 +621,42 @@ export default function TalentDashboard() {
                           <div className="text-xs text-surface-400">{job.client_name}</div>
                         </div>
                         <span className={`text-xs px-3 py-1 rounded-full status-${job.status}`}>
-                          {job.status === "in_progress" ? "In Progress" : job.status === "completed" ? "Selesai" : job.status}
+                          {job.status === "in_progress" ? "In Progress" 
+                           : job.status === "submitted_for_review" ? "Menunggu Review" 
+                           : job.status === "revision_requested" ? "Revisi Diminta"
+                           : job.status === "completed" ? "Selesai" : job.status}
                         </span>
                       </div>
                       <JobStatusTracker status={job.status} />
-                      {job.status === "completed" && (
-                        <div className="mt-4 pt-4 border-t border-surface-200">
-                          <RatingStars rating={4.8} reviewCount={3} size={14} />
-                        </div>
-                      )}
+                      
+                      {/* Deliverable Actions */}
+                      <div className="mt-4 pt-4 border-t border-surface-200">
+                        {job.status === "in_progress" || job.status === "revision_requested" ? (
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-surface-500">
+                              {job.status === "revision_requested" ? "Client meminta revisi. Silakan perbaiki dan unggah ulang." : "Sudah selesai mengerjakan?"}
+                            </span>
+                            <button
+                              onClick={() => handleUploadDeliverable(job.job_id)}
+                              disabled={uploadingDeliverableId === job.job_id}
+                              className="btn-primary text-xs px-4 py-2 flex items-center gap-2"
+                            >
+                              <Icon name="file" size={14} />
+                              {uploadingDeliverableId === job.job_id ? "Mengirim..." : "Unggah Hasil"}
+                            </button>
+                          </div>
+                        ) : job.status === "submitted_for_review" ? (
+                          <div className="flex items-center gap-2 text-sm text-surface-600 bg-surface-50 p-3 rounded-lg border border-surface-100">
+                            <Icon name="check" className="text-primary-600" size={16} />
+                            Hasil kerja telah dikirim, menunggu review dari Client.
+                          </div>
+                        ) : job.status === "completed" && (
+                          <div className="text-center">
+                            <div className="text-xs font-semibold text-accent-600 mb-2">Job Selesai!</div>
+                            <RatingStars rating={4.8} reviewCount={3} size={14} />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -583,6 +665,79 @@ export default function TalentDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Offer Modal */}
+      {offerModalJob && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-surface-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-slide-up">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-accent-50 text-accent-600 flex items-center justify-center">
+                <Icon name="briefcase" size={20} />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-surface-900">Tawaran Job</h3>
+                <p className="text-xs text-surface-500">dari {offerModalJob.client_name}</p>
+              </div>
+            </div>
+            
+            <div className="p-4 rounded-xl bg-surface-50 border border-surface-200 mb-6">
+              <div className="font-semibold text-sm text-surface-900 mb-2">{offerModalJob.title}</div>
+              <div className="flex flex-col gap-2 text-xs text-surface-600">
+                <div className="flex justify-between">
+                  <span>Budget:</span>
+                  <span className="font-medium">Rp {Number(offerModalJob.budget_max || offerModalJob.budget_min).toLocaleString("id-ID")}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Deadline:</span>
+                  <span className="font-medium">{offerModalJob.deadline ? new Date(offerModalJob.deadline).toLocaleDateString("id-ID") : "-"}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-xs font-bold text-surface-700 mb-2">
+                Alasan Penolakan (wajib jika menolak)
+              </label>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Misal: Sedang banyak antrean job lain..."
+                className="w-full text-sm p-3 rounded-xl border border-surface-200 focus:outline-none focus:border-primary-500 bg-white min-h-[80px]"
+                disabled={processingOffer}
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleRespondOffer("rejected")}
+                disabled={processingOffer || !rejectReason.trim()}
+                className="flex-1 py-2 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors disabled:opacity-50"
+              >
+                Tolak Tawaran
+              </button>
+              <button
+                onClick={() => handleRespondOffer("accepted")}
+                disabled={processingOffer}
+                className="flex-1 btn-primary py-2 text-sm flex items-center justify-center gap-2"
+              >
+                {processingOffer ? (
+                  <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+                ) : (
+                  <>Terima Tawaran</>
+                )}
+              </button>
+            </div>
+            
+            <button
+              onClick={() => { setOfferModalJob(null); setRejectReason(""); }}
+              className="absolute top-4 right-4 text-surface-400 hover:text-surface-700"
+              disabled={processingOffer}
+            >
+              <Icon name="x" size={20} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

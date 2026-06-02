@@ -11,11 +11,11 @@ export async function PATCH(
     const { id } = await params;
 
     const body = await request.json();
-    const { status } = body;
+    const { status, rejection_reason } = body;
 
-    if (!["applied", "accepted", "rejected"].includes(status)) {
+    if (!["applied", "offered", "accepted", "rejected"].includes(status)) {
       return NextResponse.json(
-        { success: false, message: "Status harus applied, accepted, atau rejected" },
+        { success: false, message: "Status harus applied, offered, accepted, atau rejected" },
         { status: 400 }
       );
     }
@@ -34,59 +34,76 @@ export async function PATCH(
 
     const isTalentOwner = session.role === "talent" && session.userId === match.talentProfile.userId;
     const isClientOwner = session.role === "client" && session.userId === match.job.clientUserId;
+    
     if (status === "applied" && !isTalentOwner) {
       return NextResponse.json(
         { success: false, message: "Hanya talenta pemilik match yang bisa melamar" },
         { status: 403 }
       );
     }
-    if ((status === "accepted" || status === "rejected") && !isClientOwner) {
+    if (status === "offered" && !isClientOwner) {
       return NextResponse.json(
-        { success: false, message: "Hanya client pemilik job yang bisa mengubah status ini" },
+        { success: false, message: "Hanya client yang bisa mengirim tawaran" },
+        { status: 403 }
+      );
+    }
+    // Allow both talent and client to accept/reject depending on the scenario
+    if ((status === "accepted" || status === "rejected") && !isClientOwner && !isTalentOwner) {
+      return NextResponse.json(
+        { success: false, message: "Hanya pihak terkait yang bisa mengubah status ini" },
         { status: 403 }
       );
     }
 
     await prisma.jobMatch.update({
       where: { id },
-      data: { status },
+      data: { 
+        status,
+        rejectionReason: rejection_reason || null
+      },
     });
 
-    // Send notification
+    // Send notification based on PRD 4B.4
     if (status === "applied") {
-      // Notify the client
       await prisma.notification.create({
         data: {
           userId: match.job.clientUserId,
-          type: "job_accepted",
-          message: `Talenta telah melamar untuk job: ${match.job.title}`,
+          type: "new_application",
+          message: `Ada talenta baru melamar ${match.job.title}`,
+          relatedJobId: match.jobId,
+        },
+      });
+    } else if (status === "offered") {
+      await prisma.notification.create({
+        data: {
+          userId: match.talentProfile.userId,
+          type: "job_offer",
+          message: `Kamu mendapat tawaran job dari Client untuk: ${match.job.title}`,
           relatedJobId: match.jobId,
         },
       });
     } else if (status === "accepted") {
-      // Update job status to in_progress
-      await prisma.job.update({
-        where: { id: match.jobId },
-        data: { status: "in_progress" },
-      });
-
-      await prisma.notification.create({
-        data: {
-          userId: match.talentProfile.userId,
-          type: "job_accepted",
-          message: `Selamat! Kamu diterima untuk job: ${match.job.title}`,
-          relatedJobId: match.jobId,
-        },
-      });
+      if (session.role === "talent") {
+        await prisma.notification.create({
+          data: {
+            userId: match.job.clientUserId,
+            type: "offer_accepted",
+            message: `Talenta menerima tawaran untuk ${match.job.title}. Konfirmasi pembayaran.`,
+            relatedJobId: match.jobId,
+          },
+        });
+      }
     } else if (status === "rejected") {
-      await prisma.notification.create({
-        data: {
-          userId: match.talentProfile.userId,
-          type: "job_rejected",
-          message: `Job ${match.job.title} tidak dilanjutkan.`,
-          relatedJobId: match.jobId,
-        },
-      });
+      if (session.role === "talent") {
+        await prisma.notification.create({
+          data: {
+            userId: match.job.clientUserId,
+            type: "offer_rejected",
+            message: `Talenta menolak tawaran job ${match.job.title}`,
+            relatedJobId: match.jobId,
+          },
+        });
+      }
     }
 
     return NextResponse.json({
