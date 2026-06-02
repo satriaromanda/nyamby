@@ -62,7 +62,7 @@ function ScoreRing({ score }: { score: number }) {
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
           className="text-2xl font-bold"
-          style={{ fontFamily: "Outfit", color }}
+          style={{  color }}
         >
           {Math.round(score)}%
         </span>
@@ -293,7 +293,7 @@ export default function JobDetailPage() {
           <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
           <h2
             className="text-xl font-bold mb-2 text-surface-900"
-            style={{ fontFamily: "Outfit" }}
+            
           >
             Job Tidak Ditemukan
           </h2>
@@ -397,7 +397,7 @@ export default function JobDetailPage() {
                   </div>
                   <h1
                     className="text-2xl font-bold text-surface-900 mb-1"
-                    style={{ fontFamily: "Outfit" }}
+                    
                   >
                     {job.title}
                   </h1>
@@ -656,7 +656,7 @@ export default function JobDetailPage() {
                   <Icon name="spark" className="mx-auto mb-3 text-primary-600" size={30} />
                   <h3
                     className="font-bold text-sm mb-2 text-surface-900"
-                    style={{ fontFamily: "Outfit" }}
+                    
                   >
                     Tertarik dengan job ini?
                   </h3>

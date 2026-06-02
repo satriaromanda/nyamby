@@ -47,7 +47,8 @@ export interface SkillGapResult {
 
 export async function generateJobMatches(
   job: JobForMatching,
-  talents: TalentForMatching[]
+  talents: TalentForMatching[],
+  retryCount = 0
 ): Promise<MatchResult[]> {
   if (!openai) {
     console.warn("[AI] No OPENAI_API_KEY - using mock job matching");
@@ -77,7 +78,12 @@ Selalu respons dalam format JSON object dengan key "matches" berisi array. Janga
     const matches = Array.isArray(parsed) ? parsed : parsed.matches || parsed.results || [];
     return matches as MatchResult[];
   } catch (error) {
-    console.error("[AI] Job matching failed, using mock:", error);
+    if (retryCount < 1) {
+      console.warn("[AI] Job matching failed, retrying in 5s...", error);
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      return generateJobMatches(job, talents, retryCount + 1);
+    }
+    console.error("[AI] Job matching failed twice, using mock:", error);
     return generateMockMatches(talents);
   }
 }
@@ -91,7 +97,8 @@ export async function generateSkillGapAnalysis(
     bio?: string | null;
     cv_text?: string | null;
     portfolio_context?: string | null;
-  }
+  },
+  retryCount = 0
 ): Promise<SkillGapResult> {
   if (!openai) {
     console.warn("[AI] No OPENAI_API_KEY - using mock skill gap analysis");
@@ -133,7 +140,12 @@ Respons dalam format JSON dengan recommendations, summary, dan profile_completen
 
     return JSON.parse(content) as SkillGapResult;
   } catch (error) {
-    console.error("[AI] Skill gap analysis failed, using mock:", error);
+    if (retryCount < 1) {
+      console.warn("[AI] Skill gap analysis failed, retrying in 5s...", error);
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      return generateSkillGapAnalysis(talentSkills, category, marketDemand, context, retryCount + 1);
+    }
+    console.error("[AI] Skill gap analysis failed twice, using mock:", error);
     return generateMockSkillGap(category);
   }
 }

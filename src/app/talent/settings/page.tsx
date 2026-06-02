@@ -171,7 +171,7 @@ export default function TalentSettingsPage() {
         <div className="mb-8">
           <h1
             className="text-3xl font-bold mb-2 text-surface-900"
-            style={{ fontFamily: "Outfit" }}
+            
           >
             Pengaturan Profil
           </h1>
@@ -194,7 +194,7 @@ export default function TalentSettingsPage() {
                   profile.full_name[0]
                 )}
               </div>
-              <h3 className="font-bold text-surface-900 text-lg" style={{ fontFamily: "Outfit" }}>
+              <h3 className="font-bold text-surface-900 text-lg" >
                 {profile.full_name}
               </h3>
               <div className="flex items-center justify-center gap-1.5 mt-1 mb-2">
@@ -247,7 +247,7 @@ export default function TalentSettingsPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Bio */}
             <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
-              <h2 className="font-bold text-lg mb-1 text-surface-900" style={{ fontFamily: "Outfit" }}>
+              <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 Informasi Profil
               </h2>
               <p className="text-xs text-surface-400 mb-5">Informasi ini akan terlihat oleh client.</p>
@@ -298,7 +298,7 @@ export default function TalentSettingsPage() {
 
             {/* Rate & Availability */}
             <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-              <h2 className="font-bold text-lg mb-1 text-surface-900" style={{ fontFamily: "Outfit" }}>
+              <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 Rate & Ketersediaan
               </h2>
               <p className="text-xs text-surface-400 mb-5">
@@ -380,7 +380,7 @@ export default function TalentSettingsPage() {
 
             {/* Account Info (read-only) */}
             <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
-              <h2 className="font-bold text-lg mb-1 text-surface-900" style={{ fontFamily: "Outfit" }}>
+              <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 <Icon name="lock" className="inline mr-1.5 text-trust-500" size={20} />
                 Informasi Akun
               </h2>

@@ -382,7 +382,7 @@ export default function ClientDashboard() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
+            <h1 className="text-3xl font-bold mb-2 text-surface-900" >
               Dashboard Client
             </h1>
             <p className="text-surface-500">
@@ -401,7 +401,7 @@ export default function ClientDashboard() {
           ].map((stat, i) => (
             <div key={i} className="glass rounded-xl p-4">
               <Icon name={stat.icon} className="mb-1 text-primary-600" size={20} />
-              <div className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>{stat.value}</div>
+              <div className="text-2xl font-bold text-surface-900" >{stat.value}</div>
               <div className="text-xs text-surface-400">{stat.label}</div>
             </div>
           ))}
@@ -625,7 +625,7 @@ export default function ClientDashboard() {
         ) : (
           <div className="glass rounded-xl p-16 text-center">
             <Icon name="file" className="mx-auto text-surface-300" size={48} />
-            <h3 className="text-xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>Belum ada job</h3>
+            <h3 className="text-xl font-bold mb-2 text-surface-900" >Belum ada job</h3>
             <p className="text-surface-500 text-sm mb-6">Post job pertamamu dan biarkan AI mencarikan talenta terbaik.</p>
             <Link href="/client/post-job" className="btn-primary">
               + Post Job Baru

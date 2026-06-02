@@ -50,7 +50,7 @@ export default function HowItWorksPage() {
             <span>AI enrichment</span>
             <span>Trust-first marketplace</span>
           </div>
-          <h1 className="text-4xl font-bold text-surface-900 mb-4" style={{ fontFamily: "Outfit" }}>
+          <h1 className="text-4xl font-bold text-surface-900 mb-4" >
             Cara Nyamby Mengubah Nyambi Menjadi Karir
           </h1>
           <p className="text-surface-500 max-w-2xl">
@@ -70,7 +70,7 @@ export default function HowItWorksPage() {
                 </div>
                 <div>
                   <div className="text-xs text-surface-400 mb-1">Step {index + 1}</div>
-                  <h2 className="font-bold text-surface-900 mb-2" style={{ fontFamily: "Outfit" }}>
+                  <h2 className="font-bold text-surface-900 mb-2" >
                     {step.title}
                   </h2>
                   <p className="text-sm text-surface-500 leading-relaxed">{step.description}</p>
@@ -82,7 +82,7 @@ export default function HowItWorksPage() {
 
         <section className="grid lg:grid-cols-3 gap-5">
           <div className="glass rounded-xl p-6">
-            <h2 className="font-bold text-surface-900 mb-2" style={{ fontFamily: "Outfit" }}>
+            <h2 className="font-bold text-surface-900 mb-2" >
               Untuk Talenta
             </h2>
             <p className="text-sm text-surface-500 mb-4">
@@ -93,7 +93,7 @@ export default function HowItWorksPage() {
             </Link>
           </div>
           <div className="glass rounded-xl p-6">
-            <h2 className="font-bold text-surface-900 mb-2" style={{ fontFamily: "Outfit" }}>
+            <h2 className="font-bold text-surface-900 mb-2" >
               Untuk Client
             </h2>
             <p className="text-sm text-surface-500 mb-4">
@@ -104,7 +104,7 @@ export default function HowItWorksPage() {
             </Link>
           </div>
           <div className="glass rounded-xl p-6">
-            <h2 className="font-bold text-surface-900 mb-2" style={{ fontFamily: "Outfit" }}>
+            <h2 className="font-bold text-surface-900 mb-2" >
               Untuk Demo
             </h2>
             <p className="text-sm text-surface-500 mb-4">

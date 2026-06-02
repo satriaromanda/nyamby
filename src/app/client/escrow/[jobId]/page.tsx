@@ -21,7 +21,7 @@ export default async function EscrowPaymentPage({
   const job = await prisma.job.findUnique({
     where: { id: jobId, clientUserId: session.userId },
     include: {
-      matches: {
+      jobMatches: {
         where: { status: "accepted" },
         include: {
           talentProfile: {
@@ -35,15 +35,14 @@ export default async function EscrowPaymentPage({
   if (!job) {
     redirect("/client/dashboard");
   }
-
-  const acceptedMatch = job.matches[0];
+  const acceptedMatch = job.jobMatches[0];
   if (!acceptedMatch) {
     // No talent accepted yet
     redirect("/client/dashboard");
   }
 
   // Check if escrow already exists
-  const existingEscrow = await prisma.escrow.findUnique({
+  const existingEscrow = await prisma.escrowTransaction.findUnique({
     where: { jobId },
   });
 

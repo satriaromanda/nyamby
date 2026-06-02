@@ -155,7 +155,7 @@ export default function ClientSettingsPage() {
         <div className="mb-8">
           <h1
             className="text-3xl font-bold mb-2 text-surface-900"
-            style={{ fontFamily: "Outfit" }}
+            
           >
             Pengaturan Profil
           </h1>
@@ -180,7 +180,7 @@ export default function ClientSettingsPage() {
               </div>
               <h3
                 className="font-bold text-surface-900 text-lg"
-                style={{ fontFamily: "Outfit" }}
+                
               >
                 {profile.full_name}
               </h3>
@@ -219,7 +219,7 @@ export default function ClientSettingsPage() {
                     </div>
                     <span
                       className="text-lg font-bold text-surface-900"
-                      style={{ fontFamily: "Outfit" }}
+                      
                     >
                       {stat.value}
                     </span>
@@ -260,7 +260,7 @@ export default function ClientSettingsPage() {
             <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
-                style={{ fontFamily: "Outfit" }}
+                
               >
                 <Icon name="user" className="inline mr-1.5 text-primary-600" size={20} />Informasi Profil
               </h2>
@@ -291,7 +291,7 @@ export default function ClientSettingsPage() {
             <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
-                style={{ fontFamily: "Outfit" }}
+                
               >
                 <Icon name="lock" className="inline mr-1.5 text-trust-500" size={20} />Informasi Akun
               </h2>
@@ -325,7 +325,7 @@ export default function ClientSettingsPage() {
             <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
-                style={{ fontFamily: "Outfit" }}
+                
               >
                 <Icon name="external" className="inline mr-1.5 text-primary-600" size={20} />Tentang Platform
               </h2>

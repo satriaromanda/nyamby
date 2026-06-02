@@ -62,7 +62,7 @@ export default async function TalentPublicProfilePage({
                   talent.user.fullName[0]
                 )}
               </div>
-              <h1 className="text-2xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
+              <h1 className="text-2xl font-bold text-surface-900" >
                 {talent.user.fullName}
               </h1>
               <p className="text-sm text-surface-500">{categoryLabel}</p>
@@ -105,7 +105,7 @@ export default async function TalentPublicProfilePage({
           <section className="lg:col-span-2 space-y-5">
             <div className="glass rounded-xl p-7">
               <div className="flex items-center justify-between gap-3 mb-4">
-                <h2 className="text-xl font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
+                <h2 className="text-xl font-bold text-surface-900" >
                   Profil Publik
                 </h2>
                 <span className="text-xs px-3 py-1 rounded-full bg-[#FAEEDA] text-[#854F0B]">
@@ -124,7 +124,7 @@ export default async function TalentPublicProfilePage({
             </div>
 
             <div className="glass rounded-xl p-7">
-              <h2 className="text-lg font-bold text-surface-900 mb-4" style={{ fontFamily: "Outfit" }}>
+              <h2 className="text-lg font-bold text-surface-900 mb-4" >
                 Skill Map
               </h2>
               <div className="flex flex-wrap gap-2">
@@ -139,7 +139,7 @@ export default async function TalentPublicProfilePage({
 
             <div className="glass rounded-xl p-7 relative overflow-hidden">
               <div className="flex items-center justify-between gap-3 mb-4">
-                <h2 className="text-lg font-bold text-surface-900" style={{ fontFamily: "Outfit" }}>
+                <h2 className="text-lg font-bold text-surface-900" >
                   AI Match Signals
                 </h2>
                 <span className="text-xs px-3 py-1 rounded-full bg-[#FAEEDA] text-[#854F0B]">
@@ -159,7 +159,7 @@ export default async function TalentPublicProfilePage({
                           {match?.reasoning || "AI menilai kecocokan berdasarkan skill, CV, dan portfolio."}
                         </div>
                       </div>
-                      <div className="text-xl font-bold text-[#534AB7]" style={{ fontFamily: "Outfit" }}>
+                      <div className="text-xl font-bold text-[#534AB7]" >
                         {match ? `${Math.round(Number(match.matchScore))}%` : "87%"}
                       </div>
                     </div>

@@ -117,7 +117,7 @@ export default function JobsPage() {
       </nav>
 
       <main role="main" className="max-w-7xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold mb-2 text-surface-900 flex items-center gap-3" style={{ fontFamily: "Outfit" }}>
+        <h1 className="text-3xl font-bold mb-2 text-surface-900 flex items-center gap-3" >
           <Icon name="briefcase" className="text-primary-600" size={28} />
           Job Aktif
         </h1>
@@ -200,7 +200,7 @@ export default function JobsPage() {
                               className={`text-2xl font-bold ${
                                 existingMatch.match_score >= 80 ? "text-accent-600" : "text-primary-600"
                               }`}
-                              style={{ fontFamily: "Outfit" }}
+                              
                             >
                               {Math.round(existingMatch.match_score)}%
                             </div>
@@ -230,7 +230,7 @@ export default function JobsPage() {
         ) : (
           <div className="glass rounded-xl p-16 text-center">
             <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
-            <h3 className="text-xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>Belum ada job aktif</h3>
+            <h3 className="text-xl font-bold mb-2 text-surface-900" >Belum ada job aktif</h3>
             <p className="text-surface-400 text-sm">Job baru akan muncul saat client posting.</p>
           </div>
         )}

@@ -32,8 +32,8 @@
   --color-surface-950: #020617;
 
   /* Semantic colors — matched to logo palette */
-  --color-ai-500: #1A4EC7;
-  --color-ai-600: #0D2661;
+  --color-ai-500: #2563EB;
+  --color-ai-600: #1d4ed8;
   --color-ai-50: #e8f0fe;
   --color-ai-100: #d2e2fc;
 
@@ -64,7 +64,7 @@
 }
 
 body {
-  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: "Plus Jakarta Sans", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -98,7 +98,7 @@ body {
 /* ─── Gradients ───────────────────────────────────────────────── */
 
 .gradient-primary {
-  background: linear-gradient(135deg, #12378C, #0054F8);
+  background: linear-gradient(135deg, var(--color-primary-700), var(--color-primary-500));
 }
 
 .gradient-hero {
@@ -114,7 +114,7 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #12378C 0%, #0054F8 100%);
+  background: linear-gradient(135deg, var(--color-primary-700) 0%, var(--color-primary-500) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -290,7 +290,7 @@ body {
 /* ─── Button Styles ───────────────────────────────────────────── */
 
 .btn-primary {
-  background: #0251EB;
+  background: #2563EB;
   color: white;
   font-weight: 600;
   padding: 16px 28px;

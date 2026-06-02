@@ -128,7 +128,7 @@ export default function OnboardingPage() {
           <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-primary flex items-center justify-center text-4xl text-white animate-pulse-glow">
             <Icon name="ai" size={40} />
           </div>
-          <h2 className="text-2xl font-bold mb-3 text-surface-900" style={{ fontFamily: "Outfit" }}>
+          <h2 className="text-2xl font-bold mb-3 text-surface-900" >
             AI sedang menganalisis profilmu...
           </h2>
           <p className="text-surface-500 text-sm mb-6">
@@ -171,7 +171,7 @@ export default function OnboardingPage() {
           {/* Step 1: Category */}
           {step === 1 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
+              <h2 className="text-2xl font-bold mb-2 text-surface-900" >
                 Pilih Kategorimu
               </h2>
               <p className="text-surface-500 text-sm mb-8">
@@ -213,7 +213,7 @@ export default function OnboardingPage() {
           {/* Step 2: Skills */}
           {step === 2 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
+              <h2 className="text-2xl font-bold mb-2 text-surface-900" >
                 Pilih Skill-mu
               </h2>
               <p className="text-surface-500 text-sm mb-6">
@@ -292,7 +292,7 @@ export default function OnboardingPage() {
           {/* Step 3: Profile Details */}
           {step === 3 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
+              <h2 className="text-2xl font-bold mb-2 text-surface-900" >
                 Detail Profilmu
               </h2>
               <p className="text-surface-500 text-sm mb-6">

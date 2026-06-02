@@ -62,7 +62,7 @@ function RegisterForm() {
         </Link>
 
         <div className="glass rounded-xl p-8 animate-scale-in">
-          <h1 className="text-2xl font-bold text-center mb-2 text-surface-900" style={{ fontFamily: "Outfit" }}>
+          <h1 className="text-2xl font-bold text-center mb-2 text-surface-900" >
             Buat Akun Baru
           </h1>
           <p className="text-surface-500 text-sm text-center mb-8">

@@ -61,7 +61,7 @@ export default async function TalentsPage({
               <span>AI-powered</span>
               <span>Public talent discovery</span>
             </div>
-            <h1 className="text-3xl font-bold text-surface-900 mb-2" style={{ fontFamily: "Outfit" }}>
+            <h1 className="text-3xl font-bold text-surface-900 mb-2" >
               Browse Talenta
             </h1>
             <p className="text-surface-500">
@@ -92,7 +92,7 @@ export default async function TalentsPage({
 
         {talents.length === 0 ? (
           <div className="glass rounded-xl p-12 text-center">
-            <h2 className="text-xl font-bold text-surface-900 mb-2" style={{ fontFamily: "Outfit" }}>
+            <h2 className="text-xl font-bold text-surface-900 mb-2" >
               Belum ada talenta yang cocok
             </h2>
             <p className="text-sm text-surface-500">Coba ubah kategori atau skill pencarian.</p>
