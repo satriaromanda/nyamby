@@ -43,8 +43,8 @@ export default function TalentsPage() {
         });
         const res = await fetch(`/api/talents?${query.toString()}`);
         const data = await res.json();
-        setTalents(data.talents);
-        setTotalPages(data.totalPages);
+        setTalents(data.talents || []);
+        setTotalPages(data.totalPages || 1);
       } catch (error) {
         console.error("Failed to fetch talents", error);
       } finally {
@@ -146,7 +146,12 @@ export default function TalentsPage() {
           </div>
         </div>
 
-        {talents.length === 0 ? (
+        {loading ? (
+          <div className="glass rounded-xl p-16 text-center">
+            <div className="animate-spin w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full mx-auto mb-4" />
+            <h3 className="text-xl font-bold mb-2 text-surface-900">Memuat data talenta...</h3>
+          </div>
+        ) : !talents || talents.length === 0 ? (
           <div className="glass rounded-xl p-16 text-center">
             <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
             <h3 className="text-xl font-bold mb-2 text-surface-900">Belum ada talenta ditemukan</h3>
