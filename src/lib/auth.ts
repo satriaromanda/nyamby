@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import { jwtVerify, SignJWT } from "jose";
 import { cookies, headers } from "next/headers";
 
 const JWT_SECRET = process.env.JWT_SECRET || "nyamby-dev-secret-change-in-prod";
@@ -11,13 +11,20 @@ export interface SessionPayload {
   fullName: string;
 }
 
-export function signToken(payload: SessionPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+const secretKey = new TextEncoder().encode(JWT_SECRET);
+
+export async function signToken(payload: SessionPayload): Promise<string> {
+  return await new SignJWT(payload as any)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("7d")
+    .sign(secretKey);
 }
 
-export function verifyToken(token: string): SessionPayload | null {
+export async function verifyToken(token: string): Promise<SessionPayload | null> {
   try {
-    return jwt.verify(token, JWT_SECRET) as SessionPayload;
+    const { payload } = await jwtVerify(token, secretKey);
+    return payload as unknown as SessionPayload;
   } catch {
     return null;
   }
@@ -36,7 +43,7 @@ export async function getSession(): Promise<SessionPayload | null> {
   }
 
   if (!token) return null;
-  return verifyToken(token);
+  return await verifyToken(token);
 }
 
 export async function setSessionCookie(token: string) {

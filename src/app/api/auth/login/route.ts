@@ -35,10 +35,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const token = signToken({
+    const token = await signToken({
       userId: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role as "talent" | "client",
       fullName: user.fullName,
     });
     await setSessionCookie(token);

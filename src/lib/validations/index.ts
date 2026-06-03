@@ -3,17 +3,14 @@ import { z } from "zod";
 export const registerTalentSchema = z.object({
   email: z.string().email({ message: "Format email tidak valid" }),
   password: z.string().min(8, { message: "Password minimal 8 karakter" }),
-  full_name: z.string().min(1, { message: "Nama lengkap wajib diisi" }),
+  full_name: z.string().min(2, { message: "Nama lengkap minimal 2 karakter" }).max(255),
   role: z.literal("talent"),
 });
 
 export const registerClientSchema = z.object({
   email: z.string().email({ message: "Format email tidak valid" }),
   password: z.string().min(8, { message: "Password minimal 8 karakter" }),
-  full_name: z.string().min(1, { message: "Nama PIC wajib diisi" }),
-  company_name: z.string().min(1, { message: "Nama Perusahaan wajib diisi" }),
-  industry: z.string().min(1, { message: "Industri wajib diisi" }),
-  whatsapp_number: z.string().min(1, { message: "No WhatsApp wajib diisi" }),
+  full_name: z.string().min(2, { message: "Nama PIC minimal 2 karakter" }).max(255),
   role: z.literal("client"),
 });
 
@@ -23,8 +20,8 @@ export const loginSchema = z.object({
 });
 
 export const jobCreateSchema = z.object({
-  title: z.string().min(1, { message: "Judul wajib diisi" }),
-  description: z.string().min(1, { message: "Deskripsi wajib diisi" }),
+  title: z.string().min(5, { message: "Judul minimal 5 karakter" }).max(255),
+  description: z.string().min(20, { message: "Deskripsi minimal 20 karakter" }),
   category: z.enum(["web_dev", "graphic_designer"], { message: "Kategori tidak valid" }),
   budget_min: z.number().nullable().optional(),
   budget_max: z.number().nullable().optional(),
@@ -38,7 +35,7 @@ export const jobCreateSchema = z.object({
 });
 
 export const talentProfileUpdateSchema = z.object({
-  bio: z.string().optional(),
+  bio: z.string().max(500).optional(),
   rate_per_hour: z.number().nullable().optional(),
   rate_per_project: z.number().nullable().optional(),
   availability: z.enum(["available", "busy", "unavailable"]).optional(),
@@ -54,3 +51,28 @@ export const talentProfileUpdateSchema = z.object({
     })
   ).optional(),
 });
+
+export const clientOnboardingSchema = z.object({
+  company_name: z.string().max(255).optional(),
+  industry: z.enum(["tech", "creative", "retail", "f&b", "education", "other"], {
+    message: "Industri wajib dipilih",
+  }),
+  company_size: z.enum(["solo", "2-10", "11-50", "51+"]).optional(),
+  location: z.string().min(2, { message: "Lokasi wajib diisi" }),
+  description: z.string().optional(),
+  website_url: z.string().url({ message: "Format URL tidak valid" }).optional().or(z.literal("")),
+  whatsapp_number: z.string().optional(),
+});
+
+export const clientProfileUpdateSchema = z.object({
+  full_name: z.string().min(2).max(255).optional(),
+  company_name: z.string().max(255).optional(),
+  industry: z.enum(["tech", "creative", "retail", "f&b", "education", "other"]).optional(),
+  company_size: z.enum(["solo", "2-10", "11-50", "51+"]).optional(),
+  location: z.string().min(2).optional(),
+  description: z.string().optional(),
+  website_url: z.string().url().optional().or(z.literal("")),
+  whatsapp_number: z.string().optional(),
+  avatar_url: z.string().optional(),
+});
+

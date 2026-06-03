@@ -42,36 +42,21 @@ export async function POST(request: NextRequest) {
     // Create user
     const passwordHash = await bcrypt.hash(password, 10);
     
-    // Transaction to create User and ClientProfile if client
-    const user = await prisma.$transaction(async (tx) => {
-      const newUser = await tx.user.create({
-        data: {
-          email,
-          passwordHash,
-          role,
-          fullName: full_name,
-        },
-      });
-
-      if (role === "client" && "company_name" in result.data) {
-        await tx.clientProfile.create({
-          data: {
-            userId: newUser.id,
-            companyName: result.data.company_name,
-            industry: result.data.industry,
-            whatsappNumber: result.data.whatsapp_number,
-          }
-        });
-      }
-
-      return newUser;
+    // Create user (client profile is created during separate onboarding)
+    const user = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        role,
+        fullName: full_name,
+      },
     });
 
     // Auto-login after register
-    const token = signToken({
+    const token = await signToken({
       userId: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role as "talent" | "client",
       fullName: user.fullName,
     });
     await setSessionCookie(token);

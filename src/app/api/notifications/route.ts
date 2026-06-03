@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { getPaginationParams, buildPaginationMeta } from "@/lib/paginate";
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,19 +9,22 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const unreadOnly = searchParams.get("unread_only") === "true";
+    const { page, per_page, skip, take } = getPaginationParams(searchParams, 20, 50);
 
     const where: Record<string, unknown> = { userId: session.userId };
     if (unreadOnly) where.isRead = false;
 
-    const [notifications, unreadCount] = await Promise.all([
+    const [notifications, unreadCount, total] = await Promise.all([
       prisma.notification.findMany({
         where,
         orderBy: { createdAt: "desc" },
-        take: 50,
+        skip,
+        take,
       }),
       prisma.notification.count({
         where: { userId: session.userId, isRead: false },
       }),
+      prisma.notification.count({ where }),
     ]);
 
     return NextResponse.json({
@@ -33,9 +37,11 @@ export async function GET(request: NextRequest) {
           message: n.message,
           related_job_id: n.relatedJobId,
           is_read: n.isRead,
+          metadata: n.metadata,
           created_at: n.createdAt,
         })),
       },
+      pagination: buildPaginationMeta(total, page, per_page),
     });
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
