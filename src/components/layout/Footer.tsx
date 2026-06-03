@@ -15,16 +15,16 @@ export function Footer() {
               AI Career Companion untuk talenta Indonesia. Dari nyambi menjadi karier.
             </p>
             <div className="flex gap-4">
-              <Link href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-200 text-surface-500 hover:text-surface-900 hover:border-surface-300 transition-colors">
+              <Link href="#" aria-label="Twitter" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-200 text-surface-500 hover:text-surface-900 hover:border-surface-300 transition-colors">
                 <Icon name="twitter" size={18} />
               </Link>
-              <Link href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-200 text-surface-500 hover:text-surface-900 hover:border-surface-300 transition-colors">
+              <Link href="#" aria-label="Instagram" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-200 text-surface-500 hover:text-surface-900 hover:border-surface-300 transition-colors">
                 <Icon name="instagram" size={18} />
               </Link>
-              <Link href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-200 text-surface-500 hover:text-surface-900 hover:border-surface-300 transition-colors">
+              <Link href="#" aria-label="LinkedIn" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-200 text-surface-500 hover:text-surface-900 hover:border-surface-300 transition-colors">
                 <Icon name="linkedin" size={18} />
               </Link>
-              <Link href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-200 text-surface-500 hover:text-surface-900 hover:border-surface-300 transition-colors">
+              <Link href="#" aria-label="GitHub" className="w-10 h-10 flex items-center justify-center rounded-full border border-surface-200 text-surface-500 hover:text-surface-900 hover:border-surface-300 transition-colors">
                 <Icon name="github" size={18} />
               </Link>
             </div>
