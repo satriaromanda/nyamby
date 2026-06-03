@@ -75,7 +75,7 @@ function ScoreRing({ score }: { score: number }) {
 
 /* ─── Job Status Tracker ────────────────────────────────────────── */
 
-function JobStatusTracker({ status }: { status: string }) {
+function JobStatusTracker({ status, onDispute }: { status: string; onDispute?: () => void }) {
   const steps = [
     { key: "active", label: "Aktif", icon: "file" as const },
     { key: "matched", label: "Matched", icon: "ai" as const },
@@ -103,38 +103,6 @@ function JobStatusTracker({ status }: { status: string }) {
   }
 
   return (
-    <div className="flex items-center gap-0 w-full">
-      {steps.map((step, i) => {
-        const isActive = i <= currentIndex;
-        const isCurrent = i === currentIndex;
-        return (
-          <div key={step.key} className="flex items-center flex-1 last:flex-none">
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-500 ${
-                  isCurrent
-                    ? "gradient-primary shadow-lg shadow-primary-500/20 scale-110 text-white"
-                    : isActive
-                      ? "bg-accent-500/10 text-accent-600"
-                      : "bg-surface-100 text-surface-400"
-                }`}
-              >
-                {isActive && i < currentIndex ? <Icon name="check" size={14} /> : <Icon name={step.icon} size={14} />}
-              </div>
-              <span
-                className={`text-[9px] mt-1 font-medium transition-colors ${
-                  isCurrent
-                    ? "text-primary-600"
-                    : isActive
-                      ? "text-accent-600"
-                      : "text-surface-300"
-                }`}
-              >
-                {step.label}
-              </span>
-            </div>
-            {i < steps.length - 1 && (
-              <div
     <div className="flex flex-col gap-4 w-full">
       <div className="flex items-center gap-0 w-full">
         {steps.map((step, i) => {
@@ -178,7 +146,7 @@ function JobStatusTracker({ status }: { status: string }) {
         })}
       </div>
       
-      {status === "in_progress" && (
+      {status === "in_progress" && onDispute && (
         <button
           onClick={onDispute}
           className="text-xs text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1 self-start ml-2"
@@ -334,7 +302,7 @@ export default function JobDetailPage() {
         setShowDisputeModal(false);
         setDisputeDesc("");
         // Optimistic UI update
-        setJob((prev) => (prev ? { ...prev, status: "disputed" as JobStatus } : prev));
+        setJob((prev) => (prev ? { ...prev, status: "disputed" } : prev));
       } else {
         showToast(d.error || "Gagal membuat laporan", "error");
       }
