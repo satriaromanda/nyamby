@@ -15,7 +15,7 @@ export default function TentangKamiPage() {
             Misi Kami
           </div>
           <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900">
-            Mengubah "Nyambi" <br className="hidden md:block"/>
+            Mengubah "Nyambi" <br className="hidden md:block" />
             Menjadi <span className="text-primary-600">Karier Profesional.</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
@@ -26,19 +26,42 @@ export default function TentangKamiPage() {
 
       {/* 2. Latar Belakang */}
       <section className="py-24 px-6 bg-white">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          <div className="order-2 md:order-1 relative">
-            <div className="absolute top-4 -left-4 w-full h-full bg-primary-100 rounded-3xl -z-10"></div>
-            <img src="/images/hero-mascot.png" alt="Tentang AyoNyamby" className="w-full rounded-3xl object-cover bg-slate-50 border border-slate-200" />
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+          <div className="space-y-6">
+            <h2 className="text-4xl font-extrabold mb-6 text-slate-900 tracking-tight">Cerita di Balik <span className="text-[#2563eb]">Nyamby</span></h2>
+
+            <div className="space-y-4 text-slate-600 leading-relaxed text-[15px]">
+              <p>
+                Kami melihat <strong>banyak talenta berbakat yang kesulitan menemukan peluang kerja yang sesuai</strong>, sementara banyak individu dan bisnis membutuhkan bantuan untuk menyelesaikan berbagai pekerjaan.
+              </p>
+              <p>
+                <strong>Di tengah berkembangnya pekerjaan remote, freelance, part-time, hingga layanan berbasis tugas harian,</strong> kami melihat kebutuhan akan platform yang mampu mempertemukan keduanya secara lebih mudah dan terpercaya.
+              </p>
+              <p>
+                Nyamby hadir sebagai jembatan antara talenta dan peluang, membantu siapa pun menemukan pekerjaan, proyek, maupun bantuan yang mereka butuhkan—mulai dari kebutuhan personal hingga profesional.
+              </p>
+            </div>
+
+            <div className="p-6 md:p-8 rounded-3xl border border-slate-200 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] mt-8">
+              <p className="italic text-slate-800 leading-relaxed text-[15px] font-medium">
+                "Kami percaya bahwa kesempatan tidak seharusnya dibatasi oleh lokasi, gelar, atau koneksi. Setiap orang berhak mendapatkan peluang untuk bekerja, berkembang, dan menghasilkan.
+                <br /><br />
+                Nyamby hadir untuk mempertemukan mereka yang membutuhkan bantuan dengan mereka yang memiliki kemampuan untuk membantu."
+              </p>
+            </div>
           </div>
-          <div className="order-1 md:order-2 space-y-6">
-            <h2 className="text-3xl font-bold mb-4">Cerita di Balik AyoNyamby</h2>
-            <p className="text-slate-500 leading-relaxed">
-              Semua berawal dari Bandar Lampung. Kami melihat teman-teman mahasiswa dan pekerja *part-time* yang memiliki skill *coding* dan desain kelas dunia, namun terjebak dalam *loop* lowongan kerja yang mensyaratkan "Pengalaman 5 Tahun".
-            </p>
-            <p className="text-slate-500 leading-relaxed">
-              Portofolio mereka luar biasa, tapi sering diremehkan karena tidak punya *title* korporat. Dari situlah kami membangun AyoNyamby: sebuah jembatan bertenaga AI yang menilai seseorang murni dari **apa yang bisa mereka lakukan**, bukan sekadar apa yang tertulis di CV formal mereka.
-            </p>
+
+          <div className="relative">
+            <div className="w-full aspect-square md:aspect-[4/5] bg-slate-50/50 rounded-3xl overflow-hidden flex items-center justify-center relative">
+              {/* Fallback Icon behind the image */}
+              <Icon name="image" size={48} className="absolute z-0 text-slate-200" />
+
+              <img
+                src="/images/cerita-mascot.png"
+                alt="Nyamby Mascot"
+                className="w-full h-full object-contain p-4 z-10 relative"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -53,7 +76,7 @@ export default function TentangKamiPage() {
                 <Icon name="check" size={24} />
               </div>
               <h3 className="font-bold text-xl mb-3">Meritokrasi Murni</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">Kami percaya bakat ada di mana-mana. Sistem kami buta terhadap latar belakang kampus atau perusahaan lama, dan hanya fokus pada *skill* aktual.</p>
+              <p className="text-slate-500 text-sm leading-relaxed">Kami percaya bakat ada di mana-mana. Sistem kami buta terhadap latar belakang kampus atau perusahaan lama, dan hanya fokus pada <strong>Skill</strong> aktual.</p>
             </div>
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
               <div className="w-12 h-12 bg-amber-100 text-amber-600 flex items-center justify-center rounded-2xl mb-6">
@@ -67,7 +90,7 @@ export default function TentangKamiPage() {
                 <Icon name="chart" size={24} />
               </div>
               <h3 className="font-bold text-xl mb-3">Pertumbuhan Agresif</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">Kami bukan sekadar *job portal*. Kami adalah inkubator karier Anda dengan fitur analisis dan rute belajar berkelanjutan.</p>
+              <p className="text-slate-500 text-sm leading-relaxed">Kami bukan sekadar <strong>Job Portal</strong>. Kami adalah inkubator karier Anda dengan fitur analisis dan rute belajar berkelanjutan.</p>
             </div>
           </div>
         </div>
@@ -77,18 +100,27 @@ export default function TentangKamiPage() {
       <section className="py-24 px-6 bg-white">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Bertemu dengan Tim</h2>
-          <p className="text-slate-500 mb-16 max-w-2xl mx-auto">Kami adalah sekumpulan desainer, *engineer*, dan pemimpi yang pernah berada di posisi Anda—memulai semuanya dari nyambi.</p>
-          <div className="grid md:grid-cols-4 gap-8">
-            {[1,2,3,4].map((i) => (
-               <div key={i} className="space-y-4">
-                 <div className="w-32 h-32 mx-auto bg-slate-200 rounded-full overflow-hidden">
-                   <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=NyambyTeam${i}`} alt="Team Member" />
-                 </div>
-                 <div>
-                   <h3 className="font-bold text-slate-900">Founder {i}</h3>
-                   <p className="text-sm text-primary-600">Position {i}</p>
-                 </div>
-               </div>
+          <p className="text-slate-500 mb-16 max-w-2xl mx-auto">Kami adalah sekumpulan desainer, engineer, dan pemimpi yang pernah berada di posisi Anda—memulai semuanya dari nyambi.</p>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { name: "Satria Romanda", role: "Co-Founder & Chief Product Officer", image: "/images/satria.jpg" },
+              { name: "Rahmat Ramadhan", role: "Co-Founder & Head of Design & Community", image: "/images/rahmat.jpg" },
+              { name: "Akbar Lubis", role: "Co-Founder & Chief Technology Officer", image: "/images/akbar.jpg" }
+            ].map((member, i) => (
+              <div key={i} className="space-y-4">
+                <div className="w-32 h-32 mx-auto bg-slate-100 rounded-full overflow-hidden flex items-center justify-center text-slate-400 relative border-4 border-white shadow-lg">
+                  <Icon name="user" size={40} className="absolute z-0 opacity-50" />
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover z-10 relative"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900">{member.name}</h3>
+                  <p className="text-sm text-primary-600">{member.role}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>

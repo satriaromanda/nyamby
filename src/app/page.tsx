@@ -90,9 +90,8 @@ function AnimateIn({
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ease-out ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      } ${className}`}
+      className={`transition-all duration-700 ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {children}
@@ -205,12 +204,6 @@ export default function LandingPage() {
                     className="transition-transform group-hover:translate-x-1"
                   />
                 </Link>
-                <a
-                  href="#demo"
-                  className="flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all text-slate-700 hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  Lihat Demo
-                </a>
               </div>
             </AnimateIn>
 
@@ -285,7 +278,7 @@ export default function LandingPage() {
             <div className="relative w-full max-w-[600px] aspect-square flex items-center justify-center">
               <Image
                 src="/images/hero-mascot.png"
-                alt="Nambi \u2014 AI mascot yang siap membantu karier kamu"
+                alt="Nyamby \u2014 AI mascot yang siap membantu karier kamu"
                 width={600}
                 height={600}
                 className="w-full h-full object-contain relative z-10 drop-shadow-2xl animate-float"
@@ -304,7 +297,7 @@ export default function LandingPage() {
               <div className="w-48 h-48 lg:w-64 lg:h-64 shrink-0 flex items-center justify-center relative">
                 <Image
                   src="/images/how-it-works-mascot.png"
-                  alt="Nambi Idea"
+                  alt="Nyamby Idea"
                   width={256}
                   height={256}
                   className="w-full h-full object-contain relative z-10 drop-shadow-xl"
@@ -316,13 +309,13 @@ export default function LandingPage() {
                   <Icon name="spark" size={12} /> How it works
                 </div>
                 <h2 className="text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4">
-                  Nambi Punya{" "}
+                  Nyamby Punya{" "}
                   <br className="hidden lg:block" />
                   <span className="text-primary-600">Jawabannya.</span>
                 </h2>
                 <p className="text-slate-500 text-lg max-w-md">
                   Empat langkah sederhana untuk membawa karier kamu ke level
-                  berikutnya. Nambi mendampingi dari hari pertama.
+                  berikutnya. Nyamby mendampingi dari hari pertama.
                 </p>
               </div>
             </div>
@@ -442,7 +435,7 @@ export default function LandingPage() {
             <div className="w-full max-w-[500px] aspect-[4/5] flex items-center justify-center relative">
               <Image
                 src="/images/ai-matching-mascot.png"
-                alt="Nambi AI Matching"
+                alt="Nyamby AI Matching"
                 width={500}
                 height={625}
                 className="w-full h-full object-contain relative z-10 drop-shadow-2xl animate-float"
@@ -549,7 +542,7 @@ export default function LandingPage() {
               Menjadi Karier.
             </h2>
             <p className="text-primary-100 text-lg max-w-sm">
-              Mulai perjalananmu bersama Nambi hari ini. Gratis, tanpa kartu
+              Mulai perjalananmu bersama Nyamby hari ini. Gratis, tanpa kartu
               kredit.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
@@ -564,12 +557,6 @@ export default function LandingPage() {
                   className="transition-transform group-hover:translate-x-1"
                 />
               </Link>
-              <a
-                href="#demo"
-                className="border border-primary-400 hover:bg-primary-600/50 text-white px-8 py-3.5 rounded-full font-semibold text-sm transition-all flex items-center gap-2 hover:-translate-y-0.5 active:translate-y-0"
-              >
-                Lihat Demo
-              </a>
             </div>
           </AnimateIn>
 

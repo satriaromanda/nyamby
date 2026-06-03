@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Icon, Logo } from "@/components/icons";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -50,18 +51,15 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center relative px-6">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center relative px-6 py-24">
       {/* Top Left Logo */}
       <div className="absolute top-6 left-6 md:top-8 md:left-8">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-            N
-          </div>
-          <span className="font-semibold text-xl text-surface-900">Nyamby</span>
+        <Link href="/">
+          <Image src="/logo-full.png" alt="Nyamby" width={140} height={40} className="h-8 w-auto object-contain" priority />
         </Link>
       </div>
 
-      <main role="main" className="w-full max-w-[440px] animate-scale-in mt-12 md:mt-0">
+      <main role="main" className="w-full max-w-[440px] animate-scale-in">
         
         <h1 className="text-4xl font-bold text-center mb-3 text-surface-900 tracking-tight" >
           Masuk ke Nyamby
