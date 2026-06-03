@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Icon } from "@/components/icons";
+import { Icon, Logo } from "@/components/icons";
 
 interface Skill {
   id: string;
@@ -145,8 +145,24 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main role="main" className="min-h-screen gradient-hero">
-      <div className="max-w-2xl mx-auto px-6 py-12">
+    <main role="main" className="min-h-screen gradient-hero relative">
+      {/* Top Bar for Escaping */}
+      <div className="absolute top-0 left-0 w-full p-6 md:p-8 flex justify-between items-center z-10">
+        <div className="flex items-center gap-2">
+          <Logo height={32} />
+        </div>
+        <button
+          onClick={async () => {
+            await fetch("/api/auth/logout", { method: "POST" });
+            window.location.href = "/";
+          }}
+          className="text-sm font-medium text-surface-500 hover:text-red-600 transition-colors bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full border border-surface-200"
+        >
+          Batalkan & Keluar
+        </button>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-6 pt-24 pb-12 relative z-0">
         {/* Progress Steps */}
         <div className="flex items-center justify-center gap-2 mb-12">
           {[1, 2, 3].map((s) => (

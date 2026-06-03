@@ -41,9 +41,7 @@ function RegisterForm() {
     };
 
     if (role === "client") {
-      payload.company_name = form.company_name;
-      payload.industry = form.industry;
-      payload.whatsapp_number = form.whatsapp_number;
+      // client specific payload modifications if any
     }
 
     try {
@@ -64,7 +62,7 @@ function RegisterForm() {
       } else if (role === "talent") {
         router.push("/talent/onboarding");
       } else {
-        router.push("/client/dashboard");
+        router.push("/client/onboarding");
       }
     } catch {
       setError("Terjadi kesalahan. Coba lagi.");
@@ -195,59 +193,23 @@ function RegisterForm() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               
-              {/* Fields specific to Client */}
               {role === "client" ? (
-                <>
-                  <div>
-                    <label className="block text-sm font-semibold text-surface-900 mb-2">Nama PIC</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Icon name="user" size={18} className="text-surface-400" />
-                      </div>
-                      <input
-                        type="text"
-                        className="w-full bg-white border border-surface-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] text-surface-900 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-shadow"
-                        placeholder="Budi Santoso"
-                        value={form.full_name}
-                        onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-                        required
-                      />
+                <div>
+                  <label className="block text-sm font-semibold text-surface-900 mb-2">Nama PIC (Person in Charge)</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Icon name="user" size={18} className="text-surface-400" />
                     </div>
+                    <input
+                      type="text"
+                      className="w-full bg-white border border-surface-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] text-surface-900 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-shadow"
+                      placeholder="Budi Santoso"
+                      value={form.full_name}
+                      onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                      required
+                    />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-surface-900 mb-2">Nama Perusahaan</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Icon name="building" size={18} className="text-surface-400" />
-                      </div>
-                      <input
-                        type="text"
-                        className="w-full bg-white border border-surface-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] text-surface-900 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-shadow"
-                        placeholder="PT Maju Digital"
-                        value={form.company_name}
-                        onChange={(e) => setForm({ ...form, company_name: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-surface-900 mb-2">Industri</label>
-                    <div className="relative">
-                      <div className="absolute top-4 left-0 pl-4 flex items-start pointer-events-none">
-                        <Icon name="briefcase" size={18} className="text-surface-400" />
-                      </div>
-                      <textarea
-                        className="w-full bg-white border border-surface-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] text-surface-900 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-shadow min-h-[100px]"
-                        placeholder="Teknologi & Informasi..."
-                        value={form.industry}
-                        onChange={(e) => setForm({ ...form, industry: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-                </>
+                </div>
               ) : (
                 /* Fields specific to Talent */
                 <div>
@@ -286,24 +248,7 @@ function RegisterForm() {
                 </div>
               </div>
 
-              {role === "client" && (
-                <div>
-                  <label className="block text-sm font-semibold text-surface-900 mb-2">No. WhatsApp</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <Icon name="phone" size={18} className="text-surface-400" />
-                    </div>
-                    <input
-                      type="tel"
-                      className="w-full bg-white border border-surface-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] text-surface-900 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-shadow"
-                      placeholder="+62 812 xxxx xxxx"
-                      value={form.whatsapp_number}
-                      onChange={(e) => setForm({ ...form, whatsapp_number: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-              )}
+
 
               <div>
                 <label className="block text-sm font-semibold text-surface-900 mb-2">Password</label>
@@ -364,7 +309,7 @@ function RegisterForm() {
               <p className="text-xs text-primary-800 leading-relaxed">
                 {role === "talent" 
                   ? "Setelah daftar, kamu akan melalui onboarding 2 menit untuk Nambi mengenal skill-mu."
-                  : "Setelah daftar, kamu langsung diarahkan ke Client Dashboard untuk post job pertamamu."}
+                  : "Setelah daftar, lengkapi profil perusahaan Anda di proses onboarding untuk mulai mem-posting job."}
               </p>
             </div>
 

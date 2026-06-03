@@ -50,9 +50,15 @@ export async function middleware(request: NextRequest) {
 
     // 4. Onboarding Guard
     // If onboarding is not complete, they can only access their respective onboarding route
-    // Note: session payload doesn't currently contain onboardingComplete. 
-    // Wait, let's allow the page component or API to handle the strict checking of onboardingComplete 
-    // since the DB call is required to know if onboarding is complete (it's not in the token payload).
+    if (session.onboardingComplete === false) {
+      const allowedPath = `/${session.role}/onboarding`;
+      if (pathname !== allowedPath) {
+        return NextResponse.redirect(new URL(allowedPath, request.url));
+      }
+    } else if (pathname === `/${session.role}/onboarding`) {
+      // If completed, don't allow accessing onboarding again
+      return NextResponse.redirect(new URL(`/${session.role}/dashboard`, request.url));
+    }
   }
 
   return NextResponse.next();

@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
       email: user.email,
       role: user.role as "talent" | "client",
       fullName: user.fullName,
+      onboardingComplete: user.onboardingComplete,
     });
     await setSessionCookie(token);
 

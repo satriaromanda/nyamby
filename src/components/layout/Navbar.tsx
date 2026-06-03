@@ -7,7 +7,28 @@ import { Icon, Logo } from "@/components/icons";
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [session, setSession] = useState<{ role: string; fullName: string } | null>(null);
   const navRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.user) {
+          setSession(data.user);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      window.location.href = "/";
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   // Close mobile menu on resize to desktop
   useEffect(() => {
@@ -158,19 +179,39 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-surface-700 hover:text-surface-900 transition-colors px-4 py-2"
-            >
-              Masuk
-            </Link>
-            <Link
-              href="/register"
-              className="btn-primary text-sm inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full shadow-md shadow-primary-500/20"
-            >
-              <Icon name="spark" size={16} />
-              Mulai Gratis
-            </Link>
+            {session ? (
+              <>
+                <Link
+                  href={`/${session.role}/dashboard`}
+                  className="text-sm font-medium text-surface-700 hover:text-surface-900 transition-colors px-4 py-2 flex items-center gap-2"
+                >
+                  <Icon name={session.role === "talent" ? "user" : "building"} size={16} />
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors px-4 py-2 rounded-xl"
+                >
+                  Keluar
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm font-medium text-surface-700 hover:text-surface-900 transition-colors px-4 py-2"
+                >
+                  Masuk
+                </Link>
+                <Link
+                  href="/register"
+                  className="btn-primary text-sm inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full shadow-md shadow-primary-500/20"
+                >
+                  <Icon name="spark" size={16} />
+                  Mulai Gratis
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Hamburger */}
@@ -232,23 +273,46 @@ export function Navbar() {
             <MobileNavLink href="/fitur/escrow" icon="shield" label="Escrow Aman" onClick={closeAll} />
 
             <div className="pt-6 space-y-3">
-              <Link
-                href="/login"
-                onClick={closeAll}
-                className="block w-full text-center text-sm font-medium text-surface-700 border border-surface-200 rounded-xl px-5 py-3 hover:bg-slate-50 transition-colors"
-              >
-                Masuk
-              </Link>
-              <Link
-                href="/register"
-                onClick={closeAll}
-                className="block w-full text-center btn-primary text-sm rounded-xl px-5 py-3"
-              >
-                <span className="inline-flex items-center justify-center gap-1.5">
-                  <Icon name="spark" size={16} />
-                  Mulai Gratis
-                </span>
-              </Link>
+              {session ? (
+                <>
+                  <Link
+                    href={`/${session.role}/dashboard`}
+                    onClick={closeAll}
+                    className="block w-full text-center text-sm font-medium text-surface-700 border border-surface-200 rounded-xl px-5 py-3 hover:bg-slate-50 transition-colors"
+                  >
+                    Dashboard ({session.role})
+                  </Link>
+                  <button
+                    onClick={() => {
+                      closeAll();
+                      handleLogout();
+                    }}
+                    className="block w-full text-center text-sm font-medium text-red-600 bg-red-50 rounded-xl px-5 py-3 hover:bg-red-100 transition-colors"
+                  >
+                    Keluar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={closeAll}
+                    className="block w-full text-center text-sm font-medium text-surface-700 border border-surface-200 rounded-xl px-5 py-3 hover:bg-slate-50 transition-colors"
+                  >
+                    Masuk
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={closeAll}
+                    className="block w-full text-center btn-primary text-sm rounded-xl px-5 py-3"
+                  >
+                    <span className="inline-flex items-center justify-center gap-1.5">
+                      <Icon name="spark" size={16} />
+                      Mulai Gratis
+                    </span>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

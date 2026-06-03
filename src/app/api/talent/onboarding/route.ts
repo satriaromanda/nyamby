@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth";
+import { requireAuth, signToken, setSessionCookie } from "@/lib/auth";
 import { generateSkillGapAnalysis } from "@/lib/openai";
 import { extractCvText, extractPortfolioContext, truncateText } from "@/lib/enrichment";
 
@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
         userId: session.userId,
         bio: bio || null,
         category,
-        ratePerHour: rate_per_hour || null,
-        ratePerProject: rate_per_project || null,
+        ratePerHour: rate_per_hour ? Math.min(rate_per_hour, 99999999) : null,
+        ratePerProject: rate_per_project ? Math.min(rate_per_project, 99999999) : null,
         availability: availability || "available",
         location: location || null,
         portfolioUrl: portfolio_url || null,
@@ -132,6 +132,22 @@ export async function POST(request: NextRequest) {
         isLatest: true,
       },
     });
+
+    // MARK ONBOARDING COMPLETE
+    await prisma.user.update({
+      where: { id: session.userId },
+      data: { onboardingComplete: true },
+    });
+
+    // Refresh JWT token
+    const newToken = await signToken({
+      userId: session.userId,
+      email: session.email,
+      role: session.role,
+      fullName: session.fullName,
+      onboardingComplete: true,
+    });
+    await setSessionCookie(newToken);
 
     return NextResponse.json(
       {

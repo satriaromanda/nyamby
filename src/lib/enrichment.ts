@@ -3,7 +3,8 @@ const MAX_PORTFOLIO_CHARS = 1000;
 
 export function truncateText(value: string | null | undefined, maxLength: number) {
   if (!value) return null;
-  const normalized = value.replace(/\s+/g, " ").trim();
+  const sanitized = value.replace(/\0/g, "");
+  const normalized = sanitized.replace(/\s+/g, " ").trim();
   return normalized ? normalized.slice(0, maxLength) : null;
 }
 

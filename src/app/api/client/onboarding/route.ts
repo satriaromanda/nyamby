@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth";
+import { requireAuth, signToken, setSessionCookie } from "@/lib/auth";
 import { clientOnboardingSchema } from "@/lib/validations";
 
 export async function POST(request: NextRequest) {
@@ -59,6 +59,16 @@ export async function POST(request: NextRequest) {
 
       return newProfile;
     });
+
+    // Refresh token
+    const newToken = await signToken({
+      userId: session.userId,
+      email: session.email,
+      role: session.role,
+      fullName: session.fullName,
+      onboardingComplete: true,
+    });
+    await setSessionCookie(newToken);
 
     return NextResponse.json(
       {

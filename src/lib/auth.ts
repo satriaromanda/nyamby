@@ -9,6 +9,7 @@ export interface SessionPayload {
   email: string;
   role: "talent" | "client";
   fullName: string;
+  onboardingComplete?: boolean;
 }
 
 const secretKey = new TextEncoder().encode(JWT_SECRET);

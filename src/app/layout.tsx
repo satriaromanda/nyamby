@@ -36,7 +36,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className={`bg-surface-50 text-surface-900 min-h-screen antialiased ${plusJakartaSans.className}`}>
+      <body
+        suppressHydrationWarning
+        className={`bg-surface-50 text-surface-900 min-h-screen antialiased ${plusJakartaSans.className}`}
+      >
         {children}
       </body>
     </html>

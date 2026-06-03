@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Icon, RatingStars, Logo } from "@/components/icons";
+import { CancelEscrowModal } from "@/components/CancelEscrowModal";
 
 interface JobDetail {
   id: string;
@@ -160,6 +161,7 @@ export default function JobDetailPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [applying, setApplying] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
@@ -689,10 +691,18 @@ export default function JobDetailPage() {
                   </p>
                   <Link
                     href="/client/dashboard"
-                    className="btn-primary text-sm w-full block text-center"
+                    className="btn-primary text-sm w-full block text-center mb-3"
                   >
                     Buka Dashboard
                   </Link>
+                  {job.status === "in_progress" && (
+                    <button
+                      onClick={() => setShowCancelModal(true)}
+                      className="w-full py-2.5 rounded-lg border border-red-200 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors"
+                    >
+                      Batalkan Pekerjaan
+                    </button>
+                  )}
                 </div>
               </div>
             )}
@@ -767,6 +777,18 @@ export default function JobDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Cancel Escrow Modal */}
+      <CancelEscrowModal
+        jobId={jobId}
+        totalEscrowAmount={job.budget_max || 0}
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        onSuccess={(data) => {
+          setJob({ ...job, status: "cancelled" });
+          showToast(`Job berhasil dibatalkan. Refund Rp ${data.escrow.client_refund.toLocaleString("id-ID")}`, "success");
+        }}
+      />
     </div>
   );
 }

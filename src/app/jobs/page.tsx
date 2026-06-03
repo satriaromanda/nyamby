@@ -32,7 +32,18 @@ interface MyMatch {
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Filter States
   const [category, setCategory] = useState("");
+  const [q, setQ] = useState("");
+  const [minBudget, setMinBudget] = useState("");
+  const [maxBudget, setMaxBudget] = useState("");
+  const [sort, setSort] = useState("newest");
+  
+  // Pagination States
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  
   const [user, setUser] = useState<SessionUser | null>(null);
   const [myMatches, setMyMatches] = useState<MyMatch[]>([]);
 
@@ -68,14 +79,32 @@ export default function JobsPage() {
     setLoading(true);
     const params = new URLSearchParams();
     if (category) params.set("category", category);
+    if (q) params.set("q", q);
+    if (minBudget) params.set("min_budget", minBudget);
+    if (maxBudget) params.set("max_budget", maxBudget);
+    if (sort) params.set("sort", sort);
+    params.set("page", page.toString());
 
-    fetch(`/api/jobs?${params.toString()}`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.success) setJobs(d.data.jobs);
-      })
-      .finally(() => setLoading(false));
-  }, [category]);
+    // Debounce fetch slightly to prevent spam if typing fast
+    const timer = setTimeout(() => {
+      fetch(`/api/jobs?${params.toString()}`)
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.success) {
+            setJobs(d.data);
+            setTotalPages(d.pagination?.total_pages || 1);
+          }
+        })
+        .finally(() => setLoading(false));
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [category, q, minBudget, maxBudget, sort, page]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [category, q, minBudget, maxBudget, sort]);
 
   const getMatch = (jobId: string) => myMatches.find((m) => m.job_id === jobId);
 
@@ -123,27 +152,59 @@ export default function JobsPage() {
         </h1>
         <p className="text-surface-500 mb-8">Temukan project yang sesuai dengan keahlianmu.</p>
 
-        <div className="flex gap-2 mb-8">
-          {[
-            { value: "", label: "Semua", icon: null },
-            { value: "web_dev", label: "Web Dev", icon: "code" as const },
-            { value: "graphic_designer", label: "Design", icon: "design" as const },
-          ].map((f) => (
-            <button
-              key={f.value}
-              onClick={() => setCategory(f.value)}
-              className={`text-sm px-4 py-2 rounded-xl transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
-                category === f.value
-                  ? "gradient-primary text-white"
-                  : "bg-white border border-surface-200 text-surface-500 hover:border-primary-200"
-              }`}
-            >
-              <span className="inline-flex items-center gap-2">
-                {f.icon && <Icon name={f.icon} size={14} />}
-                {f.label}
-              </span>
-            </button>
-          ))}
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
+          <div className="flex-1 relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-surface-400">
+              <Icon name="search" size={18} />
+            </div>
+            <input
+              type="text"
+              placeholder="Cari posisi atau skill..."
+              className="input-dark pl-10 w-full"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+            {[
+              { value: "", label: "Semua", icon: null },
+              { value: "web_dev", label: "Web Dev", icon: "code" as const },
+              { value: "graphic_designer", label: "Design", icon: "design" as const },
+            ].map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setCategory(f.value)}
+                className={`text-sm px-4 py-2 rounded-xl whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
+                  category === f.value
+                    ? "gradient-primary text-white"
+                    : "bg-white border border-surface-200 text-surface-500 hover:border-primary-200"
+                }`}
+              >
+                <span className="inline-flex items-center gap-2">
+                  {f.icon && <Icon name={f.icon} size={14} />}
+                  {f.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-4 mb-8 p-4 bg-white rounded-xl border border-surface-200 shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-surface-500">Budget:</span>
+            <input type="number" placeholder="Min" className="input-dark text-sm py-1.5 px-3 w-28" value={minBudget} onChange={e => setMinBudget(e.target.value)} />
+            <span className="text-surface-300">-</span>
+            <input type="number" placeholder="Max" className="input-dark text-sm py-1.5 px-3 w-28" value={maxBudget} onChange={e => setMaxBudget(e.target.value)} />
+          </div>
+          <div className="flex items-center gap-2 ml-auto">
+            <span className="text-sm text-surface-500">Urutkan:</span>
+            <select className="input-dark text-sm py-1.5 px-3" value={sort} onChange={e => setSort(e.target.value)}>
+              <option value="newest">Terbaru</option>
+              <option value="budget_desc">Budget Tertinggi</option>
+              <option value="budget_asc">Budget Terendah</option>
+              <option value="deadline_soon">Deadline Terdekat</option>
+            </select>
+          </div>
         </div>
 
         {loading ? (
@@ -231,7 +292,30 @@ export default function JobsPage() {
           <div className="glass rounded-xl p-16 text-center">
             <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
             <h3 className="text-xl font-bold mb-2 text-surface-900" >Belum ada job aktif</h3>
-            <p className="text-surface-400 text-sm">Job baru akan muncul saat client posting.</p>
+            <p className="text-surface-400 text-sm">Coba ubah kriteria pencarianmu.</p>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-8">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="p-2 rounded-lg border border-surface-200 bg-white text-surface-600 disabled:opacity-50 hover:bg-surface-50"
+            >
+              <Icon name="arrowLeft" size={16} />
+            </button>
+            <span className="text-sm font-medium text-surface-600">
+              Halaman {page} dari {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="p-2 rounded-lg border border-surface-200 bg-white text-surface-600 disabled:opacity-50 hover:bg-surface-50"
+            >
+              <Icon name="arrowRight" size={16} />
+            </button>
           </div>
         )}
       </main>
