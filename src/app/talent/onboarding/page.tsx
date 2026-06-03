@@ -328,6 +328,51 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    {(() => {
+                      const getOverallLevel = () => {
+                        if (form.skills.length === 0) return "beginner";
+                        if (form.skills.some((s) => s.level === "expert")) return "expert";
+                        if (form.skills.some((s) => s.level === "intermediate")) return "intermediate";
+                        return "beginner";
+                      };
+                      
+                      const getPricingGuidance = (category: string, level: string) => {
+                        if (category === "web_dev") {
+                          if (level === "beginner") return { hourly: "Rp 50.000 - 100.000", project: "Rp 1jt - 3jt" };
+                          if (level === "intermediate") return { hourly: "Rp 150.000 - 250.000", project: "Rp 5jt - 10jt" };
+                          if (level === "expert") return { hourly: "Rp 300.000+", project: "Rp 15jt+" };
+                        } else if (category === "graphic_designer") {
+                          if (level === "beginner") return { hourly: "Rp 35.000 - 75.000", project: "Rp 500rb - 1.5jt" };
+                          if (level === "intermediate") return { hourly: "Rp 100.000 - 200.000", project: "Rp 2.5jt - 5jt" };
+                          if (level === "expert") return { hourly: "Rp 250.000+", project: "Rp 8jt+" };
+                        }
+                        return null;
+                      };
+
+                      const guidance = getPricingGuidance(form.category, getOverallLevel());
+
+                      if (!guidance) return null;
+
+                      return (
+                        <div className="bg-[#FAEEDA] p-4 rounded-xl border border-[#F5D8A9] flex items-start gap-3">
+                          <Icon name="info" className="text-[#854F0B] mt-0.5 shrink-0" size={18} />
+                          <div>
+                            <div className="text-sm font-bold text-[#854F0B] flex items-center gap-2">
+                              💡 Smart Pricing Guidance
+                            </div>
+                            <p className="text-xs text-[#854F0B]/80 mt-1">
+                              Berdasarkan kategori dan level keahlianmu, rate rekomendasi standar industri:
+                            </p>
+                            <div className="mt-2 flex gap-4 text-xs font-semibold text-[#854F0B]">
+                              <span>⏱️ {guidance.hourly}/jam</span>
+                              <span>📦 {guidance.project}/project</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
                   <div>
                     <label className="block text-sm text-surface-600 mb-2">Rate / Jam (IDR)</label>
                     <input

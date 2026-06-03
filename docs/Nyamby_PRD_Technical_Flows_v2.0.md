@@ -39,6 +39,8 @@
 17. [File Deletion Flow](#17-file-deletion-flow)
 18. [Talent Search by Match](#18-talent-search-by-match-untuk-client)
 19. [Ringkasan Seluruh Endpoint — Master List](#19-ringkasan-seluruh-endpoint--master-list)
+20. [Smart Pricing Guidance (MVP)](#20-smart-pricing-guidance-mvp)
+21. [Dispute Resolution Flow](#21-dispute-resolution-flow)
 
 ---
 
@@ -2696,6 +2698,8 @@ Selain melihat shortlist hasil AI matching per job, client juga perlu bisa menca
 | Method | Endpoint | Auth | Status |
 |---|---|---|---|
 | `POST` | `/api/client/onboarding` | client | Wajib MVP |
+| `DELETE` | `/api/talent/profile` | Hapus akun talent (soft delete) |
+| `DELETE` | `/api/client/profile` | Hapus akun client (soft delete) |
 | `GET` | `/api/client/profile` | client | Wajib MVP |
 | `PATCH` | `/api/client/profile` | client | Should Have |
 | `GET` | `/api/client/dashboard` | client | Wajib MVP |
@@ -2736,6 +2740,82 @@ Selain melihat shortlist hasil AI matching per job, client juga perlu bisa menca
 | `GET` | `/api/skills` | — | Wajib MVP |
 
 **Total: 28 endpoints** — 22 Wajib MVP, 6 Should Have.
+
+---
+
+## 20. Smart Pricing Guidance (MVP)
+
+### 20.1 Konteks & Tujuan
+Sesuai Nyamby Concept v2.0, **Smart Pricing Guidance** bertujuan membantu talenta menentukan *Rate* (harga) yang wajar berdasarkan standar industri, tingkat keahlian (level), dan kompleksitas layanan.
+Meskipun sebelumnya direncanakan untuk Phase 2, fitur ini cukup sederhana dan sangat krusial untuk dimasukkan ke MVP, terutama di tahap **Onboarding Talenta** agar mereka tidak menebak-nebak harga.
+
+### 20.2 Implementasi di Onboarding Talenta
+Smart Pricing Guidance akan diimplementasikan sebagai fitur bantuan visual (UI Hint) di formulir Onboarding, tepatnya di sebelah atau di bawah field pengisian `Rate per Jam` dan `Rate per Project`.
+
+**Tabel Referensi Harga (MVP Hardcoded):**
+Untuk MVP, sistem tidak perlu menarik rata-rata dinamis dari database. Cukup gunakan tabel referensi statis berdasarkan `category` dan `level` yang dipilih talenta di form yang sama.
+
+| Kategori | Level | Rekomendasi Rate/Jam | Rekomendasi Rate/Project (Estimasi Ringan) |
+|---|---|---|---|
+| Web Developer | Beginner | Rp 50.000 - Rp 100.000 | Rp 1.000.000 - Rp 3.000.000 |
+| Web Developer | Intermediate | Rp 150.000 - Rp 250.000 | Rp 5.000.000 - Rp 10.000.000 |
+| Web Developer | Expert | Rp 300.000+ | Rp 15.000.000+ |
+| Graphic Designer | Beginner | Rp 35.000 - Rp 75.000 | Rp 500.000 - Rp 1.500.000 |
+| Graphic Designer | Intermediate | Rp 100.000 - Rp 200.000 | Rp 2.500.000 - Rp 5.000.000 |
+| Graphic Designer | Expert | Rp 250.000+ | Rp 8.000.000+ |
+
+### 20.3 Flow Interaksi UI
+1. Talenta memilih **Kategori** (Web Dev / Graphic Designer) dan **Level** (Beginner / Intermediate / Expert) di langkah awal Onboarding.
+2. Ketika talenta sampai di pengisian **Rate**, sistem memunculkan tooltip atau card kecil bertuliskan *"💡 Smart Pricing Guidance"*.
+3. Card tersebut menampilkan rentang harga rekomendasi yang dihitung dari tabel di atas (secara dinamis berdasarkan state form saat itu).
+4. Jika talenta memasukkan harga di luar (jauh di bawah atau jauh di atas) rentang wajar, sistem menampilkan teks *warning* ringan: *"Rate kamu lebih tinggi/rendah 30% dari rata-rata levelmu. Pastikan ini sesuai dengan nilai yang kamu tawarkan."*
+
+---
+
+## 21. Dispute Resolution Flow
+
+### 21.1 Konteks & Tujuan
+Di PRD v1.2, Dispute System disebut sebagai "Out of Scope" untuk menghemat waktu pengembangan MVP. Namun, menyadari bahwa Escrow System kehilangan kredibilitas tanpa alur penyelesaian sengketa yang jelas (seperti yang didefinisikan di Concept v2.0), flow ini harus didefinisikan secara konseptual.
+Dalam konteks MVP (Hackathon), kita tidak perlu membuat sistem peradilan kompleks dengan *live-chat* mediator. Cukup buat **alur eskalasi statis** yang mengubah status Escrow dan mengirim tiket ke tim internal (Admin).
+
+### 21.2 Definisi Skenario Dispute (Escrow Hold)
+Dispute (sengketa) hanya dapat diinisiasi ketika status Job adalah `in_progress` dan Escrow sedang ditahan (`held`).
+
+| Skenario | Inisiator | Pemicu |
+|---|---|---|
+| **Ghosting Talenta** | Client | Talenta tidak merespons > 3 hari setelah status In Progress atau melebihi Deadline tanpa update. |
+| **Deliverable Ditolak Sepihak** | Talenta | Talenta merasa hasil sudah sesuai *brief*, tapi Client menolak merilis dana (reject tanpa revisi wajar). |
+| **Kualitas di Bawah Standar** | Client | Talenta submit hasil, tapi hasil sangat jauh dari ekspektasi awal dan Talenta menolak merevisi. |
+| **Pembatalan Sepihak** | Client / Talenta | Salah satu pihak ingin membatalkan job setelah dana masuk escrow. |
+
+### 21.3 Flow Dispute & Resolusi (MVP)
+
+| Step | Aktor | Aksi | Output / System Response |
+|---|---|---|---|
+| 1 | Pihak yang Dirugikan | Buka halaman Job Detail → klik "Laporkan Masalah / Dispute" | Muncul Modal Form Dispute. |
+| 2 | Pihak yang Dirugikan | Mengisi form (Tipe Masalah, Deskripsi, Bukti link file percakapan/hasil) | `POST /api/escrow/dispute` dengan payload `{job_id, reason, description}`. |
+| 3 | System | Update status Job → `disputed`. Update status Escrow → `disputed`. | Notifikasi email/in-app dikirim ke **Pihak Lawan** dan **Admin Nyamby**. |
+| 4 | Pihak Lawan | Menerima notifikasi bahwa job dihentikan sementara (frozen) | Tidak bisa submit deliverable atau merilis dana sampai dispute selesai. |
+| 5 | Admin Nyamby (Manual) | Meninjau laporan via database / Admin Panel (Di luar scope UI, cukup simulasi DB) | Admin mengevaluasi *brief* vs *deliverable*. |
+| 6 | Admin Nyamby | Memutuskan resolusi: **Refund penuh ke Client**, **Rilis parsial**, atau **Rilis penuh ke Talenta** | `POST /api/admin/resolve-dispute` dengan `{escrow_id, decision_type, client_amount, talent_amount}`. |
+| 7 | System | Update status Escrow → `resolved_refunded` / `resolved_released`. Update status Job → `cancelled` / `completed`. | Notifikasi keputusan final dikirim ke kedua belah pihak. Dana (mock) diproses sesuai pembagian. |
+
+### 21.4 Tabel: dispute_tickets `NEW`
+Untuk mencatat riwayat dispute jika diperlukan.
+
+| Field | Tipe | Constraint | Keterangan |
+|---|---|---|---|
+| `id` | UUID | PK | Primary key |
+| `job_id` | UUID | FK → jobs.id | Job yang disengketakan |
+| `escrow_id` | UUID | FK → escrow_transactions.id | Escrow terkait |
+| `initiator_user_id`| UUID | FK → users.id | Siapa yang melapor |
+| `reason` | VARCHAR(100) | NOT NULL | ghosting, rejected_work, low_quality, cancellation |
+| `description` | TEXT | NOT NULL | Penjelasan detail masalah |
+| `status` | ENUM | DEFAULT 'open' | open, investigating, resolved |
+| `resolution` | TEXT | NULLABLE | Catatan keputusan Admin |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | Waktu lapor |
+
+> **Implementasi MVP:** Untuk demo hackathon, tombol "Laporkan Masalah" cukup menampilkan Toast peringatan *"Tiket dispute berhasil dibuat. Tim Nyamby akan menghubungi Anda via email dalam 1x24 jam."* dan mengubah status visual job menjadi **"Dalam Peninjauan (Disputed)"**. Tidak perlu membangun panel admin yang kompleks.
 
 ---
 

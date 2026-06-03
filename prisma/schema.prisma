@@ -12,6 +12,19 @@ datasource db {
 
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
+enum DisputeStatus {
+  open
+  investigating
+  resolved
+}
+
+enum DisputeReason {
+  ghosting
+  rejected_work
+  low_quality
+  cancellation
+}
+
 enum Role {
   talent
   client
@@ -91,6 +104,7 @@ model User {
   escrowsAsClient EscrowTransaction[] @relation("EscrowClient")
   escrowsAsTalent EscrowTransaction[] @relation("EscrowTalent")
   notifications   Notification[]
+  initiatedDisputes DisputeTicket[]   @relation("DisputeInitiator")
 
   @@map("users")
 }
@@ -199,6 +213,7 @@ model Job {
   requiredSkills    JobRequiredSkill[]
   jobMatches        JobMatch[]
   escrowTransaction EscrowTransaction?
+  disputeTickets    DisputeTicket[]
 
   @@map("jobs")
 }
@@ -255,6 +270,7 @@ model EscrowTransaction {
   job    Job  @relation(fields: [jobId], references: [id])
   client User @relation("EscrowClient", fields: [clientUserId], references: [id])
   talent User @relation("EscrowTalent", fields: [talentUserId], references: [id])
+  disputeTickets DisputeTicket[]
 
   @@map("escrow_transactions")
 }
@@ -273,4 +289,23 @@ model Notification {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
+}
+
+model DisputeTicket {
+  id              String        @id @default(uuid())
+  jobId           String        @map("job_id")
+  escrowId        String        @map("escrow_id")
+  initiatorUserId String        @map("initiator_user_id")
+  reason          DisputeReason
+  description     String
+  status          DisputeStatus @default(open)
+  resolution      String?
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  job             Job               @relation(fields: [jobId], references: [id])
+  escrow          EscrowTransaction @relation(fields: [escrowId], references: [id])
+  initiator       User              @relation("DisputeInitiator", fields: [initiatorUserId], references: [id])
+
+  @@map("dispute_tickets")
 }

@@ -135,14 +135,57 @@ function JobStatusTracker({ status }: { status: string }) {
             </div>
             {i < steps.length - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-1 rounded-full transition-all duration-500 ${
-                  i < currentIndex ? "bg-accent-500/30" : "bg-surface-200"
-                }`}
-              />
-            )}
-          </div>
-        );
-      })}
+    <div className="flex flex-col gap-4 w-full">
+      <div className="flex items-center gap-0 w-full">
+        {steps.map((step, i) => {
+          const isActive = i <= currentIndex;
+          const isCurrent = i === currentIndex;
+          return (
+            <div key={step.key} className="flex items-center flex-1 last:flex-none">
+              <div className="flex flex-col items-center">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-500 ${
+                    isCurrent
+                      ? "gradient-primary shadow-lg shadow-primary-500/20 scale-110 text-white"
+                      : isActive
+                        ? "bg-accent-500/10 text-accent-600"
+                        : "bg-surface-100 text-surface-400"
+                  }`}
+                >
+                  {isActive && i < currentIndex ? <Icon name="check" size={14} /> : <Icon name={step.icon} size={14} />}
+                </div>
+                <span
+                  className={`text-[9px] mt-1 font-medium transition-colors ${
+                    isCurrent
+                      ? "text-primary-600"
+                      : isActive
+                        ? "text-accent-600"
+                        : "text-surface-300"
+                  }`}
+                >
+                  {step.label}
+                </span>
+              </div>
+              {i < steps.length - 1 && (
+                <div
+                  className={`flex-1 h-0.5 mx-1 rounded-full transition-all duration-500 ${
+                    i < currentIndex ? "bg-accent-500/30" : "bg-surface-200"
+                  }`}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      
+      {status === "in_progress" && (
+        <button
+          onClick={onDispute}
+          className="text-xs text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1 self-start ml-2"
+        >
+          <Icon name="alertTriangle" size={14} /> Laporkan Masalah
+        </button>
+      )}
     </div>
   );
 }
@@ -162,6 +205,10 @@ export default function JobDetailPage() {
   const [applying, setApplying] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showDisputeModal, setShowDisputeModal] = useState(false);
+  const [disputeReason, setDisputeReason] = useState("ghosting");
+  const [disputeDesc, setDisputeDesc] = useState("");
+  const [submittingDispute, setSubmittingDispute] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
@@ -266,6 +313,35 @@ export default function JobDetailPage() {
       showToast("Terjadi kesalahan", "error");
     } finally {
       setApplying(false);
+    }
+  };
+
+  const handleDispute = async () => {
+    if (!disputeDesc.trim()) {
+      showToast("Tolong jelaskan masalahnya secara detail", "error");
+      return;
+    }
+    setSubmittingDispute(true);
+    try {
+      const res = await fetch("/api/escrow/dispute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId, reason: disputeReason, description: disputeDesc }),
+      });
+      const d = await res.json();
+      if (d.success) {
+        showToast("Tiket dispute berhasil dibuat. Tim Nyamby akan menghubungi Anda via email dalam 1x24 jam.");
+        setShowDisputeModal(false);
+        setDisputeDesc("");
+        // Optimistic UI update
+        setJob((prev) => (prev ? { ...prev, status: "disputed" as JobStatus } : prev));
+      } else {
+        showToast(d.error || "Gagal membuat laporan", "error");
+      }
+    } catch {
+      showToast("Terjadi kesalahan sistem", "error");
+    } finally {
+      setSubmittingDispute(false);
     }
   };
 
@@ -617,6 +693,15 @@ export default function JobDetailPage() {
                         Job ini tidak dilanjutkan
                       </div>
                     )}
+
+                    {job.status === "in_progress" && (
+                      <button
+                        onClick={() => setShowDisputeModal(true)}
+                        className="w-full py-2.5 mt-2 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 text-sm font-medium hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Icon name="alertTriangle" size={16} /> Laporkan Masalah
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center py-4">
@@ -696,12 +781,20 @@ export default function JobDetailPage() {
                     Buka Dashboard
                   </Link>
                   {job.status === "in_progress" && (
-                    <button
-                      onClick={() => setShowCancelModal(true)}
-                      className="w-full py-2.5 rounded-lg border border-red-200 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors"
-                    >
-                      Batalkan Pekerjaan
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={() => setShowCancelModal(true)}
+                        className="w-full py-2.5 rounded-lg border border-red-200 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors"
+                      >
+                        Batalkan Pekerjaan
+                      </button>
+                      <button
+                        onClick={() => setShowDisputeModal(true)}
+                        className="w-full py-2.5 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 text-sm font-medium hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Icon name="alertTriangle" size={16} /> Laporkan Masalah
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
