@@ -10,6 +10,7 @@ export function Navbar() {
   const [session, setSession] = useState<{ role: string; fullName: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const navRef = useRef<HTMLElement>(null);
+  const mobilePanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch("/api/auth/session")
@@ -44,7 +45,9 @@ export function Navbar() {
   // Close on outside click
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+      const clickedInside = navRef.current?.contains(e.target as Node) || 
+                            mobilePanelRef.current?.contains(e.target as Node);
+      if (!clickedInside) {
         setActiveDropdown(null);
         setMobileOpen(false);
       }
@@ -245,6 +248,7 @@ export function Navbar() {
 
         {/* Panel */}
         <div
+          ref={mobilePanelRef}
           className={`absolute top-0 right-0 w-[min(85vw,360px)] h-full bg-white shadow-2xl transform transition-transform duration-300 ease-out ${
             mobileOpen ? "translate-x-0" : "translate-x-full"
           }`}
