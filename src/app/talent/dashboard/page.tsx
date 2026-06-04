@@ -308,11 +308,21 @@ export default function TalentDashboard() {
     setRefreshingGap(true);
     try {
       await fetch("/api/talent/skill-gap/refresh", { method: "POST" });
-      setTimeout(async () => {
+      // Poll until AI finishes
+      let attempts = 0;
+      while (attempts < 30) {
+        await new Promise((r) => setTimeout(r, 2000));
         await fetchDashboard();
-        setRefreshingGap(false);
-      }, 2000);
+        const res = await fetch("/api/talent/dashboard");
+        const d = await res.json();
+        if (d.data?.skill_gap?.ai_status !== "processing" && d.data?.skill_gap?.ai_status !== "pending") {
+          break;
+        }
+        attempts++;
+      }
     } catch {
+      // fallback
+    } finally {
       setRefreshingGap(false);
     }
   };

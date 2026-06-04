@@ -65,7 +65,23 @@ export async function generateJobMatches(
     const systemPrompt = `Kamu adalah mesin matching profesional untuk platform freelance Indonesia.
 Tugasmu adalah mengevaluasi kesesuaian setiap talenta terhadap job yang diberikan.
 Jika tersedia, gunakan cv_text dan portfolio_context sebagai bukti konkret, bukan hanya self-report skill.
-Selalu respons dalam format JSON object dengan key "matches" berisi array. Jangan tambahkan teks di luar JSON.`;
+
+RESPON HANYA JSON dengan struktur:
+{
+  "matches": [
+    {
+      "talent_id": "id-talenta",
+      "match_score": 85,
+      "strengths": ["kelebihan 1", "kelebihan 2"],
+      "gaps": ["kekurangan 1"],
+      "reasoning": "Penjelasan mengapa talenta ini cocok",
+      "portfolio_evidence": "Bukti dari portfolio jika ada",
+      "recommendation": "highly_recommended"
+    }
+  ]
+}
+
+recommendation: highly_recommended, recommended, atau not_recommended. Jangan tambahkan teks di luar JSON.`;
 
     const response = await ai.chat.completions.create({
       model: aiModel,
