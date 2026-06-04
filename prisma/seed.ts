@@ -56,13 +56,14 @@ async function main() {
   // Talent: Raka
   const raka = await prisma.user.upsert({
     where: { email: "raka@demo.com" },
-    update: {},
+    update: { onboardingComplete: true },
     create: {
       email: "raka@demo.com",
       passwordHash,
       role: "talent",
       fullName: "Raka Pratama",
       avatarUrl: null,
+      onboardingComplete: true,
     },
   });
 
@@ -115,13 +116,14 @@ async function main() {
   // Talent 2: Sari (Designer)
   const sari = await prisma.user.upsert({
     where: { email: "sari@demo.com" },
-    update: {},
+    update: { onboardingComplete: true },
     create: {
       email: "sari@demo.com",
       passwordHash,
       role: "talent",
       fullName: "Sari Wulandari",
       avatarUrl: null,
+      onboardingComplete: true,
     },
   });
 
@@ -172,13 +174,14 @@ async function main() {
   // Talent 3: Andi (Web Dev)
   const andi = await prisma.user.upsert({
     where: { email: "andi@demo.com" },
-    update: {},
+    update: { onboardingComplete: true },
     create: {
       email: "andi@demo.com",
       passwordHash,
       role: "talent",
       fullName: "Andi Setiawan",
       avatarUrl: null,
+      onboardingComplete: true,
     },
   });
 
