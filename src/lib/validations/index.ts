@@ -41,6 +41,7 @@ export const talentProfileUpdateSchema = z.object({
   availability: z.enum(["available", "busy", "unavailable"]).optional(),
   location: z.string().nullable().optional(),
   portfolio_url: z.string().nullable().optional(),
+  slug: z.string().min(3).max(50).regex(/^[a-z0-9-]+$/, "Hanya huruf kecil, angka, dan strip").optional(),
   cv_text: z.string().nullable().optional(),
   portfolio_context: z.string().nullable().optional(),
   skills: z.array(

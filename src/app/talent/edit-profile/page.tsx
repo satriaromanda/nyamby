@@ -17,6 +17,7 @@ export default function EditProfilePage() {
   const [availability, setAvailability] = useState("available");
   const [location, setLocation] = useState("");
   const [portfolioUrl, setPortfolioUrl] = useState("");
+  const [slug, setSlug] = useState("");
   const [skills, setSkills] = useState<{ id: string; name: string; level: string }[]>([]);
   const [newSkill, setNewSkill] = useState("");
 
@@ -36,6 +37,7 @@ export default function EditProfilePage() {
         setAvailability(p.availability || "available");
         setLocation(p.location || "");
         setPortfolioUrl(p.portfolio_url || "");
+        setSlug(p.slug || "");
         setSkills(p.skills || []);
       }
       if (skillsRes.success) {
@@ -78,6 +80,7 @@ export default function EditProfilePage() {
           availability,
           location,
           portfolio_url: portfolioUrl,
+          slug: slug || undefined,
           skills
         })
       });
@@ -191,6 +194,25 @@ export default function EditProfilePage() {
                   {profile?.category === "graphic_designer"
                     ? "Behance, Dribbble, Figma, atau portofolio desain lainnya."
                     : "GitHub, GitLab, website pribadi, atau portofolio kode."}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-surface-700 mb-1">Profile URL Kustom</label>
+                <div className="flex items-center">
+                  <span className="px-3 py-2 bg-surface-100 border border-r-0 border-surface-200 rounded-l-lg text-xs text-surface-500">
+                    nyamby.id/talents/
+                  </span>
+                  <input
+                    type="text"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))}
+                    className="w-full px-3 py-2 bg-white border border-surface-200 rounded-r-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                    placeholder="nama-kamu"
+                  />
+                </div>
+                <p className="mt-1 text-[10px] text-surface-400">
+                  Biarkan kosong untuk URL default.
                 </p>
               </div>
             </div>

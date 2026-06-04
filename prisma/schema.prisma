@@ -112,6 +112,7 @@ model User {
 model TalentProfile {
   id               String         @id @default(uuid())
   userId           String         @unique @map("user_id")
+  slug             String?        @unique
   bio              String?
   category         TalentCategory
   ratePerHour      Decimal?       @map("rate_per_hour") @db.Decimal(10, 2)

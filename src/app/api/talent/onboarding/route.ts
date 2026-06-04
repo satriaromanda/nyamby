@@ -52,10 +52,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Generate unique slug from fullName
+    const baseSlug = session.fullName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .trim();
+    
+    let slug = baseSlug;
+    let counter = 1;
+    while (await prisma.talentProfile.findUnique({ where: { slug } })) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
     // Create talent profile
     const profile = await prisma.talentProfile.create({
       data: {
         userId: session.userId,
+        slug,
         bio: bio || null,
         category,
         ratePerHour: rate_per_hour ? Math.min(rate_per_hour, 99999999) : null,

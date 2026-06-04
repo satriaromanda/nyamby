@@ -12,8 +12,9 @@ export default async function TalentPublicProfilePage({
   const { id } = await params;
   const session = await getSession();
 
-  const talent = await prisma.talentProfile.findUnique({
-    where: { id },
+  // Accept both UUID and slug
+  const talent = await prisma.talentProfile.findFirst({
+    where: { OR: [{ id }, { slug: id }] },
     include: {
       user: { select: { fullName: true, avatarUrl: true } },
       talentSkills: { include: { skill: true } },
