@@ -234,7 +234,7 @@ export default function JobDetailPage() {
       const res = await fetch("/api/ai/match-talent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ job_id: jobId }),
+        body: JSON.stringify({ job_id: jobId, force_refresh: !!match }),
       });
       const d = await res.json();
       if (d.success) {
@@ -688,7 +688,7 @@ export default function JobDetailPage() {
                           AI sedang menganalisis...
                         </>
                       ) : (
-                        <><Icon name="ai" size={15} />Analyze Match Score</>
+                        <><Icon name="ai" size={15} />{match ? "Analisis Ulang" : "Analyze Match Score"}</>
                       )}
                     </button>
                     {job.status !== "active" && (

@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { job_id } = body;
+    const { job_id, force_refresh } = body;
 
     if (!job_id) {
       return NextResponse.json(
@@ -40,8 +40,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if match already exists
-    const existingMatch = await prisma.jobMatch.findUnique({
+    // Check if match already exists (skip if force refresh)
+    if (!force_refresh) {
+      const existingMatch = await prisma.jobMatch.findUnique({
       where: {
         jobId_talentProfileId: {
           jobId: job_id,
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
         },
       });
     }
+  }
 
     // Get job details
     const job = await prisma.job.findUnique({
