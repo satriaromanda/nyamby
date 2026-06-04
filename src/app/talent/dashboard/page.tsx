@@ -97,10 +97,10 @@ function JobStatusTracker({ status }: { status: string }) {
         const isActive = i <= currentIndex;
         const isCurrent = i === currentIndex;
         return (
-          <div key={step.key} className="flex items-center flex-1 last:flex-none">
+          <div key={step.key} className="flex items-center flex-1 last:flex-none min-w-0">
             <div className="flex flex-col items-center">
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs transition-all duration-500 ${
+                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm transition-all duration-500 shrink-0 ${
                   isCurrent
                     ? "gradient-primary shadow-lg shadow-primary-500/20 scale-110 text-white"
                     : isActive
@@ -108,10 +108,10 @@ function JobStatusTracker({ status }: { status: string }) {
                       : "bg-surface-100 text-surface-400"
                 }`}
               >
-                {isActive && i < currentIndex ? <Icon name="check" size={13} /> : <Icon name={step.icon} size={13} />}
+                {isActive && i < currentIndex ? <Icon name="check" size={12} /> : <Icon name={step.icon} size={12} />}
               </div>
               <span
-                className={`text-[8px] mt-1 font-medium transition-colors ${
+                className={`text-[8px] sm:text-[9px] mt-1 font-medium transition-colors whitespace-nowrap ${
                   isCurrent
                     ? "text-primary-600"
                     : isActive
@@ -124,7 +124,7 @@ function JobStatusTracker({ status }: { status: string }) {
             </div>
             {i < steps.length - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-0.5 rounded-full transition-all duration-500 ${
+                className={`flex-1 h-0.5 mx-0.5 sm:mx-1 rounded-full transition-all duration-500 ${
                   i < currentIndex ? "bg-accent-500/30" : "bg-surface-200"
                 }`}
               />
@@ -383,26 +383,26 @@ export default function TalentDashboard() {
     <div className="min-h-screen bg-surface-50">
       {/* Top Nav */}
       <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
-        <div className="max-w-[1280px] mx-auto px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={32} />
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <Logo height={28} />
           </Link>
 
-          <div className="flex items-center gap-3">
-            <Link href="/jobs" className="text-sm text-surface-500 hover:text-surface-900 transition-colors">
+          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+            <Link href="/jobs" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline">
               Browse Jobs
             </Link>
             <NotificationBell />
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-white">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full gradient-primary flex items-center justify-center text-[10px] sm:text-xs font-bold text-white">
                 {data.profile.full_name[0]}
               </div>
-              <span className="text-sm font-medium hidden md:block text-surface-900">{data.profile.full_name}</span>
+              <span className="text-xs sm:text-sm font-medium hidden sm:block text-surface-900">{data.profile.full_name}</span>
             </div>
-            <Link href="/talent/settings" className="text-sm text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
-              <Icon name="settings" size={18} />
+            <Link href="/talent/settings" className="text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
+              <Icon name="settings" size={16} />
             </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
+            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
               Keluar
             </button>
           </div>

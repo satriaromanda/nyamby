@@ -76,10 +76,10 @@ function JobStatusTracker({ status }: { status: string }) {
         const isActive = i <= currentIndex;
         const isCurrent = i === currentIndex;
         return (
-          <div key={step.key} className="flex items-center flex-1 last:flex-none">
+          <div key={step.key} className="flex items-center flex-1 last:flex-none min-w-0">
             <div className="flex flex-col items-center">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-500 ${
+                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm transition-all duration-500 shrink-0 ${
                   isCurrent
                     ? "gradient-primary shadow-lg shadow-primary-500/20 scale-110 text-white"
                     : isActive
@@ -87,10 +87,10 @@ function JobStatusTracker({ status }: { status: string }) {
                       : "bg-surface-100 text-surface-400"
                 }`}
               >
-                {isActive && i < currentIndex ? <Icon name="check" size={13} /> : <Icon name={step.icon} size={13} />}
+                {isActive && i < currentIndex ? <Icon name="check" size={12} /> : <Icon name={step.icon} size={12} />}
               </div>
               <span
-                className={`text-[9px] mt-1 font-medium transition-colors ${
+                className={`text-[8px] sm:text-[9px] mt-1 font-medium transition-colors whitespace-nowrap ${
                   isCurrent
                     ? "text-primary-600"
                     : isActive
@@ -103,7 +103,7 @@ function JobStatusTracker({ status }: { status: string }) {
             </div>
             {i < steps.length - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-1 rounded-full transition-all duration-500 ${
+                className={`flex-1 h-0.5 mx-0.5 sm:mx-1 rounded-full transition-all duration-500 ${
                   i < currentIndex ? "bg-accent-500/30" : "bg-surface-200"
                 }`}
               />
@@ -360,19 +360,19 @@ export default function ClientDashboard() {
     <div className="min-h-screen bg-surface-50">
       {/* Nav */}
       <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
-        <div className="max-w-[1280px] mx-auto px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={32} />
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <Logo height={28} />
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
             <NotificationBell />
-            <Link href="/client/post-job" className="btn-primary text-xs px-4 py-2">
-              + Post Job Baru
+            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap">
+              + Post Job
             </Link>
-            <Link href="/client/settings" className="text-sm text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
-              <Icon name="settings" size={18} />
+            <Link href="/client/settings" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline" title="Pengaturan">
+              <Icon name="settings" size={16} />
             </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
+            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700 hidden sm:inline">
               Keluar
             </button>
           </div>
@@ -416,11 +416,11 @@ export default function ClientDashboard() {
                   className="p-6 cursor-pointer"
                   onClick={() => setExpandedJob(expandedJob === job.id ? null : job.id)}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-bold text-surface-900">{job.title}</h3>
-                        <span className={`text-xs px-3 py-1 rounded-full status-${job.status}`}>
+                  <div className="flex items-start justify-between gap-2 md:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                        <h3 className="text-base md:text-lg font-bold text-surface-900">{job.title}</h3>
+                        <span className={`text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full status-${job.status}`}>
                           {statusLabels[job.status]}
                         </span>
                       </div>
@@ -431,7 +431,7 @@ export default function ClientDashboard() {
                           </span>
                         ))}
                       </div>
-                      <div className="flex gap-4 text-xs text-surface-400 mb-4">
+                      <div className="flex flex-wrap gap-2 sm:gap-4 text-xs text-surface-400 mb-4">
                         {job.budget_max && (
                           <span className="inline-flex items-center gap-1"><Icon name="money" size={13} />Rp {Number(job.budget_max).toLocaleString("id-ID")}</span>
                         )}
@@ -462,12 +462,12 @@ export default function ClientDashboard() {
                     {job.top_matches.length > 0 ? (
                       <div className="space-y-3">
                         {job.top_matches.map((match) => (
-                          <div key={match.match_id} className="flex items-center justify-between p-3 rounded-xl bg-surface-50 border border-surface-200">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-sm font-bold text-white">
+                          <div key={match.match_id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-surface-50 border border-surface-200 gap-3">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-sm font-bold text-white shrink-0">
                                 {match.full_name[0]}
                               </div>
-                              <div>
+                              <div className="min-w-0">
                                 <Link
                                   href={`/talents/${match.talent_profile_id}`}
                                   className="text-sm font-medium text-surface-900 hover:text-primary-600 transition-colors"
@@ -485,7 +485,7 @@ export default function ClientDashboard() {
                                 )}
                               </div>
                             </div>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-3 mt-3 sm:mt-0">
                               <div className="text-right">
                                 <div className={`text-xl font-bold ${Number(match.match_score) >= 80 ? "text-accent-600" : "text-primary-600"}`}>
                                   {Math.round(Number(match.match_score))}%
