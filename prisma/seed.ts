@@ -249,6 +249,147 @@ async function main() {
   console.log("✅ Seeded demo users: Raka (talent), Sari (talent), Andi (talent), Budi (client)");
   console.log("   All demo accounts use password: password123");
 
+  // ─── Seed Demo Jobs ───────────────────────────────────────────────────────
+
+  const job1 = await prisma.job.create({
+    data: {
+      clientUserId: budi.id,
+      title: "Landing Page UMKM Fashion Batik",
+      description: "Butuh landing page profesional untuk brand batik lokal. Desain sudah ada (Figma), tinggal convert ke Next.js + Tailwind. Target selesai 2 minggu.",
+      category: "web_dev",
+      budgetMin: 1500000,
+      budgetMax: 3000000,
+      status: "active",
+      requiredSkills: {
+        create: [
+          { skillId: createdSkills["HTML/CSS"], isMandatory: true },
+          { skillId: createdSkills["React"], isMandatory: true },
+          { skillId: createdSkills["Next.js"], isMandatory: true },
+          { skillId: createdSkills["Tailwind CSS"], isMandatory: true },
+        ],
+      },
+    },
+  });
+
+  const job2 = await prisma.job.create({
+    data: {
+      clientUserId: budi.id,
+      title: "Dashboard Analytics Internal",
+      description: "Buat dashboard internal untuk monitoring penjualan bulanan. Data dari REST API, tampilkan chart dan tabel. Butuh pengalaman Next.js + TypeScript.",
+      category: "web_dev",
+      budgetMin: 5000000,
+      budgetMax: 8000000,
+      status: "active",
+      requiredSkills: {
+        create: [
+          { skillId: createdSkills["React"], isMandatory: true },
+          { skillId: createdSkills["TypeScript"], isMandatory: true },
+          { skillId: createdSkills["Next.js"], isMandatory: true },
+          { skillId: createdSkills["REST API"], isMandatory: true },
+          { skillId: createdSkills["Node.js"], isMandatory: false },
+        ],
+      },
+    },
+  });
+
+  const job3 = await prisma.job.create({
+    data: {
+      clientUserId: budi.id,
+      title: "Integrasi Payment Gateway Midtrans",
+      description: "Integrasi Midtrans ke aplikasi Next.js yang sudah ada. Frontend checkout page + backend webhook handler. Wajib pengalaman payment gateway Indonesia.",
+      category: "web_dev",
+      budgetMin: 3000000,
+      budgetMax: 5000000,
+      status: "active",
+      requiredSkills: {
+        create: [
+          { skillId: createdSkills["React"], isMandatory: true },
+          { skillId: createdSkills["Next.js"], isMandatory: true },
+          { skillId: createdSkills["Node.js"], isMandatory: true },
+          { skillId: createdSkills["REST API"], isMandatory: true },
+          { skillId: createdSkills["PostgreSQL"], isMandatory: false },
+        ],
+      },
+    },
+  });
+
+  const job4 = await prisma.job.create({
+    data: {
+      clientUserId: budi.id,
+      title: "Desain Logo & Brand Identity Kopi Lokal",
+      description: "Brand kopi specialty baru butuh logo, color palette, dan basic brand guidelines. Style: modern, minimalis, earthy tone. Portfolio brand identity wajib.",
+      category: "graphic_designer",
+      budgetMin: 2000000,
+      budgetMax: 3500000,
+      status: "active",
+      requiredSkills: {
+        create: [
+          { skillId: createdSkills["Figma"], isMandatory: true },
+          { skillId: createdSkills["Adobe Illustrator"], isMandatory: true },
+          { skillId: createdSkills["Brand Identity"], isMandatory: true },
+          { skillId: createdSkills["UI/UX Design"], isMandatory: false },
+        ],
+      },
+    },
+  });
+
+  const job5 = await prisma.job.create({
+    data: {
+      clientUserId: budi.id,
+      title: "Social Media Kit Bulanan — 12 Post",
+      description: "Butuh 12 desain post Instagram per bulan untuk brand skincare. Template Canva/Figma, deliver tiap minggu 3 post. Ada brand guidelines existing.",
+      category: "graphic_designer",
+      budgetMin: 1500000,
+      budgetMax: 2500000,
+      status: "active",
+      requiredSkills: {
+        create: [
+          { skillId: createdSkills["Figma"], isMandatory: true },
+          { skillId: createdSkills["Canva"], isMandatory: true },
+          { skillId: createdSkills["Adobe Photoshop"], isMandatory: false },
+          { skillId: createdSkills["UI/UX Design"], isMandatory: false },
+        ],
+      },
+    },
+  });
+
+  const job6 = await prisma.job.create({
+    data: {
+      clientUserId: budi.id,
+      title: "Redesign UI/UX Aplikasi Mobile Fintech",
+      description: "Redesign total UI/UX aplikasi mobile fintech. Deliver: wireframe, prototype interaktif Figma, dan UI kit. Riset user sudah ada, tinggal eksekusi desain.",
+      category: "graphic_designer",
+      budgetMin: 8000000,
+      budgetMax: 12000000,
+      status: "active",
+      requiredSkills: {
+        create: [
+          { skillId: createdSkills["Figma"], isMandatory: true },
+          { skillId: createdSkills["UI/UX Design"], isMandatory: true },
+          { skillId: createdSkills["Adobe Illustrator"], isMandatory: false },
+          { skillId: createdSkills["Adobe Photoshop"], isMandatory: false },
+        ],
+      },
+    },
+  });
+
+  console.log("✅ Seeded 6 demo jobs (3 web_dev + 3 graphic_designer)");
+
+  // Trigger AI matching for all seed jobs
+  console.log("🤖 Triggering AI matching for seed jobs...");
+  for (const job of [job1, job2, job3, job4, job5, job6]) {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/api/ai/match-job`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ job_id: job.id, force_refresh: true }),
+      });
+    } catch (e) {
+      console.warn(`  ⚠️ Could not trigger AI for job ${job.title}`);
+    }
+  }
+  console.log("✅ AI matching triggered for all jobs");
+
   // ─── Seed Skill Gap Analysis for demo talents ─────────────────────────────
 
   await prisma.skillGapAnalysis.create({
