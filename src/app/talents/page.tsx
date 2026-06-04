@@ -57,14 +57,14 @@ export default function TalentsPage() {
   return (
     <div className="min-h-screen bg-surface-50">
       <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation">
-        <div className="max-w-[1280px] mx-auto px-8 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={32} />
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 md:h-20 flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <Logo height={28} />
           </Link>
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm whitespace-nowrap">
             <Link href="/jobs" className="text-surface-500 hover:text-surface-900">Browse Jobs</Link>
             <Link href="/how-it-works" className="text-surface-500 hover:text-surface-900">Cara Kerja</Link>
-            <Link href="/register?role=client" className="btn-primary text-xs px-4 py-2 rounded-lg focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">Post Job</Link>
+            <Link href="/register?role=client" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg">Post Job</Link>
           </div>
         </div>
       </nav>
@@ -122,12 +122,12 @@ export default function TalentsPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-4 mb-8 p-4 bg-white rounded-xl border border-surface-200 shadow-sm">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-8 p-4 bg-white rounded-xl border border-surface-200 shadow-sm">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm text-surface-500">Rate/Jam:</span>
-            <input type="number" placeholder="Min" className="input-dark text-sm py-1.5 px-3 w-28" value={minRate} onChange={e => setMinRate(e.target.value)} />
+            <input type="number" placeholder="Min" className="input-dark text-sm py-1.5 px-3 w-24" value={minRate} onChange={e => setMinRate(e.target.value)} />
             <span className="text-surface-300">-</span>
-            <input type="number" placeholder="Max" className="input-dark text-sm py-1.5 px-3 w-28" value={maxRate} onChange={e => setMaxRate(e.target.value)} />
+            <input type="number" placeholder="Max" className="input-dark text-sm py-1.5 px-3 w-24" value={maxRate} onChange={e => setMaxRate(e.target.value)} />
           </div>
           <div className="flex items-center gap-2">
             <select className="input-dark text-sm py-1.5 px-3" value={availability} onChange={e => setAvailability(e.target.value)}>
@@ -136,7 +136,7 @@ export default function TalentsPage() {
               <option value="busy">Busy</option>
             </select>
           </div>
-          <div className="flex items-center gap-2 md:ml-auto">
+          <div className="flex items-center gap-2 sm:ml-auto">
             <span className="text-sm text-surface-500">Urutkan:</span>
             <select className="input-dark text-sm py-1.5 px-3" value={sort} onChange={e => setSort(e.target.value)}>
               <option value="newest">Terbaru</option>
