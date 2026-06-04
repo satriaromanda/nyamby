@@ -54,10 +54,10 @@ export const talentProfileUpdateSchema = z.object({
 
 export const clientOnboardingSchema = z.object({
   company_name: z.string().max(255).optional(),
-  industry: z.enum(["tech", "creative", "retail", "f&b", "education", "other"], {
+  industry: z.enum(["technology", "creative", "retail", "finance", "education", "other"], {
     message: "Industri wajib dipilih",
   }),
-  company_size: z.enum(["solo", "2-10", "11-50", "51+"]).optional(),
+  company_size: z.enum(["1-10", "11-50", "51-200", "200+"]).optional(),
   location: z.string().min(2, { message: "Lokasi wajib diisi" }),
   description: z.string().optional(),
   website_url: z.string().url({ message: "Format URL tidak valid" }).optional().or(z.literal("")),

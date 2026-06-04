@@ -233,15 +233,16 @@ async function main() {
   }
 
   // Client: Budi
-  await prisma.user.upsert({
+  const budi = await prisma.user.upsert({
     where: { email: "budi@demo.com" },
-    update: {},
+    update: { onboardingComplete: true },
     create: {
       email: "budi@demo.com",
       passwordHash,
       role: "client",
       fullName: "Budi Santoso",
       avatarUrl: null,
+      onboardingComplete: true,
     },
   });
 
