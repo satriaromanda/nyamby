@@ -420,11 +420,16 @@ export default function OnboardingPage() {
                   <input
                     type="url"
                     className="input-dark"
-                    placeholder="https://github.com/username"
+                    placeholder={form.category === "graphic_designer" ? "https://behance.net/username" : "https://github.com/username"}
                     value={form.portfolio_url}
                     onChange={(e) => setForm({ ...form, portfolio_url: e.target.value })}
                     autoComplete="url"
                   />
+                  <p className="mt-2 text-[10px] text-surface-400">
+                    {form.category === "graphic_designer"
+                      ? "Behance, Dribbble, Figma, atau portofolio desain lainnya."
+                      : "GitHub, GitLab, website pribadi, atau portofolio kode."}
+                  </p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
@@ -466,12 +471,14 @@ export default function OnboardingPage() {
                     </label>
                     <input
                       type="file"
-                      accept="application/pdf,.pdf,application/zip,.zip"
+                      accept={form.category === "graphic_designer" ? "application/pdf,.pdf,application/zip,.zip,image/png,image/jpeg,image/webp" : "application/pdf,.pdf,application/zip,.zip"}
                       className="block w-full text-xs text-surface-500 file:mr-3 file:rounded-lg file:border-0 file:bg-surface-100 file:px-3 file:py-2 file:text-xs file:font-medium file:text-surface-700"
                       onChange={(event) => setPortfolioFile(event.target.files?.[0] || null)}
                     />
                     <p className="mt-2 text-[10px] text-surface-400">
-                      Opsional, PDF/ZIP maksimal 10MB. Bisa digabung dengan URL.
+                      {form.category === "graphic_designer"
+                        ? "Opsional, PDF/ZIP/PNG/JPG maksimal 10MB. Upload portofolio desainmu."
+                        : "Opsional, PDF/ZIP maksimal 10MB. Bisa digabung dengan URL."}
                     </p>
                     {portfolioFile && (
                       <div className="mt-2 text-[10px] text-[#3B6D11]">

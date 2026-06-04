@@ -1,7 +1,13 @@
 import OpenAI from "openai";
 
-const openai = process.env.OPENAI_API_KEY
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+// Supports OpenAI, DeepSeek, or any OpenAI-compatible API.
+// Set AI_API_KEY + optional AI_BASE_URL and AI_MODEL in your .env
+const aiApiKey = process.env.AI_API_KEY;
+const aiBaseUrl = process.env.AI_BASE_URL || "https://api.openai.com/v1";
+const aiModel = process.env.AI_MODEL || "gpt-4o";
+
+const ai = aiApiKey
+  ? new OpenAI({ apiKey: aiApiKey, baseURL: aiBaseUrl })
   : null;
 
 export interface TalentForMatching {
@@ -50,8 +56,8 @@ export async function generateJobMatches(
   talents: TalentForMatching[],
   retryCount = 0
 ): Promise<MatchResult[]> {
-  if (!openai) {
-    console.warn("[AI] No OPENAI_API_KEY - using mock job matching");
+  if (!ai) {
+    console.warn("[AI] No AI_API_KEY - using mock job matching");
     return generateMockMatches(talents);
   }
 
@@ -61,8 +67,8 @@ Tugasmu adalah mengevaluasi kesesuaian setiap talenta terhadap job yang diberika
 Jika tersedia, gunakan cv_text dan portfolio_context sebagai bukti konkret, bukan hanya self-report skill.
 Selalu respons dalam format JSON object dengan key "matches" berisi array. Jangan tambahkan teks di luar JSON.`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+    const response = await ai.chat.completions.create({
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: JSON.stringify({ job, talents }) },
@@ -100,8 +106,8 @@ export async function generateSkillGapAnalysis(
   },
   retryCount = 0
 ): Promise<SkillGapResult> {
-  if (!openai) {
-    console.warn("[AI] No OPENAI_API_KEY - using mock skill gap analysis");
+  if (!ai) {
+    console.warn("[AI] No AI_API_KEY - using mock skill gap analysis");
     return generateMockSkillGap(category);
   }
 
@@ -112,8 +118,8 @@ Jika cv_text tersedia, gunakan sebagai bukti pengalaman kerja nyata. Jika portfo
 Prioritaskan bukti konkret di atas self-report. Berikan maksimal 3 rekomendasi.
 Respons dalam format JSON dengan recommendations, summary, dan profile_completeness_score. Jangan tambahkan teks di luar JSON.`;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+    const response = await ai.chat.completions.create({
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         {

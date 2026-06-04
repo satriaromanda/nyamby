@@ -185,8 +185,13 @@ export default function EditProfilePage() {
                   value={portfolioUrl}
                   onChange={(e) => setPortfolioUrl(e.target.value)}
                   className="w-full px-4 py-2 bg-white border border-surface-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                  placeholder="https://github.com/..."
+                  placeholder={profile?.category === "graphic_designer" ? "https://behance.net/..." : "https://github.com/..."}
                 />
+                <p className="mt-1 text-[10px] text-surface-400">
+                  {profile?.category === "graphic_designer"
+                    ? "Behance, Dribbble, Figma, atau portofolio desain lainnya."
+                    : "GitHub, GitLab, website pribadi, atau portofolio kode."}
+                </p>
               </div>
             </div>
           </div>
