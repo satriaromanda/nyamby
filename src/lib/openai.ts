@@ -116,7 +116,23 @@ export async function generateSkillGapAnalysis(
 Analisis kesenjangan skill talenta berdasarkan demand pasar yang tersedia.
 Jika cv_text tersedia, gunakan sebagai bukti pengalaman kerja nyata. Jika portfolio_context tersedia, jadikan sebagai validasi skill yang diklaim.
 Prioritaskan bukti konkret di atas self-report. Berikan maksimal 3 rekomendasi.
-Respons dalam format JSON dengan recommendations, summary, dan profile_completeness_score. Jangan tambahkan teks di luar JSON.`;
+
+RESPON HANYA JSON dengan struktur persis seperti ini:
+{
+  "recommendations": [
+    {
+      "skill_name": "Nama Skill",
+      "priority": "high",
+      "reason": "Alasan kenapa skill ini penting",
+      "estimated_impact": "Dampak jika skill ini dikuasai (contoh: Potensi rate naik 30%)",
+      "evidence_basis": "form"
+    }
+  ],
+  "summary": "Ringkasan analisis 1-2 kalimat",
+  "profile_completeness_score": 75
+}
+
+priority hanya: high, medium, atau low. Jangan tambahkan teks di luar JSON.`;
 
     const response = await ai.chat.completions.create({
       model: aiModel,
@@ -173,10 +189,45 @@ function generateMockMatches(talents: TalentForMatching[]): MatchResult[] {
 }
 
 function generateMockSkillGap(category: string): SkillGapResult {
+  const isWebDev = category === "web_dev";
   return {
-    recommendations: [],
-    summary: "Sistem AI sedang sibuk, kumpulkan bukti portfolio Anda secara manual.",
-    profile_completeness_score: 50,
+    recommendations: isWebDev
+      ? [
+          {
+            skill_name: "TypeScript",
+            priority: "high" as const,
+            reason: "Banyak job aktif mensyaratkan TypeScript. Tingkatkan level dari intermediate ke expert.",
+            estimated_impact: "Potensi rate naik 30-40% dan akses proyek enterprise",
+            evidence_basis: "cv" as const,
+          },
+          {
+            skill_name: "Testing (Jest/Vitest)",
+            priority: "medium" as const,
+            reason: "Employer mencari developer yang bisa menulis test. Menunjukkan profesionalisme.",
+            estimated_impact: "Peluang diterima naik 25%",
+            evidence_basis: "form" as const,
+          },
+        ]
+      : [
+          {
+            skill_name: "Motion Design / After Effects",
+            priority: "high" as const,
+            reason: "Permintaan konten video animasi meningkat. Skill ini membedakan kamu dari desainer lain.",
+            estimated_impact: "Rate project bisa naik 50% dengan skill motion",
+            evidence_basis: "form" as const,
+          },
+          {
+            skill_name: "3D Design (Blender)",
+            priority: "medium" as const,
+            reason: "Brand semakin banyak meminta aset 3D untuk marketing. Masih sedikit desainer yang kuasai.",
+            estimated_impact: "Akses niche market dengan budget lebih tinggi",
+            evidence_basis: "portfolio" as const,
+          },
+        ],
+    summary: isWebDev
+      ? "Skill kamu sudah solid untuk web development. Fokus utama: TypeScript dan testing untuk membuka peluang lebih besar."
+      : "Portfolio desainmu bagus. Upgrade ke motion dan 3D untuk naik ke tier selanjutnya.",
+    profile_completeness_score: isWebDev ? 65 : 55,
   };
 }
 

@@ -75,6 +75,7 @@ export async function GET() {
               summary: skillGap.summary,
               profile_completeness_score: skillGap.profileCompletenessScore,
               generated_at: skillGap.generatedAt,
+              ai_status: skillGap.aiStatus,
             }
           : null,
         recommended_jobs: jobMatches.map((jm) => ({

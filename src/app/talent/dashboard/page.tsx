@@ -46,6 +46,7 @@ interface DashboardData {
     summary: string;
     profile_completeness_score?: number | null;
     generated_at: string;
+    ai_status?: string;
   };
   recommended_jobs?: RecommendedJob[];
   active_jobs?: { job_id: string; title: string; client_name: string; status: string }[];
@@ -278,6 +279,7 @@ export default function TalentDashboard() {
   const [rejectReason, setRejectReason] = useState("");
   const [processingOffer, setProcessingOffer] = useState(false);
   const [uploadingDeliverableId, setUploadingDeliverableId] = useState<string | null>(null);
+  const [refreshingGap, setRefreshingGap] = useState(false);
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -301,6 +303,19 @@ export default function TalentDashboard() {
   useEffect(() => {
     fetchDashboard();
   }, [fetchDashboard]);
+
+  const handleRefreshSkillGap = async () => {
+    setRefreshingGap(true);
+    try {
+      await fetch("/api/talent/skill-gap/refresh", { method: "POST" });
+      setTimeout(async () => {
+        await fetchDashboard();
+        setRefreshingGap(false);
+      }, 2000);
+    } catch {
+      setRefreshingGap(false);
+    }
+  };
 
   const handleApply = async (matchId: string) => {
     setApplyingId(matchId);
@@ -411,16 +426,16 @@ export default function TalentDashboard() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-start">
+        <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
           <div>
             <h1 className="text-3xl font-bold mb-2 text-surface-900" >
               Halo, {data.profile.full_name.split(" ")[0]}!
             </h1>
-            <p className="text-surface-500">
+            <p className="text-surface-500 text-sm">
               Dashboard karirmu - lihat insight AI dan job yang cocok untukmu.
             </p>
           </div>
-          <Link href="/talent/edit-profile" className="btn-secondary text-sm inline-flex items-center gap-1.5 px-4 py-2">
+          <Link href="/talent/edit-profile" className="btn-secondary text-xs sm:text-sm inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 shrink-0 self-start">
             <Icon name="spark" size={14} /> Edit Profil
           </Link>
         </div>
@@ -451,51 +466,74 @@ export default function TalentDashboard() {
           {/* ─── Skill Gap Analysis Card ─────────────────────────── */}
           <div className="lg:col-span-1">
             <div className="glass rounded-xl p-6 card-hover">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-sm">
-              <Icon name="settings" size={18} />
+              <div className="flex items-center justify-between gap-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-sm">
+                    <Icon name="settings" size={18} />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-sm text-surface-900">Insight Karir AI</h2>
+                    <span className="text-[10px] text-surface-400">Skill Gap Analysis</span>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="font-bold text-sm text-surface-900">Insight Karir AI</h2>
-                  <span className="text-[10px] text-surface-400">Skill Gap Analysis</span>
-                </div>
+                {data.skill_gap && data.skill_gap.ai_status !== "processing" && data.skill_gap.ai_status !== "pending" && (
+                  <button
+                    onClick={handleRefreshSkillGap}
+                    disabled={refreshingGap}
+                    className="text-[10px] text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-primary-50 transition-colors disabled:opacity-50 shrink-0"
+                  >
+                    <Icon name={refreshingGap ? "settings" : "spark"} size={12} className={refreshingGap ? "animate-spin" : ""} />
+                    {refreshingGap ? "Menganalisis..." : "Analisis Ulang"}
+                  </button>
+                )}
               </div>
 
               {data.skill_gap ? (
-                <>
-                  <p className="text-xs text-surface-500 mb-4 leading-relaxed">
-                    {data.skill_gap.summary}
-                  </p>
-                  {data.skill_gap.profile_completeness_score !== null &&
-                    data.skill_gap.profile_completeness_score !== undefined && (
+                data.skill_gap.ai_status === "pending" || data.skill_gap.ai_status === "processing" ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-amber-600 mb-3">
+                      <div className="w-5 h-5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                      <span className="text-sm font-medium">AI sedang menganalisis skill gap...</span>
+                    </div>
+                    <div className="h-4 bg-surface-100 animate-pulse rounded w-3/4" />
+                    <div className="h-4 bg-surface-100 animate-pulse rounded w-1/2" />
+                    <div className="h-4 bg-surface-100 animate-pulse rounded w-2/3" />
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-xs text-surface-500 mb-4 leading-relaxed">
+                      {data.skill_gap.summary}
+                    </p>
+                    {data.skill_gap.profile_completeness_score != null && (
                       <div className="mb-4 p-3 rounded-xl bg-[#FAEEDA] border border-amber-100">
                         <div className="text-[10px] text-[#854F0B] font-medium mb-1">
                           AI enrichment completeness
                         </div>
-                        <div className="text-lg font-bold text-surface-900" >
+                        <div className="text-lg font-bold text-surface-900">
                           {data.skill_gap.profile_completeness_score}%
                         </div>
                       </div>
                     )}
 
-                  <div className="space-y-3">
-                    {(data.skill_gap.recommendations as unknown as SkillGapRec[]).map((rec, i) => {
-                      const cfg = priorityConfig[rec.priority] || priorityConfig.medium;
-                      return (
-                        <div key={i} className="p-3 rounded-xl bg-surface-50 border border-surface-200">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-sm font-semibold text-surface-900">{rec.skill_name}</span>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full ${cfg.bg} ${cfg.color}`}>
-                              {cfg.label}
-                            </span>
+                    <div className="space-y-3">
+                      {(data.skill_gap.recommendations as unknown as SkillGapRec[]).map((rec, i) => {
+                        const cfg = priorityConfig[rec.priority] || priorityConfig.medium;
+                        return (
+                          <div key={i} className="p-3 rounded-xl bg-surface-50 border border-surface-200">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm font-semibold text-surface-900">{rec.skill_name}</span>
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full ${cfg.bg} ${cfg.color}`}>
+                                {cfg.label}
+                              </span>
+                            </div>
+                            <p className="text-xs text-surface-500 mb-1">{rec.reason}</p>
+                            <p className="text-xs text-accent-600"><Icon name="spark" className="inline mr-1" size={12} />{rec.estimated_impact}</p>
                           </div>
-                          <p className="text-xs text-surface-500 mb-1">{rec.reason}</p>
-                          <p className="text-xs text-accent-600"><Icon name="spark" className="inline mr-1" size={12} />{rec.estimated_impact}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
+                        );
+                      })}
+                    </div>
+                  </>
+                )
               ) : (
                 <p className="text-sm text-surface-500">Belum ada analisis. Lengkapi profilmu.</p>
               )}
