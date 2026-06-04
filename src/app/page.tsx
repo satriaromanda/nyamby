@@ -104,6 +104,8 @@ function AnimateIn({
 export default function LandingPage() {
   const statsRef = useRef<HTMLDivElement>(null);
   const [statsVisible, setStatsVisible] = useState(false);
+  const [showTopBtn, setShowTopBtn] = useState(false);
+  const [showFloatingCta, setShowFloatingCta] = useState(false);
   const rating = useAnimatedCounter(4.9, 1800, 0, 1);
   const talents = useAnimatedCounter(500, 1600, 0);
   const accuracy = useAnimatedCounter(95, 1400, 0);
@@ -128,6 +130,20 @@ export default function LandingPage() {
     obs.observe(el);
     return () => obs.disconnect();
   }, [rating, talents, accuracy, projects]);
+
+  // Back-to-top visibility
+  useEffect(() => {
+    const onScroll = () => setShowTopBtn(window.scrollY > 500);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Show floating CTA after hero
+  useEffect(() => {
+    const onScroll = () => setShowFloatingCta(window.scrollY > 300);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const typedText = useTypingEffect([
     "peluang terbaik.",
@@ -575,6 +591,29 @@ export default function LandingPage() {
       </section>
 
       <Footer />
+
+      {/* Back-to-top button */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className={`fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-white border border-slate-200 shadow-lg flex items-center justify-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
+          showTopBtn ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
+        aria-label="Back to top"
+      >
+        <Icon name="chevronDown" size={20} className="rotate-180 text-slate-600" />
+      </button>
+
+      {/* Floating CTA */}
+      <Link
+        href="/register"
+        className={`fixed bottom-6 left-6 z-50 flex items-center gap-3 px-4 py-3 bg-primary-600 text-white rounded-full shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:bg-primary-700 ${
+          showFloatingCta ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
+      >
+        <Icon name="spark" size={18} />
+        <span className="text-sm font-bold hidden sm:inline">Mulai Gratis</span>
+        <Icon name="arrowRight" size={16} />
+      </Link>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { Icon, Logo } from "@/components/icons";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [session, setSession] = useState<{ role: string; fullName: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,7 +34,12 @@ export function Navbar() {
     }
   };
 
-  // Close mobile menu on resize to desktop
+  // Navbar shadow on scroll
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) setMobileOpen(false);
@@ -87,7 +93,9 @@ export function Navbar() {
     <>
       <nav
         ref={navRef}
-        className="fixed top-0 w-full z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200"
+        className={`fixed top-0 w-full z-50 bg-white/85 backdrop-blur-xl transition-shadow duration-300 ${
+          scrolled ? "shadow-lg shadow-slate-200/50" : "border-b border-slate-200"
+        }`}
         role="navigation"
         aria-label="Main navigation"
       >
@@ -184,7 +192,12 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            {loading ? null : session ? (
+            {loading ? (
+              <>
+                <div className="h-9 w-20 bg-surface-200 animate-pulse rounded-xl" />
+                <div className="h-9 w-32 bg-surface-200 animate-pulse rounded-full" />
+              </>
+            ) : session ? (
               <>
                 <Link
                   href={`/${session.role}/dashboard`}
@@ -279,7 +292,12 @@ export function Navbar() {
             <MobileNavLink href="/fitur/escrow" icon="shield" label="Escrow Aman" onClick={closeAll} />
 
             <div className="pt-6 space-y-3">
-              {loading ? null : session ? (
+              {loading ? (
+                <>
+                  <div className="h-12 w-full bg-surface-200 animate-pulse rounded-xl" />
+                  <div className="h-12 w-full bg-surface-200 animate-pulse rounded-xl" />
+                </>
+              ) : session ? (
                 <>
                   <Link
                     href={`/${session.role}/dashboard`}
