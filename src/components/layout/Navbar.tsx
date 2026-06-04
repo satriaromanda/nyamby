@@ -8,6 +8,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [session, setSession] = useState<{ role: string; fullName: string } | null>(null);
+  const [loading, setLoading] = useState(true);
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -17,6 +18,7 @@ export function Navbar() {
         if (data.success && data.user) {
           setSession(data.user);
         }
+        setLoading(false);
       })
       .catch(console.error);
   }, []);
@@ -179,7 +181,7 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            {session ? (
+            {loading ? null : session ? (
               <>
                 <Link
                   href={`/${session.role}/dashboard`}
@@ -273,7 +275,7 @@ export function Navbar() {
             <MobileNavLink href="/fitur/escrow" icon="shield" label="Escrow Aman" onClick={closeAll} />
 
             <div className="pt-6 space-y-3">
-              {session ? (
+              {loading ? null : session ? (
                 <>
                   <Link
                     href={`/${session.role}/dashboard`}
