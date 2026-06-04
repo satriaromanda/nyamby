@@ -240,7 +240,7 @@ export function Navbar() {
             aria-controls="mobile-menu"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
-            <Icon name={mobileOpen ? "x" : "book"} size={22} />
+            <Icon name={mobileOpen ? "x" : "menu"} size={22} />
           </button>
         </div>
       </nav>
