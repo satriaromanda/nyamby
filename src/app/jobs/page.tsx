@@ -46,6 +46,7 @@ export default function JobsPage() {
   
   const [user, setUser] = useState<SessionUser | null>(null);
   const [myMatches, setMyMatches] = useState<MyMatch[]>([]);
+  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/session")
@@ -107,6 +108,29 @@ export default function JobsPage() {
   }, [category, q, minBudget, maxBudget, sort]);
 
   const getMatch = (jobId: string) => myMatches.find((m) => m.job_id === jobId);
+
+  const handleQuickAnalyze = async (e: React.MouseEvent, jobId: string) => {
+    e.preventDefault(); // prevent navigating to job detail
+    setAnalyzingId(jobId);
+    try {
+      const res = await fetch("/api/ai/match-talent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ job_id: jobId, force_refresh: true }),
+      });
+      const d = await res.json();
+      if (d.success) {
+        setMyMatches((prev) => [
+          ...prev.filter((m) => m.job_id !== jobId),
+          { job_id: jobId, match_score: Number(d.data.match_score), status: d.data.status },
+        ]);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setAnalyzingId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-surface-50">
@@ -273,10 +297,24 @@ export default function JobsPage() {
                               <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-accent-600">Diterima</span>
                             )}
                           </>
+                        ) : user?.role === "talent" ? (
+                          <button
+                            onClick={(e) => handleQuickAnalyze(e, job.id)}
+                            disabled={analyzingId === job.id}
+                            className="btn-primary text-xs px-3 py-1.5 disabled:opacity-50"
+                          >
+                            {analyzingId === job.id ? (
+                              <div className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
+                            ) : (
+                              <span className="inline-flex items-center gap-1">
+                                <Icon name="ai" size={12} /> Cek Kecocokan
+                              </span>
+                            )}
+                          </button>
                         ) : (
                           <span className="btn-primary text-xs px-4 py-2">
                             <span className="inline-flex items-center gap-1">
-                              {user?.role === "talent" ? "Lihat Detail" : "Lamar"}
+                              Lamar
                               <Icon name="arrowRight" size={13} />
                             </span>
                           </span>
