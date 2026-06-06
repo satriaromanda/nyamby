@@ -1,3 +1,9 @@
+# Project: Nyamby
+
+- **Repository:** https://github.com/satriaromanda/nyamby
+- **Owner:** Satrio Romanda
+- **Description:** Nyamby is a standalone project. It has **no correlation** with E-Kinerja or any other external systems mentioned in conversations unless explicitly stated.
+
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 

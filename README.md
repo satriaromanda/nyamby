@@ -1,36 +1,144 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center">
+  <img src="docs/Logo%20Nyamby%20Full.svg" alt="Nyamby Logo" width="320" />
+</p>
 
-## Getting Started
+> **AI Talent Matching Platform** — mempertemukan talenta Indonesia dengan client melalui AI matching, escrow, dan workflow end-to-end.
+>
+> Built for **Hackathon Digdaya X 2026** | [Live Demo →](https://nyamby.akbarhlubis.duckdns.org)
 
-First, run the development server:
+![Version](https://img.shields.io/badge/version-v1.2.0-blue)
+![Status](https://img.shields.io/badge/status-MVP%20Complete-brightgreen)
+![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen)
+
+---
+
+## ✨ Fitur
+
+### Untuk Talenta
+- **AI Skill Gap Analysis** — rekomendasi 3 skill prioritas berdasarkan CV & portfolio
+- **AI Job Matching** — dapatkan match score personal untuk setiap job
+- **Dashboard** — job rekomendasi, skill gap card, job aktif
+- **Apply Job** — lamar langsung dari dashboard dengan 1 klik
+- **Submit Deliverable** — upload hasil kerja, terima feedback client
+
+### Untuk Client
+- **Post Job** — judul, deskripsi, required skills, budget, deadline
+- **AI Talent Matching** — ranked shortlist dengan reasoning per talenta
+- **Dashboard** — kelola job, lihat matched talents
+- **Escrow** — dana ditahan aman, rilis setelah approve
+
+### Kedua Role
+- **In-App Notifications** — bell badge + toast real-time (10 tipe trigger)
+- **Public Browsing** — `/jobs` dan `/talents` aksesibel tanpa login
+- **Dispute System** — ticket dispute dengan status tracking
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| Styling | Tailwind CSS + shadcn/ui |
+| Database | PostgreSQL + Prisma ORM |
+| AI Engine | DeepSeek Chat (primary) / GPT-4o (fallback) |
+| Auth | Session-based (iron-session) |
+| Deployment | Vercel |
+
+---
+
+## 🚀 Getting Started
+
+### Prasyarat
+
+- Node.js 18+
+- PostgreSQL
+- API key AI (DeepSeek atau OpenAI)
+
+### Setup
 
 ```bash
+# Clone repo
+git clone https://github.com/satriaromanda/nyamby.git
+cd nyamby
+
+# Install dependencies
+npm install
+
+# Setup environment
+cp .env.example .env
+# Isi DATABASE_URL, AI_API_KEY, SESSION_SECRET di .env
+
+# Setup database
+npx prisma db push
+npx prisma db seed
+
+# Run dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Demo Accounts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Role | Email | Password |
+|------|-------|----------|
+| Talenta (Dev) | raka@nyamby.id | password123 |
+| Talenta (Designer) | sari@nyamby.id | password123 |
+| Client | budi@nyamby.id | password123 |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📂 Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/                  # Next.js App Router pages & API routes
+│   ├── api/              # Route handlers (auth, ai, jobs, matches, escrow, etc.)
+│   ├── talent/           # Talent pages (dashboard, onboarding, profile, settings)
+│   ├── client/           # Client pages (dashboard, onboarding, post-job, escrow, settings)
+│   ├── jobs/             # Public job listing & detail
+│   ├── talents/          # Public talent directory & profile
+│   ├── how-it-works/     # How It Works page
+│   ├── fitur/            # Feature detail pages
+│   ├── login/ & register/ # Auth pages
+│   └── page.tsx          # Landing page
+├── components/           # Shared UI components
+├── lib/                  # Core logic (auth, openai, prisma, enrichment, validations)
+└── middleware.ts         # Auth middleware & route protection
+prisma/
+├── schema.prisma         # Database schema
+└── seed.ts               # Demo data seeder
+docs/                     # PRD, technical flows, API spec
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📋 PRD & Docs
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [PRD v1.2](docs/Nyamby_PRD_MVP_v1.2.md) — Product requirements lengkap
+- [Technical Flows](docs/Nyamby_PRD_Technical_Flows_v2.0.md) — Detail flow teknis
+- [API Spec](docs/api-spec.json) — OpenAPI specification
+- [Schema](docs/schema.json) — Database schema reference
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🔖 Version History
+
+| Version | Date | Highlights |
+|---------|------|-----------|
+| **v1.2.0** | 2026-06-06 | MVP Complete — semua Layer 1 + Workflow v1.2 + 8 bug fixes |
+| v1.1.0 | — | CV/Portfolio upload, public flows, design system |
+| v1.0.0 | — | Core MVP: Auth, Onboarding, AI matching, Dashboard, Escrow |
+
+---
+
+## 👤 Author
+
+**Satrio Romanda** — [GitHub](https://github.com/satriaromanda)
+
+---
+
+## 📄 License
+
+Private — Hackathon Digdaya X 2026
