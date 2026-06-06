@@ -43,7 +43,7 @@
 | Database | PostgreSQL + Prisma ORM |
 | AI Engine | DeepSeek Chat (primary) / GPT-4o (fallback) |
 | Auth | Session-based (iron-session) |
-| Deployment | Vercel |
+| Deployment | Virtual Private Server|
 
 ---
 
