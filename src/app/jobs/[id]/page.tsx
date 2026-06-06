@@ -543,7 +543,7 @@ export default function JobDetailPage() {
                   <div>
                     <h3 className="font-bold text-sm text-surface-900">AI Match Analysis</h3>
                     <span className="text-[10px] text-surface-400">
-                      Powered by GPT-4o
+                      Powered by AI
                     </span>
                   </div>
                 </div>

@@ -4,7 +4,7 @@ import OpenAI from "openai";
 // Set AI_API_KEY + optional AI_BASE_URL and AI_MODEL in your .env
 const aiApiKey = process.env.AI_API_KEY;
 const aiBaseUrl = process.env.AI_BASE_URL || "https://api.openai.com/v1";
-const aiModel = process.env.AI_MODEL || "gpt-4o";
+const aiModel = process.env.AI_MODEL || "deepseek-chat";
 
 const ai = aiApiKey
   ? new OpenAI({ apiKey: aiApiKey, baseURL: aiBaseUrl })
