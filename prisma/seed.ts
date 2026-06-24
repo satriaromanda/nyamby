@@ -246,7 +246,21 @@ async function main() {
     },
   });
 
-  console.log("✅ Seeded demo users: Raka (talent), Sari (talent), Andi (talent), Budi (client)");
+  // Admin: AyoNyamby Admin
+  const admin = await prisma.user.upsert({
+    where: { email: "admin@ayonyamby.com" },
+    update: { onboardingComplete: true },
+    create: {
+      email: "admin@ayonyamby.com",
+      passwordHash,
+      role: "admin",
+      fullName: "AyoNyamby Admin",
+      avatarUrl: null,
+      onboardingComplete: true,
+    },
+  });
+
+  console.log("✅ Seeded demo users: Raka (talent), Sari (talent), Andi (talent), Budi (client), Admin (admin)");
   console.log("   All demo accounts use password: password123");
 
   // ─── Seed Demo Jobs ───────────────────────────────────────────────────────

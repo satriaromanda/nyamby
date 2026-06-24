@@ -61,6 +61,9 @@ export async function GET() {
         cv_file: profile.cvFile,
         cv_text: profile.cvText,
         portfolio_context: profile.portfolioContext,
+        bank_code: profile.bankCode,
+        bank_account: profile.bankAccount,
+        bank_account_name: profile.bankAccountName,
         skills: profile.talentSkills.map((ts) => ({
           id: ts.skillId,
           name: ts.skill.name,
@@ -127,6 +130,9 @@ export async function PATCH(request: NextRequest) {
         ...(cv_text !== undefined && { cvText: cv_text }),
         ...(portfolio_context !== undefined && { portfolioContext: portfolio_context }),
         ...(slug !== undefined && { slug }),
+        ...(body.bank_code !== undefined && { bankCode: body.bank_code }),
+        ...(body.bank_account !== undefined && { bankAccount: body.bank_account }),
+        ...(body.bank_account_name !== undefined && { bankAccountName: body.bank_account_name }),
       },
     });
 

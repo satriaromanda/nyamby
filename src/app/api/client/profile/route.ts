@@ -21,6 +21,13 @@ export async function GET() {
         fullName: true,
         avatarUrl: true,
         createdAt: true,
+        clientProfile: {
+          select: {
+            bankCode: true,
+            bankAccount: true,
+            bankAccountName: true,
+          }
+        }
       },
     });
 
@@ -46,6 +53,9 @@ export async function GET() {
         full_name: user.fullName,
         avatar_url: user.avatarUrl,
         created_at: user.createdAt,
+        bank_code: user.clientProfile?.bankCode || null,
+        bank_account: user.clientProfile?.bankAccount || null,
+        bank_account_name: user.clientProfile?.bankAccountName || null,
         stats: {
           total_jobs: totalJobs,
           active_jobs: activeJobs,
@@ -77,22 +87,38 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { full_name, avatar_url } = body;
+    const { full_name, avatar_url, bank_code, bank_account, bank_account_name } = body;
 
-    const updateData: Record<string, string> = {};
-    if (full_name !== undefined) updateData.fullName = full_name;
-    if (avatar_url !== undefined) updateData.avatarUrl = avatar_url;
+    const updateUser: Record<string, string> = {};
+    if (full_name !== undefined) updateUser.fullName = full_name;
+    if (avatar_url !== undefined) updateUser.avatarUrl = avatar_url;
 
-    if (Object.keys(updateData).length === 0) {
+    const updateProfile: Record<string, string | null> = {};
+    if (bank_code !== undefined) updateProfile.bankCode = bank_code;
+    if (bank_account !== undefined) updateProfile.bankAccount = bank_account;
+    if (bank_account_name !== undefined) updateProfile.bankAccountName = bank_account_name;
+
+    if (Object.keys(updateUser).length === 0 && Object.keys(updateProfile).length === 0) {
       return NextResponse.json(
         { success: false, message: "Tidak ada data yang diupdate" },
         { status: 400 }
       );
     }
 
-    await prisma.user.update({
-      where: { id: session.userId },
-      data: updateData,
+    await prisma.$transaction(async (tx) => {
+      if (Object.keys(updateUser).length > 0) {
+        await tx.user.update({
+          where: { id: session.userId },
+          data: updateUser,
+        });
+      }
+
+      if (Object.keys(updateProfile).length > 0) {
+        await tx.clientProfile.update({
+          where: { userId: session.userId },
+          data: updateProfile,
+        });
+      }
     });
 
     return NextResponse.json({

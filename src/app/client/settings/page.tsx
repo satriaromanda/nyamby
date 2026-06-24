@@ -12,6 +12,9 @@ interface ClientProfile {
   full_name: string;
   avatar_url: string | null;
   created_at: string;
+  bank_code: string | null;
+  bank_account: string | null;
+  bank_account_name: string | null;
   stats: {
     total_jobs: number;
     active_jobs: number;
@@ -28,6 +31,9 @@ export default function ClientSettingsPage() {
 
   const [form, setForm] = useState({
     full_name: "",
+    bank_code: "",
+    bank_account: "",
+    bank_account_name: "",
   });
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
@@ -47,6 +53,9 @@ export default function ClientSettingsPage() {
         setProfile(d.data);
         setForm({
           full_name: d.data.full_name || "",
+          bank_code: d.data.bank_code || "",
+          bank_account: d.data.bank_account || "",
+          bank_account_name: d.data.bank_account_name || "",
         });
       } else if (res.status === 403) {
         router.push("/talent/settings");
@@ -75,6 +84,9 @@ export default function ClientSettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           full_name: form.full_name,
+          bank_code: form.bank_code || null,
+          bank_account: form.bank_account || null,
+          bank_account_name: form.bank_account_name || null,
         }),
       });
       const d = await res.json();
@@ -282,6 +294,71 @@ export default function ClientSettingsPage() {
                   />
                   <p className="text-[10px] text-surface-400 mt-1">
                     Nama ini akan terlihat oleh talenta saat mereka melihat job posting-mu.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bank Info */}
+            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.075s" }}>
+              <h2 className="font-bold text-lg mb-1 text-surface-900" >
+                Informasi Rekening Bank
+              </h2>
+              <p className="text-xs text-surface-400 mb-5">
+                Rekening ini akan digunakan untuk proses refund (jika ada).
+              </p>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-surface-600 mb-2">
+                      Bank Tujuan
+                    </label>
+                    <select
+                      className="input-dark"
+                      value={form.bank_code}
+                      onChange={(e) => setForm({ ...form, bank_code: e.target.value })}
+                    >
+                      <option value="">Pilih Bank</option>
+                      <option value="BCA">BCA</option>
+                      <option value="BNI">BNI</option>
+                      <option value="BRI">BRI</option>
+                      <option value="MANDIRI">Mandiri</option>
+                      <option value="BSI">BSI</option>
+                      <option value="CIMB">CIMB Niaga</option>
+                      <option value="PERMATA">Permata</option>
+                      <option value="GOPAY">GoPay</option>
+                      <option value="OVO">OVO</option>
+                      <option value="DANA">DANA</option>
+                      <option value="SHOPEEPAY">ShopeePay</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-surface-600 mb-2">
+                      Nomor Rekening / E-Wallet
+                    </label>
+                    <input
+                      type="text"
+                      className="input-dark"
+                      placeholder="Contoh: 1234567890"
+                      value={form.bank_account}
+                      onChange={(e) => setForm({ ...form, bank_account: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-surface-600 mb-2">
+                    Nama Pemilik Rekening
+                  </label>
+                  <input
+                    type="text"
+                    className="input-dark"
+                    placeholder="Sesuai buku tabungan"
+                    value={form.bank_account_name}
+                    onChange={(e) => setForm({ ...form, bank_account_name: e.target.value })}
+                  />
+                  <p className="text-[10px] text-surface-400 mt-1">
+                    Pastikan nama sesuai dengan yang terdaftar di bank untuk menghindari kegagalan transfer.
                   </p>
                 </div>
               </div>
