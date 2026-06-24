@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { createPayOut } from "@/services/xenith";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,7 +27,12 @@ export async function POST(request: NextRequest) {
 
     const escrow = await prisma.escrowTransaction.findUnique({
       where: { jobId: job_id },
-      include: { job: true },
+      include: { 
+        job: true,
+        talent: {
+          include: { talentProfile: true }
+        }
+      },
     });
 
     if (!escrow) {
@@ -43,42 +51,58 @@ export async function POST(request: NextRequest) {
 
     if (escrow.status !== "held") {
       return NextResponse.json(
-        { success: false, message: "Dana sudah dirilis atau di-refund" },
+        { success: false, message: "Dana sudah diproses, dirilis, atau di-refund" },
         { status: 400 }
       );
     }
 
-    const updated = await prisma.escrowTransaction.update({
-      where: { id: escrow.id },
+    const talentProfile = escrow.talent.talentProfile;
+    if (!talentProfile || !talentProfile.bankCode || !talentProfile.bankAccount) {
+       return NextResponse.json(
+         { success: false, message: "Data rekening talent belum lengkap untuk pencairan dana" }, 
+         { status: 400 }
+       );
+    }
+
+    const referenceCode = `PAYOUT-${job_id}-${Date.now()}`;
+    const idempotencyKey = crypto.randomUUID();
+
+    const payoutResult = await createPayOut({
+      initiatedAmount: Number(escrow.amount),
+      destinationPayoutMethod: "BANK_TRANSFER", // Default method
+      destinationPayoutChannel: talentProfile.bankCode,
+      destinationPayoutAccount: talentProfile.bankAccount,
+      destinationPayoutAccountName: talentProfile.bankAccountName || escrow.talent.fullName,
+      referenceCode,
+      customerReference: `TALENT-${escrow.talentUserId}`,
+      description: `Pencairan Dana Escrow Job: ${escrow.job.title}`,
+      callbackUrl: `${APP_URL}/api/webhooks/xenith/payout`
+    }, idempotencyKey);
+
+    // Buat payout record
+    const payout = await prisma.payout.create({
       data: {
-        status: "released",
-        releasedAt: new Date(),
+        escrowId: escrow.id,
+        xenithPayoutId: payoutResult.id,
+        referenceCode: payoutResult.referenceCode || referenceCode,
+        customerReference: `TALENT-${escrow.talentUserId}`,
+        payoutType: "talent",
+        amount: escrow.amount,
+        destinationAccount: talentProfile.bankAccount,
+        destinationChannel: talentProfile.bankCode,
+        status: payoutResult.status || "PENDING",
       },
     });
 
-    // Update job status to completed
-    await prisma.job.update({
-      where: { id: job_id },
-      data: { status: "completed" },
-    });
-
-    // Notify talent
-    await prisma.notification.create({
-      data: {
-        userId: escrow.talentUserId,
-        type: "payment_released",
-        message: `Dana Rp ${Number(escrow.amount).toLocaleString("id-ID")} telah dirilis untuk job: ${escrow.job.title}. Selamat!`,
-        relatedJobId: job_id,
-      },
-    });
+    // Job status dan notifikasi talent akan di-handle oleh webhook payout
 
     return NextResponse.json({
       success: true,
-      message: "Dana berhasil dirilis ke talenta. Job selesai!",
+      message: "Proses pencairan dana sedang berjalan. Menunggu konfirmasi Xenith.",
       data: {
-        escrow_id: updated.id,
-        status: updated.status,
-        released_at: updated.releasedAt,
+        escrow_id: escrow.id,
+        status: escrow.status,
+        payout_status: payout.status,
       },
     });
   } catch (error) {

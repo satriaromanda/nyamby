@@ -48,6 +48,15 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/client/dashboard', request.url));
     }
 
+    // 4. Admin Guard: Only admin can access /admin/* routes
+    if (pathname.startsWith('/admin') && session.role !== 'admin') {
+      return NextResponse.redirect(new URL(`/${session.role}/dashboard`, request.url));
+    }
+    // Admin skips onboarding checks
+    if (session.role === 'admin') {
+      return NextResponse.next();
+    }
+
     // 4. Onboarding Guard
     // If onboarding is not complete, they can only access their respective onboarding route
     if (session.onboardingComplete === false) {

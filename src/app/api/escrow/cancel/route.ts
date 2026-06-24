@@ -5,26 +5,13 @@ import { requireAuth } from "@/lib/auth";
 export async function POST(request: NextRequest) {
   try {
     const session = await requireAuth();
-    if (session.role !== "client") {
-      return NextResponse.json(
-        { success: false, message: "Hanya client yang bisa cancel escrow" },
-        { status: 403 }
-      );
-    }
 
     const body = await request.json();
-    const { job_id, progress_pct } = body;
+    const { job_id, reason, description } = body;
 
-    if (!job_id || progress_pct === undefined || progress_pct === null) {
+    if (!job_id || !description) {
       return NextResponse.json(
-        { success: false, message: "job_id dan progress_pct wajib diisi" },
-        { status: 400 }
-      );
-    }
-
-    if (typeof progress_pct !== "number" || progress_pct < 0 || progress_pct > 100) {
-      return NextResponse.json(
-        { success: false, message: "progress_pct harus angka antara 0 - 100" },
+        { success: false, message: "job_id dan description wajib diisi" },
         { status: 400 }
       );
     }
@@ -36,91 +23,102 @@ export async function POST(request: NextRequest) {
 
     if (!escrow) {
       return NextResponse.json(
-        { success: false, message: "Escrow tidak ditemukan" },
+        { success: false, message: "Escrow tidak ditemukan untuk job ini" },
         { status: 404 }
       );
     }
 
-    if (escrow.clientUserId !== session.userId) {
+    // Hanya client pemilik job atau talent yang terlibat yang bisa membatalkan
+    const isClient = escrow.clientUserId === session.userId;
+    const isTalent = escrow.talentUserId === session.userId;
+
+    if (!isClient && !isTalent) {
       return NextResponse.json(
-        { success: false, message: "Anda tidak memiliki akses" },
+        { success: false, message: "Anda bukan peserta dalam job ini" },
         { status: 403 }
       );
     }
 
     if (escrow.status !== "held") {
       return NextResponse.json(
-        { success: false, message: "Escrow sudah dirilis atau di-refund" },
+        { success: false, message: "Escrow tidak dalam status aktif (held)" },
         { status: 400 }
       );
     }
 
-    // Calculate distribution per PRD §7.1
-    let talentPct: number;
-    let clientRefundPct: number;
+    // Cek apakah sudah ada dispute yang masih terbuka untuk job ini
+    const existingDispute = await prisma.disputeTicket.findFirst({
+      where: {
+        jobId: job_id,
+        status: { in: ["open", "investigating"] },
+      },
+    });
 
-    if (progress_pct <= 25) {
-      talentPct = 0;
-      clientRefundPct = 100;
-    } else if (progress_pct <= 75) {
-      talentPct = 50;
-      clientRefundPct = 50;
-    } else {
-      talentPct = 100;
-      clientRefundPct = 0;
+    if (existingDispute) {
+      return NextResponse.json(
+        { success: false, message: "Sudah ada dispute yang sedang diproses untuk job ini" },
+        { status: 400 }
+      );
     }
 
-    const amount = Number(escrow.amount);
-    const talentReceives = Math.round((amount * talentPct) / 100);
-    const clientRefund = amount - talentReceives; // Ensures exact total matching
+    // Tentukan reason berdasarkan role
+    const disputeReason = reason || (isTalent ? "talent_resign" : "cancellation");
 
-    // Update escrow and job in transaction
-    await prisma.$transaction(async (tx) => {
-      await tx.escrowTransaction.update({
-        where: { id: escrow.id },
-        data: { status: "refunded" },
-      });
-
-      await tx.job.update({
-        where: { id: job_id },
-        data: { status: "cancelled" },
-      });
-
-      // Notify talent
-      await tx.notification.create({
+    // Buat DisputeTicket dan update job status dalam satu transaksi
+    const result = await prisma.$transaction(async (tx) => {
+      const ticket = await tx.disputeTicket.create({
         data: {
-          userId: escrow.talentUserId,
-          type: "escrow_cancelled",
-          message: `Job "${escrow.job.title}" dibatalkan. Kamu menerima Rp ${talentReceives.toLocaleString("id-ID")} dari total escrow.`,
-          relatedJobId: job_id,
-          metadata: { progress_pct, talent_receives: talentReceives, client_refund: clientRefund },
+          jobId: job_id,
+          escrowId: escrow.id,
+          initiatorUserId: session.userId,
+          reason: disputeReason,
+          description,
+          status: "open",
         },
       });
 
-      // Notify client
+      // Update job status ke disputed
+      await tx.job.update({
+        where: { id: job_id },
+        data: { status: "disputed" },
+      });
+
+      // Notifikasi ke pihak lawan
+      const otherUserId = isClient ? escrow.talentUserId : escrow.clientUserId;
+      const initiatorRole = isClient ? "Client" : "Talent";
+
+      await tx.notification.create({
+        data: {
+          userId: otherUserId,
+          type: "dispute_opened",
+          message: `${initiatorRole} mengajukan pembatalan untuk job "${escrow.job.title}". Tim AyoNyamby akan meninjau dan menentukan keputusan.`,
+          relatedJobId: job_id,
+          metadata: { dispute_id: ticket.id, reason: disputeReason },
+        },
+      });
+
+      // Notifikasi ke initiator (konfirmasi)
       await tx.notification.create({
         data: {
           userId: session.userId,
-          type: "escrow_cancelled",
-          message: `Job "${escrow.job.title}" dibatalkan. Refund: Rp ${clientRefund.toLocaleString("id-ID")}.`,
+          type: "dispute_opened",
+          message: `Pengajuan pembatalan untuk job "${escrow.job.title}" telah diterima. Tim AyoNyamby akan meninjau dalam 1-3 hari kerja.`,
           relatedJobId: job_id,
-          metadata: { progress_pct, talent_receives: talentReceives, client_refund: clientRefund },
+          metadata: { dispute_id: ticket.id },
         },
       });
+
+      return ticket;
     });
 
     return NextResponse.json({
       success: true,
-      message: "Escrow berhasil dibatalkan",
+      message: "Pengajuan pembatalan berhasil. Menunggu keputusan arbitrasi tim AyoNyamby.",
       data: {
-        escrow: {
-          id: escrow.id,
-          status: "refunded",
-          amount,
-          talent_receives: talentReceives,
-          client_refund: clientRefund,
-          progress_pct,
-        },
+        dispute_id: result.id,
+        job_id,
+        status: "open",
+        reason: disputeReason,
       },
     });
   } catch (error) {

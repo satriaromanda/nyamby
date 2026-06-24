@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { createPayIn } from "@/services/xenith";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,9 +18,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { job_id, talent_user_id, amount } = body;
 
-    if (!job_id || !talent_user_id || !amount) {
+    if (!job_id || !talent_user_id || typeof amount !== "number" || amount <= 0) {
       return NextResponse.json(
-        { success: false, message: "job_id, talent_user_id, dan amount wajib diisi" },
+        { success: false, message: "job_id, talent_user_id, dan amount (angka positif) wajib diisi" },
         { status: 400 }
       );
     }
@@ -43,6 +46,11 @@ export async function POST(request: NextRequest) {
     }
 
     const platformFee = Math.round(amount * 0.1 * 100) / 100; // 10% fee
+    const totalAmount = amount + platformFee; // Ditambahkan ke total tagihan client
+
+    // Save escrow + payment to DB first (status: pending), before calling Xenith
+    const referenceCode = `JOB-${job_id}-${Date.now()}`;
+    const customerReference = `CUST-${session.userId}`;
 
     const escrow = await prisma.escrowTransaction.create({
       data: {
@@ -51,40 +59,63 @@ export async function POST(request: NextRequest) {
         talentUserId: talent_user_id,
         amount,
         platformFee,
-        status: "held",
-        heldAt: new Date(),
+        status: "pending",
       },
     });
 
-    // Update job status
-    await prisma.job.update({
-      where: { id: job_id },
-      data: { status: "in_progress" },
-    });
+    try {
+      // Call Xenith API to create Pay In
+      const payInResult = await createPayIn({
+        initiatedAmount: totalAmount,
+        paymentMethod: "VIRTUAL_ACCOUNT",
+        customerReference,
+        customerName: session.fullName || "Client AyoNyamby",
+        description: `Pembayaran Escrow untuk Job: ${job.title}`,
+        callbackUrl: `${APP_URL}/api/webhooks/xenith/payin`,
+      });
 
-    // Notify talent
-    await prisma.notification.create({
-      data: {
-        userId: talent_user_id,
-        type: "payment_held",
-        message: `Dana Rp ${amount.toLocaleString("id-ID")} telah ditahan untuk job: ${job.title}. Anda bisa mulai bekerja!`,
-        relatedJobId: job_id,
-      },
-    });
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Dana berhasil ditahan. Talenta dapat mulai bekerja.",
+      // Update escrow with payment record
+      await prisma.payment.create({
         data: {
-          escrow_id: escrow.id,
-          amount: escrow.amount,
-          platform_fee: escrow.platformFee,
-          status: escrow.status,
+          escrowId: escrow.id,
+          xenithPayinId: payInResult.id,
+          referenceCode: payInResult.referenceCode || referenceCode,
+          customerReference,
+          amount: totalAmount,
+          paymentCode: payInResult.paymentCode,
+          paymentCodeType: payInResult.paymentCodeType,
+          status: payInResult.status || "PENDING",
+          redirectUrl: payInResult.redirectUrl,
         },
-      },
-      { status: 201 }
-    );
+      });
+
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Silakan selesaikan pembayaran untuk memulai.",
+          data: {
+            escrow_id: escrow.id,
+            amount: escrow.amount,
+            total_amount: totalAmount,
+            platform_fee: escrow.platformFee,
+            status: escrow.status,
+            payment: {
+              payment_code: payInResult.paymentCode,
+              redirect_url: payInResult.redirectUrl,
+            },
+          },
+        },
+        { status: 201 }
+      );
+    } catch (xenithError) {
+      // Rollback: hapus escrow jika Xenith API gagal
+      await prisma.escrowTransaction.delete({ where: { id: escrow.id } });
+      console.error("[EscrowHold] Xenith API failed, rolled back escrow:", xenithError);
+      return NextResponse.json(
+        { success: false, message: "Gagal membuat pembayaran. Silakan coba lagi." },
+        { status: 502 }
+      );
+    }
   } catch (error) {
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });

@@ -23,11 +23,13 @@ enum DisputeReason {
   rejected_work
   low_quality
   cancellation
+  talent_resign
 }
 
 enum Role {
   talent
   client
+  admin
 }
 
 enum TalentCategory {
@@ -53,6 +55,7 @@ enum JobStatus {
   in_progress
   submitted_for_review
   revision_requested
+  disputed
   completed
   cancelled
 }
@@ -72,9 +75,23 @@ enum MatchStatus {
 }
 
 enum EscrowStatus {
+  pending
   held
   released
   refunded
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  EXPIRED
+}
+
+enum PayoutStatus {
+  PENDING
+  SUCCESS
+  FAILED
 }
 
 enum AiAnalysisStatus {
@@ -124,6 +141,9 @@ model TalentProfile {
   cvFile           String?        @map("cv_file")
   cvText           String?        @map("cv_text")
   portfolioContext String?        @map("portfolio_context")
+  bankCode         String?        @map("bank_code")
+  bankAccount      String?        @map("bank_account")
+  bankAccountName  String?        @map("bank_account_name")
   createdAt        DateTime       @default(now()) @map("created_at")
 
   // Relations
@@ -145,6 +165,9 @@ model ClientProfile {
   description     String?
   websiteUrl      String?  @map("website_url")
   whatsappNumber  String?  @map("whatsapp_number")
+  bankCode        String?  @map("bank_code")
+  bankAccount     String?  @map("bank_account")
+  bankAccountName String?  @map("bank_account_name")
   createdAt       DateTime @default(now()) @map("created_at")
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -272,6 +295,8 @@ model EscrowTransaction {
   client User @relation("EscrowClient", fields: [clientUserId], references: [id])
   talent User @relation("EscrowTalent", fields: [talentUserId], references: [id])
   disputeTickets DisputeTicket[]
+  payment Payment?
+  payouts Payout[]
 
   @@map("escrow_transactions")
 }
@@ -293,15 +318,20 @@ model Notification {
 }
 
 model DisputeTicket {
-  id              String        @id @default(uuid())
-  jobId           String        @map("job_id")
-  escrowId        String        @map("escrow_id")
-  initiatorUserId String        @map("initiator_user_id")
-  reason          DisputeReason
-  description     String
-  status          DisputeStatus @default(open)
-  resolution      String?
-  createdAt       DateTime      @default(now()) @map("created_at")
+  id                String        @id @default(uuid())
+  jobId             String        @map("job_id")
+  escrowId          String        @map("escrow_id")
+  initiatorUserId   String        @map("initiator_user_id")
+  reason            DisputeReason
+  description       String
+  status            DisputeStatus @default(open)
+  resolution        String?
+  progressPct       Int?          @map("progress_pct")
+  talentAmount      Decimal?      @map("talent_amount") @db.Decimal(12, 2)
+  clientRefundAmount Decimal?     @map("client_refund_amount") @db.Decimal(12, 2)
+  resolvedAt        DateTime?     @map("resolved_at")
+  resolvedByUserId  String?       @map("resolved_by_user_id")
+  createdAt         DateTime      @default(now()) @map("created_at")
 
   // Relations
   job             Job               @relation(fields: [jobId], references: [id])
@@ -309,4 +339,44 @@ model DisputeTicket {
   initiator       User              @relation("DisputeInitiator", fields: [initiatorUserId], references: [id])
 
   @@map("dispute_tickets")
+}
+
+model Payment {
+  id               String   @id @default(uuid())
+  escrowId         String   @unique @map("escrow_id")
+  xenithPayinId    String   @unique @map("xenith_payin_id")
+  referenceCode    String   @unique @map("reference_code")
+  customerReference String  @map("customer_reference")
+  amount           Decimal  @db.Decimal(12, 2)
+  paymentCode      String?  @map("payment_code")
+  paymentCodeType  String?  @map("payment_code_type")
+  status           PaymentStatus @default(PENDING)
+  redirectUrl      String?  @map("redirect_url")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  escrowTransaction EscrowTransaction @relation(fields: [escrowId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Payout {
+  id                   String       @id @default(uuid())
+  escrowId             String       @map("escrow_id")
+  xenithPayoutId       String       @unique @map("xenith_payout_id")
+  referenceCode        String       @unique @map("reference_code")
+  customerReference    String       @map("customer_reference")
+  payoutType           String       @default("talent") @map("payout_type") // "talent" or "client_refund"
+  amount               Decimal      @db.Decimal(12, 2)
+  destinationAccount   String       @map("destination_account")
+  destinationChannel   String       @map("destination_channel")
+  status               PayoutStatus @default(PENDING)
+  createdAt            DateTime     @default(now()) @map("created_at")
+  updatedAt            DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  escrowTransaction EscrowTransaction @relation(fields: [escrowId], references: [id], onDelete: Cascade)
+
+  @@map("payouts")
 }

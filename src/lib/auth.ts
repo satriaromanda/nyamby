@@ -10,7 +10,7 @@ const COOKIE_NAME = "nyamby-session";
 export interface SessionPayload {
   userId: string;
   email: string;
-  role: "talent" | "client";
+  role: "talent" | "client" | "admin";
   fullName: string;
   onboardingComplete?: boolean;
 }
@@ -70,6 +70,14 @@ export async function requireAuth(): Promise<SessionPayload> {
   const session = await getSession();
   if (!session) {
     throw new Error("Unauthorized");
+  }
+  return session;
+}
+
+export async function requireAdmin(): Promise<SessionPayload> {
+  const session = await requireAuth();
+  if (session.role !== "admin") {
+    throw new Error("Forbidden");
   }
   return session;
 }
