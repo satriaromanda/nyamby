@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon, Logo } from "@/components/icons";
+import { clientOnboardingSchema } from "@/lib/validations";
 
 export default function ClientOnboardingPage() {
   const router = useRouter();
@@ -23,6 +24,13 @@ export default function ClientOnboardingPage() {
   const handleSubmit = async () => {
     setLoading(true);
     setError("");
+
+    const result = clientOnboardingSchema.safeParse(form);
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch("/api/client/onboarding", {

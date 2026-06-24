@@ -97,7 +97,28 @@ recommendation: highly_recommended, recommended, atau not_recommended. Jangan ta
     if (!content) throw new Error("Empty AI response");
 
     const parsed = JSON.parse(content);
-    const matches = Array.isArray(parsed) ? parsed : parsed.matches || parsed.results || [];
+    let rawMatches = Array.isArray(parsed) ? parsed : parsed.matches || parsed.results || [];
+    
+    const matches = rawMatches.map((match: any) => {
+      let score = Number(match.match_score);
+      if (isNaN(score) || score < 0 || score > 100) {
+        console.warn(`[AI] Invalid match_score ${match.match_score}, defaulting to 50.`);
+        score = 50;
+      }
+      
+      let rec = match.recommendation;
+      if (!["highly_recommended", "recommended", "not_recommended"].includes(rec)) {
+        console.warn(`[AI] Invalid recommendation ${match.recommendation}, defaulting to 'recommended'.`);
+        rec = "recommended";
+      }
+      
+      return {
+        ...match,
+        match_score: score,
+        recommendation: rec,
+      };
+    });
+    
     return matches as MatchResult[];
   } catch (error) {
     if (retryCount < 1) {

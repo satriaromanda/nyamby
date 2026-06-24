@@ -14,6 +14,7 @@ interface TopMatch {
   portfolio_evidence?: string | null;
   recommendation: string;
   status: string;
+  aiStatus: string;
 }
 
 interface JobItem {
@@ -459,7 +460,19 @@ export default function ClientDashboard() {
                       AI Matched Talents
                     </h4>
 
-                    {job.top_matches.length > 0 ? (
+                    {job.top_matches.some((m) => m.aiStatus === "processing" || m.aiStatus === "pending") ? (
+                      <div className="flex flex-col items-center justify-center py-8 bg-surface-50 rounded-xl border border-surface-200">
+                        <div className="w-8 h-8 border-4 border-primary-100 border-t-primary-500 rounded-full animate-spin mb-4" />
+                        <h5 className="font-bold text-sm text-surface-900 mb-1">AI sedang mencarikan talenta terbaik...</h5>
+                        <p className="text-xs text-surface-500">Proses ini biasanya memakan waktu beberapa detik.</p>
+                      </div>
+                    ) : job.top_matches.some((m) => m.aiStatus === "failed") ? (
+                      <div className="flex flex-col items-center justify-center py-8 bg-red-50 rounded-xl border border-red-200">
+                        <Icon name="x" className="text-red-500 mb-2" size={32} />
+                        <h5 className="font-bold text-sm text-red-900 mb-1">AI Matching Gagal</h5>
+                        <p className="text-xs text-red-600">Mohon maaf, sistem gagal memproses kecocokan. Silakan refresh untuk mencoba lagi.</p>
+                      </div>
+                    ) : job.top_matches.length > 0 ? (
                       <div className="space-y-3">
                         {job.top_matches.map((match) => (
                           <div key={match.match_id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-surface-50 border border-surface-200 gap-3">

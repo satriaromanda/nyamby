@@ -25,6 +25,28 @@ export async function runAiJobMatching(jobId: string, category: TalentCategory) 
 
     if (allTalents.length === 0) return;
 
+    // 1. Set processing state
+    const existingCount = await prisma.jobMatch.count({ where: { jobId } });
+    if (existingCount === 0 && allTalents.length > 0) {
+      await prisma.jobMatch.create({
+        data: {
+          jobId,
+          talentProfileId: allTalents[0].id,
+          matchScore: 0,
+          strengths: [],
+          gaps: [],
+          reasoning: "AI sedang menganalisis kecocokan talenta...",
+          recommendation: "recommended",
+          aiStatus: "processing"
+        }
+      });
+    } else {
+      await prisma.jobMatch.updateMany({
+        where: { jobId },
+        data: { aiStatus: "processing" }
+      });
+    }
+
     const jobData = {
       title: jobWithSkills.title,
       description: jobWithSkills.description,
@@ -45,12 +67,30 @@ export async function runAiJobMatching(jobId: string, category: TalentCategory) 
     }));
 
     // Call OpenAI
-    const matches = await generateJobMatches(jobData, talentData);
+    let matches;
+    try {
+      matches = await generateJobMatches(jobData, talentData);
+    } catch (err) {
+      await prisma.jobMatch.updateMany({
+        where: { jobId },
+        data: { aiStatus: "failed", reasoning: "AI matching gagal. Silakan coba lagi." }
+      });
+      return;
+    }
 
-    if (!matches || matches.length === 0) return;
+    if (!matches || matches.length === 0) {
+      await prisma.jobMatch.updateMany({
+        where: { jobId },
+        data: { aiStatus: "failed", reasoning: "Tidak ada talenta yang cocok." }
+      });
+      return;
+    }
 
     // Use transaction for bulk inserts to avoid N+1 DB calls
     await prisma.$transaction(async (tx) => {
+      // Safely delete old matches before inserting new ones
+      await tx.jobMatch.deleteMany({ where: { jobId } });
+
       // 1. Bulk Create Matches
       await tx.jobMatch.createMany({
         data: matches.map((match) => ({

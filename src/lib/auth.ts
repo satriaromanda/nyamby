@@ -1,7 +1,10 @@
 import { jwtVerify, SignJWT } from "jose";
 import { cookies, headers } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET || "nyamby-dev-secret-change-in-prod";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET || JWT_SECRET.length < 32) {
+  throw new Error("JWT_SECRET wajib diset di .env (minimal 32 karakter)");
+}
 const COOKIE_NAME = "nyamby-session";
 
 export interface SessionPayload {

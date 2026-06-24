@@ -55,6 +55,7 @@ export async function GET() {
             portfolio_evidence: m.portfolioEvidence,
             recommendation: m.recommendation,
             status: m.status,
+            aiStatus: m.aiStatus,
           })),
           escrow: j.escrowTransaction
             ? {

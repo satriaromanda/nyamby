@@ -83,9 +83,9 @@ Buka [http://localhost:3000](http://localhost:3000).
 
 | Role | Email | Password |
 |------|-------|----------|
-| Talenta (Dev) | raka@nyamby.id | password123 |
-| Talenta (Designer) | sari@nyamby.id | password123 |
-| Client | budi@nyamby.id | password123 |
+| Talenta (Dev) | raka@demo.com | password123 |
+| Talenta (Designer) | sari@demo.com | password123 |
+| Client | budi@demo.com | password123 |
 
 ---
 

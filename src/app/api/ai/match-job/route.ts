@@ -29,65 +29,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const allTalents = await prisma.talentProfile.findMany({
-      where: { category: job.category },
-      include: {
-        user: { select: { fullName: true } },
-        talentSkills: { include: { skill: true } },
-      },
+    const { runAiJobMatching } = await import("@/services/ai-matching");
+    await runAiJobMatching(job_id, job.category);
+
+    // Fetch the newly generated matches
+    const generatedMatches = await prisma.jobMatch.findMany({
+      where: { jobId: job_id },
+      orderBy: { matchScore: "desc" },
     });
 
-    const jobData = {
-      title: job.title,
-      description: job.description,
-      required_skills: job.requiredSkills.map((rs) => rs.skill.name),
-      category: job.category,
-      budget_range: `${job.budgetMin || 0} - ${job.budgetMax || "Negotiable"} IDR`,
-    };
-
-    const talentData = allTalents.map((t) => ({
-      id: t.id,
-      name: t.user.fullName,
-      skills: t.talentSkills.map((ts) => ({ name: ts.skill.name, level: ts.level })),
-      category: t.category,
-      rate: Number(t.ratePerHour || 0),
-      bio: t.bio || "",
-      cv_text: t.cvText,
-      portfolio_context: t.portfolioContext,
-    }));
-
-    const matches = await generateJobMatches(jobData, talentData);
-
-    // Clear old matches and save new ones
-    await prisma.jobMatch.deleteMany({ where: { jobId: job_id } });
-
-    for (const match of matches) {
-      await prisma.jobMatch.create({
-        data: {
-          jobId: job_id,
-          talentProfileId: match.talent_id,
-          matchScore: match.match_score,
-          strengths: match.strengths,
-          gaps: match.gaps,
-          reasoning: match.reasoning,
-          portfolioEvidence: match.portfolio_evidence || null,
-          recommendation: match.recommendation,
-        },
-      });
-    }
-
-    const topMatch = matches.sort((a, b) => b.match_score - a.match_score)[0];
+    const topMatch = generatedMatches[0];
 
     return NextResponse.json({
       success: true,
-      message: `Matching selesai. ${matches.length} talenta dievaluasi.`,
+      message: `Matching selesai. ${generatedMatches.length} talenta dimatch.`,
       data: {
         job_id,
-        matches_generated: matches.length,
+        matches_generated: generatedMatches.length,
         top_match: topMatch
           ? {
-              talent_id: topMatch.talent_id,
-              match_score: topMatch.match_score,
+              talent_id: topMatch.talentProfileId,
+              match_score: Number(topMatch.matchScore),
               recommendation: topMatch.recommendation,
             }
           : null,
