@@ -112,10 +112,10 @@ async function testApiPayIn(): Promise<boolean> {
         const timestamp = new Date().toISOString();
 
         const testPayload = {
-            initiatedAmount: 10000,
+            initiatedAmount: 50000,
             currency: "IDR",
             paymentMethod: "VIRTUAL_ACCOUNT",
-            paymentChannel: "BCA",
+            paymentChannel: "BNI.VA",
             referenceCode: `REF-TEST-${Date.now()}`,
             customerReference: `TEST-${Date.now()}`,
             customerName: "Test AyoNyamby",

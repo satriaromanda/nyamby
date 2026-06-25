@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       const payInResult = await createPayIn({
         initiatedAmount: totalAmount,
         paymentMethod: "VIRTUAL_ACCOUNT",
-        paymentChannel: "BCA",
+        paymentChannel: "BCA.VA",
         referenceCode,
         customerReference,
         customerName: session.fullName || "Client AyoNyamby",
