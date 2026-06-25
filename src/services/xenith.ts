@@ -52,10 +52,13 @@ export async function createPayIn(data: {
     initiatedAmount: number;
     currency?: string;
     paymentMethod: string;
+    paymentChannel: string;
+    referenceCode: string;
     customerReference: string;
     customerName: string;
     description: string;
     callbackUrl: string;
+    redirectUrl: string;
 }) {
     const uri = '/v1/payins';
     const method = 'POST';
@@ -72,7 +75,8 @@ export async function createPayIn(data: {
             'Content-Type': 'application/json',
             'Xenith-Api-Key': API_KEY,
             'Xenith-Request-Timestamp': timestamp,
-            'Xenith-Request-Signature': signature
+            'Xenith-Request-Signature': signature,
+            'X-Idempotency-Key': crypto.randomUUID()
         },
         body: payloadStr
     });
