@@ -104,7 +104,7 @@ export async function PATCH(request: NextRequest) {
         { status: 400 }
       );
     }
-    const { bio, rate_per_hour, rate_per_project, availability, location, portfolio_url, cv_text, portfolio_context, skills, slug } = result.data;
+    const { bio, rate_per_hour, rate_per_project, availability, location, portfolio_url, cv_text, portfolio_context, skills, slug, bank_code, bank_account, bank_account_name } = result.data;
 
     const profile = await prisma.talentProfile.findUnique({
       where: { userId: session.userId },
@@ -130,9 +130,9 @@ export async function PATCH(request: NextRequest) {
         ...(cv_text !== undefined && { cvText: cv_text }),
         ...(portfolio_context !== undefined && { portfolioContext: portfolio_context }),
         ...(slug !== undefined && { slug }),
-        ...(body.bank_code !== undefined && { bankCode: body.bank_code }),
-        ...(body.bank_account !== undefined && { bankAccount: body.bank_account }),
-        ...(body.bank_account_name !== undefined && { bankAccountName: body.bank_account_name }),
+        ...(bank_code !== undefined && { bankCode: bank_code }),
+        ...(bank_account !== undefined && { bankAccount: bank_account }),
+        ...(bank_account_name !== undefined && { bankAccountName: bank_account_name }),
       },
     });
 

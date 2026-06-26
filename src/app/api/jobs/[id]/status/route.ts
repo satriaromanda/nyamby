@@ -11,7 +11,7 @@ export async function PATCH(
     const { id } = await params;
 
     const body = await request.json();
-    const { status } = body;
+    const { status, submission_url, submission_notes } = body;
 
     if (!["active", "matched", "in_progress", "submitted_for_review", "revision_requested", "completed", "cancelled"].includes(status)) {
       return NextResponse.json(
@@ -93,9 +93,17 @@ export async function PATCH(
       }
     }
 
+    // Build update data — include submission fields when submitting for review
+    const updateData: Record<string, unknown> = { status };
+    if (status === "submitted_for_review") {
+      updateData.submittedAt = new Date();
+      if (submission_url) updateData.submissionUrl = submission_url;
+      if (submission_notes) updateData.submissionNotes = submission_notes;
+    }
+
     await prisma.job.update({
       where: { id },
-      data: { status },
+      data: updateData,
     });
 
     return NextResponse.json({

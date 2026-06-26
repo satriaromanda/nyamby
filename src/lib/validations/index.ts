@@ -44,6 +44,9 @@ export const talentProfileUpdateSchema = z.object({
   slug: z.string().min(3).max(50).regex(/^[a-z0-9-]+$/, "Hanya huruf kecil, angka, dan strip").optional(),
   cv_text: z.string().nullable().optional(),
   portfolio_context: z.string().nullable().optional(),
+  bank_code: z.string().max(50).nullable().optional(),
+  bank_account: z.string().max(50).nullable().optional(),
+  bank_account_name: z.string().max(100).nullable().optional(),
   skills: z.array(
     z.object({
       id: z.string(),

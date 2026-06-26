@@ -15,6 +15,7 @@ export async function GET(
       include: {
         user: { select: { fullName: true, email: true, avatarUrl: true } },
         talentSkills: { include: { skill: true } },
+        ratings: { select: { score: true } },
         jobMatches: {
           orderBy: { matchScore: "desc" },
           take: 3,
@@ -29,6 +30,12 @@ export async function GET(
         { status: 404 }
       );
     }
+
+    // Calculate average rating
+    const totalRatings = profile.ratings.length;
+    const averageScore = totalRatings > 0
+      ? Math.round((profile.ratings.reduce((sum, r) => sum + r.score, 0) / totalRatings) * 10) / 10
+      : null;
 
     return NextResponse.json({
       success: true,
@@ -47,6 +54,8 @@ export async function GET(
         cv_file: profile.cvFile,
         has_cv_enrichment: Boolean(profile.cvText),
         portfolio_context: profile.portfolioContext,
+        average_score: averageScore,
+        total_ratings: totalRatings,
         ai_match_preview_locked: !session,
         ai_match_preview: session
           ? profile.jobMatches.map((match) => ({

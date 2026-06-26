@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await requireAdmin();
 
-    const disputeId = params.id;
+    const { id: disputeId } = await params;
 
     const dispute = await prisma.disputeTicket.findUnique({
       where: { id: disputeId },
@@ -16,7 +19,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             title: true,
             budgetMin: true,
             budgetMax: true,
-            clientUser: {
+            client: {
               select: {
                 id: true,
                 fullName: true,
@@ -30,7 +33,14 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
                 }
               }
             },
-            talentUser: {
+          }
+        },
+        escrow: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            talent: {
               select: {
                 id: true,
                 fullName: true,
@@ -46,14 +56,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             }
           }
         },
-        escrowTransaction: {
-          select: {
-            id: true,
-            amount: true,
-            status: true,
-          }
-        },
-        initiatorUser: {
+        initiator: {
           select: {
             id: true,
             fullName: true,
@@ -89,3 +92,4 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     );
   }
 }
+

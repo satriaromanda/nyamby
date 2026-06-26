@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { DisputeStatus } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
@@ -8,9 +9,12 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const statusFilter = searchParams.get("status");
+    const validStatuses = Object.values(DisputeStatus);
 
     const disputes = await prisma.disputeTicket.findMany({
-      where: statusFilter ? { status: statusFilter } : undefined,
+      where: statusFilter && validStatuses.includes(statusFilter as DisputeStatus)
+        ? { status: statusFilter as DisputeStatus }
+        : undefined,
       include: {
         job: {
           select: {
@@ -19,12 +23,12 @@ export async function GET(request: NextRequest) {
             budgetMax: true,
           }
         },
-        escrowTransaction: {
+        escrow: {
           select: {
             amount: true,
           }
         },
-        initiatorUser: {
+        initiator: {
           select: {
             fullName: true,
             email: true,
@@ -41,12 +45,12 @@ export async function GET(request: NextRequest) {
       id: d.id,
       job_id: d.jobId,
       job_title: d.job.title,
-      escrow_amount: d.escrowTransaction.amount,
+      escrow_amount: d.escrow.amount,
       initiator: {
         id: d.initiatorUserId,
-        name: d.initiatorUser.fullName,
-        role: d.initiatorUser.role,
-        email: d.initiatorUser.email,
+        name: d.initiator.fullName,
+        role: d.initiator.role,
+        email: d.initiator.email,
       },
       reason: d.reason,
       status: d.status,

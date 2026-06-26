@@ -35,6 +35,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // PRD v3.0: Block suspended users from logging in
+    if (user.isSuspended) {
+      return NextResponse.json(
+        { success: false, message: "Akun Anda telah disuspend. Hubungi admin untuk informasi lebih lanjut." },
+        { status: 403 }
+      );
+    }
+
     const token = await signToken({
       userId: user.id,
       email: user.email,
