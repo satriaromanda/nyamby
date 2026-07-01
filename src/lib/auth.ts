@@ -13,6 +13,7 @@ export interface SessionPayload {
   role: "talent" | "client" | "admin";
   fullName: string;
   onboardingComplete?: boolean;
+  isSuspended?: boolean;
 }
 
 const secretKey = new TextEncoder().encode(JWT_SECRET);

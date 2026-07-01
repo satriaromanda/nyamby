@@ -31,6 +31,9 @@ export async function POST(request: NextRequest) {
       cv_text,
       portfolio_context,
       upload_warning,
+      bank_code,
+      bank_account,
+      bank_account_name,
       skills,
     } = body;
 
@@ -83,6 +86,9 @@ export async function POST(request: NextRequest) {
         cvFile: cv_file || null,
         cvText: truncateText(cv_text, 3000),
         portfolioContext: truncateText(portfolio_context, 1000),
+        bankCode: bank_code || null,
+        bankAccount: bank_account || null,
+        bankAccountName: bank_account_name || null,
       },
     });
 
@@ -212,6 +218,9 @@ async function readMultipartOnboarding(request: NextRequest) {
     cv_text: cvResult?.text || null,
     portfolio_context: portfolioResult.context,
     upload_warning: warning || null,
+    bank_code: stringValue(formData.get("bank_code")),
+    bank_account: stringValue(formData.get("bank_account")),
+    bank_account_name: stringValue(formData.get("bank_account_name")),
     skills: JSON.parse(stringValue(formData.get("skills")) || "[]"),
   };
 }

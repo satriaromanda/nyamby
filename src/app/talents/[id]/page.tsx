@@ -23,6 +23,10 @@ export default async function TalentPublicProfilePage({
         take: 3,
         include: { job: { select: { title: true } } },
       },
+      ratings: {
+        include: { client: { select: { fullName: true } } },
+        orderBy: { createdAt: "desc" }
+      },
     },
   });
 
@@ -31,6 +35,11 @@ export default async function TalentPublicProfilePage({
   const categoryLabel = talent.category === "web_dev" ? "Web Developer" : "Graphic Designer";
   const redirectPath = `/talents/${talent.id}`;
   const canSeeAi = Boolean(session);
+
+  const reviewCount = talent.ratings.length;
+  const averageRating = reviewCount > 0 
+    ? talent.ratings.reduce((acc, curr) => acc + curr.score, 0) / reviewCount 
+    : 0;
 
   return (
     <div className="min-h-screen bg-surface-50">
@@ -94,12 +103,32 @@ export default async function TalentPublicProfilePage({
 
             <div className="glass rounded-xl p-6">
               <h2 className="font-bold text-sm text-surface-900 mb-3">Rating & Review</h2>
-              <div className="text-center">
-                <RatingStars rating={4.7} reviewCount={8} size={16} />
+              <div className="text-center mb-4">
+                <RatingStars rating={averageRating} reviewCount={reviewCount} size={16} />
                 <p className="text-xs text-surface-400 mt-2">
-                  Berdasarkan {8} project terselesaikan
+                  Berdasarkan {reviewCount} ulasan klien
                 </p>
               </div>
+
+              {talent.ratings.length > 0 && (
+                <div className="space-y-3 mt-4 border-t border-surface-200 pt-4">
+                  {talent.ratings.slice(0, 3).map((rating) => (
+                    <div key={rating.id} className="text-left">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-bold text-surface-900">{rating.client.fullName}</span>
+                        <div className="flex text-amber-400">
+                          {[...Array(rating.score)].map((_, i) => (
+                            <Icon key={i} name="star" size={10} fill="currentColor" />
+                          ))}
+                        </div>
+                      </div>
+                      {rating.comment && (
+                        <p className="text-xs text-surface-600 leading-relaxed italic">"{rating.comment}"</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </aside>
 

@@ -30,6 +30,12 @@ export async function GET() {
       orderBy: { generatedAt: "desc" },
     });
 
+    // Get latest portfolio analysis
+    const portfolioAnalysis = await prisma.portfolioAnalysis.findFirst({
+      where: { talentProfileId: profile.id, isLatest: true },
+      orderBy: { generatedAt: "desc" },
+    });
+
     // Get recommended jobs (matched)
     const jobMatches = await prisma.jobMatch.findMany({
       where: { talentProfileId: profile.id },
@@ -64,6 +70,7 @@ export async function GET() {
           full_name: session.fullName,
           category: profile.category,
           availability: profile.availability,
+          has_bank_account: !!(profile.bankCode && profile.bankAccount),
           skills: profile.talentSkills.map((ts) => ({
             name: ts.skill.name,
             level: ts.level,
@@ -76,6 +83,16 @@ export async function GET() {
               profile_completeness_score: skillGap.profileCompletenessScore,
               generated_at: skillGap.generatedAt,
               ai_status: skillGap.aiStatus,
+            }
+          : null,
+        portfolio_analysis: portfolioAnalysis
+          ? {
+              overall_score: portfolioAnalysis.overallScore,
+              dimensions: portfolioAnalysis.dimensions,
+              strengths: portfolioAnalysis.strengths,
+              improvements: portfolioAnalysis.improvements,
+              summary: portfolioAnalysis.summary,
+              generated_at: portfolioAnalysis.generatedAt,
             }
           : null,
         recommended_jobs: jobMatches.map((jm) => ({

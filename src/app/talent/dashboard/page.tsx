@@ -39,6 +39,7 @@ interface DashboardData {
     full_name: string;
     category: string;
     availability: string;
+    has_bank_account?: boolean;
     skills: { name: string; level: string }[];
   };
   skill_gap?: {
@@ -47,6 +48,14 @@ interface DashboardData {
     profile_completeness_score?: number | null;
     generated_at: string;
     ai_status?: string;
+  };
+  portfolio_analysis?: {
+    overall_score: number;
+    dimensions: Record<string, { score: number, feedback: string }>;
+    strengths: string[];
+    improvements: { priority: string, action: string, impact: string }[];
+    summary: string;
+    generated_at: string;
   };
   recommended_jobs?: RecommendedJob[];
   active_jobs?: { job_id: string; title: string; client_name: string; status: string }[];
@@ -275,6 +284,7 @@ export default function TalentDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [applyingId, setApplyingId] = useState<string | null>(null);
+  const [analyzingPortfolio, setAnalyzingPortfolio] = useState(false);
   const [offerModalJob, setOfferModalJob] = useState<RecommendedJob | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [processingOffer, setProcessingOffer] = useState(false);
@@ -324,6 +334,18 @@ export default function TalentDashboard() {
       // fallback
     } finally {
       setRefreshingGap(false);
+    }
+  };
+
+  const handleAnalyzePortfolio = async () => {
+    setAnalyzingPortfolio(true);
+    try {
+      const res = await fetch("/api/ai/portfolio-analyzer", { method: "POST" });
+      if (res.ok) fetchDashboard();
+    } catch {
+      // silently fail
+    } finally {
+      setAnalyzingPortfolio(false);
     }
   };
 
@@ -472,6 +494,24 @@ export default function TalentDashboard() {
           ))}
         </div>
 
+        {/* Bank Account Warning Banner — PRD v3.0 §9.2 */}
+        {data.profile.has_bank_account === false && (
+          <div className="mb-8 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center gap-3">
+            <Icon name="info" className="text-amber-600 shrink-0" size={20} />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-amber-800">
+                Lengkapi data rekening kamu untuk bisa menerima pembayaran.
+              </p>
+              <p className="text-xs text-amber-600 mt-0.5">
+                Tanpa data rekening, pembayaran escrow tidak bisa di-release ke kamu.
+              </p>
+            </div>
+            <Link href="/talent/edit-profile" className="btn-primary text-xs py-1.5 px-3 rounded-lg shrink-0">
+              Lengkapi
+            </Link>
+          </div>
+        )}
+
         <div className="grid lg:grid-cols-3 gap-8">
           {/* ─── Skill Gap Analysis Card ─────────────────────────── */}
           <div className="lg:col-span-1">
@@ -559,6 +599,63 @@ export default function TalentDashboard() {
                   </span>
                 ))}
               </div>
+            </div>
+
+            {/* Portfolio Analysis */}
+            <div className="glass rounded-xl p-6 mt-4 card-hover">
+              <div className="flex items-center justify-between gap-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-sm">
+                    <Icon name="file" size={18} className="text-emerald-600" />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-sm text-surface-900">Portfolio Analyzer</h2>
+                    <span className="text-[10px] text-surface-400">AI Portfolio Review</span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleAnalyzePortfolio}
+                  disabled={analyzingPortfolio || (!data.profile.has_bank_account && !data.portfolio_analysis)}
+                  className="text-[10px] text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-emerald-50 transition-colors disabled:opacity-50 shrink-0"
+                >
+                  <Icon name={analyzingPortfolio ? "settings" : "spark"} size={12} className={analyzingPortfolio ? "animate-spin" : ""} />
+                  {analyzingPortfolio ? "Menganalisis..." : data.portfolio_analysis ? "Analisis Ulang" : "Mulai Analisis"}
+                </button>
+              </div>
+
+              {data.portfolio_analysis ? (
+                <>
+                  <div className="mb-4 flex items-center gap-4">
+                    <div className="text-3xl font-bold text-surface-900">{data.portfolio_analysis.overall_score}</div>
+                    <div className="text-xs text-surface-500 leading-tight">
+                      Score Portofolio Anda.<br/>{data.portfolio_analysis.summary}
+                    </div>
+                  </div>
+                  
+                  {data.portfolio_analysis.improvements && data.portfolio_analysis.improvements.length > 0 && (
+                    <div className="space-y-3 mt-4 border-t border-surface-200 pt-4">
+                      <h3 className="text-xs font-bold text-surface-900 mb-2">Saran Peningkatan</h3>
+                      {data.portfolio_analysis.improvements.map((imp, i) => (
+                        <div key={i} className="p-3 rounded-xl bg-surface-50 border border-surface-200">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-semibold text-surface-900">{imp.action}</span>
+                            <span className={`text-[9px] px-2 py-0.5 rounded-full ${imp.priority === 'high' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'}`}>
+                              {imp.priority === 'high' ? 'Tinggi' : 'Sedang'}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-accent-600 mt-1"><Icon name="spark" className="inline mr-1" size={10} />{imp.impact}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-surface-500">
+                  {data.profile.has_bank_account 
+                    ? "Belum ada analisis portofolio. Klik tombol di atas untuk memulai." 
+                    : "Lengkapi profil dan CV/Portfolio Anda terlebih dahulu."}
+                </p>
+              )}
             </div>
           </div>
 

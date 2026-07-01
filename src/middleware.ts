@@ -35,6 +35,15 @@ export async function middleware(request: NextRequest) {
 
   // If logged in...
   if (session) {
+    // Check suspension
+    if (session.isSuspended) {
+      // Clear cookie and redirect to login with error
+      const url = new URL('/login?error=suspended', request.url);
+      const res = NextResponse.redirect(url);
+      res.cookies.delete('nyamby-session');
+      return res;
+    }
+
     // 2. Prevent accessing login/register if already logged in -> Dashboard
     if (pathname === '/login' || pathname === '/register') {
       return NextResponse.redirect(new URL(`/${session.role}/dashboard`, request.url));

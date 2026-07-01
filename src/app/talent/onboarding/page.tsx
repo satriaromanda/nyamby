@@ -29,6 +29,9 @@ export default function OnboardingPage() {
     availability: "available",
     location: "",
     portfolio_url: "",
+    bank_code: "",
+    bank_account: "",
+    bank_account_name: "",
     skills: [] as { skill_id: string; level: string; name: string }[],
   });
 
@@ -92,6 +95,9 @@ export default function OnboardingPage() {
         "skills",
         JSON.stringify(form.skills.map((s) => ({ skill_id: s.skill_id, level: s.level })))
       );
+      if (form.bank_code) payload.set("bank_code", form.bank_code);
+      if (form.bank_account) payload.set("bank_account", form.bank_account);
+      if (form.bank_account_name) payload.set("bank_account_name", form.bank_account_name);
       if (cvFile) payload.set("cv_file", cvFile);
       if (portfolioFile) payload.set("portfolio_file", portfolioFile);
 
@@ -485,6 +491,62 @@ export default function OnboardingPage() {
                         Portofolio siap diproses: {portfolioFile.name}
                       </div>
                     )}
+                  </div>
+                </div>
+
+                {/* Bank Account Section — PRD v3.0 §9.2 */}
+                <div className="p-4 rounded-xl bg-white border border-surface-200">
+                  <label className="flex items-center gap-2 text-sm font-medium text-surface-700 mb-3">
+                    <Icon name="money" className="text-[#0F6E56]" size={15} />
+                    Data Rekening Bank
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                      Untuk pembayaran
+                    </span>
+                  </label>
+                  <p className="text-[10px] text-surface-400 mb-3">
+                    Dibutuhkan agar kamu bisa menerima pembayaran dari client melalui escrow.
+                  </p>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs text-surface-500 mb-1">Bank / E-Wallet</label>
+                      <select
+                        className="input-dark text-sm"
+                        value={form.bank_code}
+                        onChange={(e) => setForm({ ...form, bank_code: e.target.value })}
+                      >
+                        <option value="">Pilih bank atau e-wallet...</option>
+                        <option value="BCA">BCA</option>
+                        <option value="BNI">BNI</option>
+                        <option value="MANDIRI">Mandiri</option>
+                        <option value="BRI">BRI</option>
+                        <option value="GOPAY">GoPay</option>
+                        <option value="OVO">OVO</option>
+                        <option value="DANA">DANA</option>
+                        <option value="SHOPEEPAY">ShopeePay</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-surface-500 mb-1">Nomor Rekening / HP</label>
+                      <input
+                        type="text"
+                        className="input-dark"
+                        placeholder={form.bank_code && ["GOPAY", "OVO", "DANA", "SHOPEEPAY"].includes(form.bank_code) ? "08xxxxxxxxxx" : "1234567890"}
+                        value={form.bank_account}
+                        onChange={(e) => setForm({ ...form, bank_account: e.target.value })}
+                        autoComplete="off"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-surface-500 mb-1">Nama Pemilik Rekening <span className="text-surface-300">(opsional)</span></label>
+                      <input
+                        type="text"
+                        className="input-dark"
+                        placeholder="Nama sesuai rekening bank"
+                        value={form.bank_account_name}
+                        onChange={(e) => setForm({ ...form, bank_account_name: e.target.value })}
+                        autoComplete="name"
+                      />
+                    </div>
                   </div>
                 </div>
 

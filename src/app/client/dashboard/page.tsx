@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Icon, RatingStars, Logo } from "@/components/icons";
+import { RatingModal } from "@/components/RatingModal";
 
 interface TopMatch {
   match_id: string;
@@ -29,6 +30,7 @@ interface JobItem {
   required_skills: string[];
   top_matches: TopMatch[];
   escrow: { status: string; amount: number } | null;
+  has_rating: boolean;
 }
 
 interface Notification {
@@ -255,6 +257,7 @@ export default function ClientDashboard() {
   const [loading, setLoading] = useState(true);
   const [expandedJob, setExpandedJob] = useState<string | null>(null);
   const [updatingJobId, setUpdatingJobId] = useState<string | null>(null);
+  const [ratingModal, setRatingModal] = useState<{ isOpen: boolean; jobId: string; talentProfileId: string } | null>(null);
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -627,7 +630,28 @@ export default function ClientDashboard() {
                     {/* Completed Job Rating */}
                     {job.status === "completed" && (
                       <div className="mt-4 pt-4 border-t border-surface-200">
-                        <RatingStars rating={4.5} reviewCount={7} size={14} />
+                        {!job.has_rating ? (
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-surface-500">Pekerjaan telah selesai. Berikan penilaian untuk talenta.</span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const acceptedMatch = job.top_matches.find(m => m.status === "accepted");
+                                if (acceptedMatch) {
+                                  setRatingModal({ isOpen: true, jobId: job.id, talentProfileId: acceptedMatch.talent_profile_id });
+                                }
+                              }}
+                              className="btn-primary text-xs px-4 py-2"
+                            >
+                              Berikan Rating
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-sm text-surface-500 flex items-center gap-2">
+                            <Icon name="check" className="text-emerald-500" size={16} />
+                            Anda telah memberikan rating untuk pekerjaan ini.
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -660,6 +684,19 @@ export default function ClientDashboard() {
           </div>
         )}
       </div>
+
+      {ratingModal && (
+        <RatingModal
+          isOpen={ratingModal.isOpen}
+          jobId={ratingModal.jobId}
+          talentProfileId={ratingModal.talentProfileId}
+          onClose={() => setRatingModal(null)}
+          onSuccess={() => {
+            setRatingModal(null);
+            fetchDashboard();
+          }}
+        />
+      )}
     </div>
   );
 }

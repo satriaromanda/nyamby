@@ -662,7 +662,7 @@ export default function JobDetailPage() {
                       </div>
                     )}
 
-                    {job.status === "in_progress" && (
+                    {(job.status === "in_progress" || job.status === "submitted_for_review") && (
                       <button
                         onClick={() => setShowDisputeModal(true)}
                         className="w-full py-2.5 mt-2 rounded-lg border border-amber-200 bg-amber-50 text-amber-600 text-sm font-medium hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
@@ -748,7 +748,7 @@ export default function JobDetailPage() {
                   >
                     Buka Dashboard
                   </Link>
-                  {job.status === "in_progress" && (
+                  {(job.status === "in_progress" || job.status === "submitted_for_review") && (
                     <div className="flex flex-col gap-2">
                       <button
                         onClick={() => setShowCancelModal(true)}

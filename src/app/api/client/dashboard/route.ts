@@ -28,6 +28,7 @@ export async function GET() {
           take: 5,
         },
         escrowTransaction: true,
+        talentRating: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -63,6 +64,7 @@ export async function GET() {
                 amount: j.escrowTransaction.amount,
               }
             : null,
+          has_rating: !!j.talentRating,
         })),
       },
     });
