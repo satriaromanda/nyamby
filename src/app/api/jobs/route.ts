@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { jobCreateSchema } from "@/lib/validations";
 import { getPaginationParams, buildPaginationMeta } from "@/lib/paginate";
+import { convertToIDR, convertFromIDR } from "@/lib/fx-rate";
 
 // POST: Client creates a new job + triggers AI matching
 export async function POST(request: NextRequest) {
@@ -28,21 +29,48 @@ export async function POST(request: NextRequest) {
     }
     const { title, description, category, budget_min, budget_max, deadline, required_skills } = result.data;
 
-    // 2. Create job
+    // 2. PRD v4.0 §3.2 — Check client's preferred currency for cross-border display
+    const clientProfile = await prisma.clientProfile.findUnique({
+      where: { userId: session.userId },
+      select: { preferredCurrency: true, country: true },
+    });
+
+    const displayCurrency = clientProfile?.preferredCurrency || "IDR";
+    let finalBudgetMin = budget_min || null;
+    let finalBudgetMax = budget_max || null;
+    let fxRateAtPosting: number | null = null;
+
+    // If client uses non-IDR currency, convert budget to IDR for storage
+    if (displayCurrency !== "IDR" && (budget_min || budget_max)) {
+      const { fxRate } = await convertToIDR(1, displayCurrency);
+      fxRateAtPosting = fxRate;
+      
+      if (budget_min) {
+        finalBudgetMin = Math.round(budget_min * fxRate);
+      }
+      if (budget_max) {
+        finalBudgetMax = Math.round(budget_max * fxRate);
+      }
+    }
+
+    // 3. Create job
     const job = await prisma.job.create({
       data: {
         clientUserId: session.userId,
         title,
         description,
         category,
-        budgetMin: budget_min || null,
-        budgetMax: budget_max || null,
+        budgetMin: finalBudgetMin,
+        budgetMax: finalBudgetMax,
         deadline: deadline ? new Date(deadline) : null,
         status: "active",
+        // PRD v4.0 §2.2 — Currency display fields
+        displayCurrency,
+        fxRateAtPosting,
       },
     });
 
-    // 3. Bulk insert required skills
+    // 4. Bulk insert required skills
     await prisma.jobRequiredSkill.createMany({
       data: required_skills.map((sk) => ({
         jobId: job.id,
@@ -51,7 +79,7 @@ export async function POST(request: NextRequest) {
       })),
     });
 
-    // 4. Trigger AI Job Matching in Background
+    // 5. Trigger AI Job Matching in Background
     const { runAiJobMatching } = await import("@/services/ai-matching");
     runAiJobMatching(job.id, category).catch((err) => {
       console.error("Failed to run background AI matching", err);
@@ -61,7 +89,13 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         message: "Job berhasil diposting. AI sedang mencarikan talenta terbaik.",
-        data: { job_id: job.id, status: "active", ai_matching_status: "processing" },
+        data: {
+          job_id: job.id,
+          status: "active",
+          ai_matching_status: "processing",
+          display_currency: displayCurrency,
+          fx_rate: fxRateAtPosting,
+        },
       },
       { status: 201 }
     );
@@ -125,7 +159,18 @@ export async function GET(request: NextRequest) {
       prisma.job.findMany({
         where,
         include: {
-          client: { select: { fullName: true, clientProfile: { select: { companyName: true } } } },
+          client: {
+            select: {
+              fullName: true,
+              clientProfile: {
+                select: {
+                  companyName: true,
+                  country: true,
+                  businessVerifiedAt: true,
+                },
+              },
+            },
+          },
           requiredSkills: { include: { skill: true } },
         },
         orderBy,
@@ -137,25 +182,43 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: jobs.map((j) => ({
-        id: j.id,
-        title: j.title,
-        description: j.description,
-        category: j.category,
-        budget_min: j.budgetMin,
-        budget_max: j.budgetMax,
-        deadline: j.deadline,
-        status: j.status,
-        created_at: j.createdAt,
-        client: {
-          full_name: j.client.fullName,
-          company_name: j.client.clientProfile?.companyName || null,
-        },
-        required_skills: j.requiredSkills.map((rs) => ({
-          name: rs.skill.name,
-          is_mandatory: rs.isMandatory,
-        })),
-      })),
+      data: jobs.map((j) => {
+        // PRD v4.0: Include display currency info and verified badge
+        const displayBudgetMin = j.displayCurrency !== "IDR" && j.fxRateAtPosting && j.budgetMin
+          ? convertFromIDR(Number(j.budgetMin), j.displayCurrency, Number(j.fxRateAtPosting))
+          : null;
+        const displayBudgetMax = j.displayCurrency !== "IDR" && j.fxRateAtPosting && j.budgetMax
+          ? convertFromIDR(Number(j.budgetMax), j.displayCurrency, Number(j.fxRateAtPosting))
+          : null;
+
+        return {
+          id: j.id,
+          title: j.title,
+          description: j.description,
+          category: j.category,
+          budget_min: j.budgetMin,
+          budget_max: j.budgetMax,
+          // PRD v4.0 §2.2 — Display currency fields
+          display_currency: j.displayCurrency,
+          display_budget_min: displayBudgetMin,
+          display_budget_max: displayBudgetMax,
+          fx_rate_at_posting: j.fxRateAtPosting,
+          deadline: j.deadline,
+          status: j.status,
+          created_at: j.createdAt,
+          client: {
+            full_name: j.client.fullName,
+            company_name: j.client.clientProfile?.companyName || null,
+            // PRD v4.0: Cross-border client indicators
+            country: j.client.clientProfile?.country || "indonesia",
+            is_verified: !!j.client.clientProfile?.businessVerifiedAt,
+          },
+          required_skills: j.requiredSkills.map((rs) => ({
+            name: rs.skill.name,
+            is_mandatory: rs.isMandatory,
+          })),
+        };
+      }),
       pagination: buildPaginationMeta(total, page, per_page),
     });
   } catch (error) {

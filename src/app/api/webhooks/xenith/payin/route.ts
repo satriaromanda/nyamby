@@ -24,6 +24,10 @@ export async function POST(request: NextRequest) {
     const payload = JSON.parse(payloadText);
     const { id, status } = payload.data;
 
+    // PRD v4.0 §3.5 — Extract cross-border payment info from Xenith payload
+    const originCurrencyRaw = payload.data?.currency || payload.data?.originCurrency || null;
+    const paymentCodeType = payload.data?.paymentCodeType || null;
+
     const payment = await prisma.payment.findUnique({
       where: { xenithPayinId: id },
       include: {
@@ -42,11 +46,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: "Already processed" });
     }
 
+    // PRD v4.0 §2.3 — Resolve cross-border origin info
+    let originCountry = null;
+    let originCurrency = originCurrencyRaw;
+    if (payment.escrowTransaction) {
+      const clientProfile = await prisma.clientProfile.findFirst({
+        where: { userId: payment.escrowTransaction.clientUserId },
+        select: { country: true, preferredCurrency: true },
+      });
+      if (clientProfile && clientProfile.country !== "indonesia") {
+        originCountry = clientProfile.country;
+        originCurrency = originCurrency || clientProfile.preferredCurrency;
+      }
+    }
+
     if (status === "SUCCESS") {
       await prisma.$transaction(async (tx) => {
         await tx.payment.update({
           where: { id: payment.id },
-          data: { status: "SUCCESS" },
+          data: {
+            status: "SUCCESS",
+            // PRD v4.0 §2.3 — Store cross-border origin data
+            ...(originCountry ? { originCountry } : {}),
+            ...(originCurrency && originCurrency !== "IDR" ? { originCurrency } : {}),
+          },
         });
 
         await tx.escrowTransaction.update({

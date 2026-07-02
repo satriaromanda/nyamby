@@ -101,6 +101,22 @@ enum AiAnalysisStatus {
   failed
 }
 
+// ─── PRD v4.0 — Cross-Border Enums ─────────────────────────────────────────
+
+enum ClientCountry {
+  indonesia
+  malaysia
+  singapore
+  other
+}
+
+enum Currency {
+  IDR
+  MYR
+  SGD
+  USD
+}
+
 // ─── Models ─────────────────────────────────────────────────────────────────
 
 model User {
@@ -161,19 +177,24 @@ model TalentProfile {
 }
 
 model ClientProfile {
-  id              String   @id @default(uuid())
-  userId          String   @unique @map("user_id")
-  companyName     String?  @map("company_name")
-  industry        String
-  companySize     String?  @map("company_size")
-  location        String
-  description     String?
-  websiteUrl      String?  @map("website_url")
-  whatsappNumber  String?  @map("whatsapp_number")
-  bankCode        String?  @map("bank_code")
-  bankAccount     String?  @map("bank_account")
-  bankAccountName String?  @map("bank_account_name")
-  createdAt       DateTime @default(now()) @map("created_at")
+  id                  String         @id @default(uuid())
+  userId              String         @unique @map("user_id")
+  companyName         String?        @map("company_name")
+  industry            String
+  companySize         String?        @map("company_size")
+  location            String
+  description         String?
+  websiteUrl          String?        @map("website_url")
+  whatsappNumber      String?        @map("whatsapp_number")
+  bankCode            String?        @map("bank_code")
+  bankAccount         String?        @map("bank_account")
+  bankAccountName     String?        @map("bank_account_name")
+  // PRD v4.0 §2.1 — Cross-Border fields
+  country             ClientCountry  @default(indonesia) @map("country")
+  preferredCurrency   Currency       @default(IDR) @map("preferred_currency")
+  businessVerifiedAt  DateTime?      @map("business_verified_at")
+  businessEmailDomain String?        @map("business_email_domain")
+  createdAt           DateTime       @default(now()) @map("created_at")
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -235,6 +256,9 @@ model Job {
   submissionUrl    String?        @map("submission_url")
   submissionNotes  String?        @map("submission_notes")
   submittedAt      DateTime?      @map("submitted_at")
+  // PRD v4.0 §2.2 — Currency display for cross-border clients
+  displayCurrency  Currency       @default(IDR) @map("display_currency")
+  fxRateAtPosting  Decimal?       @map("fx_rate_at_posting") @db.Decimal(12, 6)
   createdAt        DateTime       @default(now()) @map("created_at")
 
   // Relations
@@ -348,18 +372,21 @@ model DisputeTicket {
 }
 
 model Payment {
-  id               String   @id @default(uuid())
-  escrowId         String   @unique @map("escrow_id")
-  xenithPayinId    String   @unique @map("xenith_payin_id")
-  referenceCode    String   @unique @map("reference_code")
-  customerReference String  @map("customer_reference")
-  amount           Decimal  @db.Decimal(12, 2)
-  paymentCode      String?  @map("payment_code")
-  paymentCodeType  String?  @map("payment_code_type")
-  status           PaymentStatus @default(PENDING)
-  redirectUrl      String?  @map("redirect_url")
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  id               String         @id @default(uuid())
+  escrowId         String         @unique @map("escrow_id")
+  xenithPayinId    String         @unique @map("xenith_payin_id")
+  referenceCode    String         @unique @map("reference_code")
+  customerReference String        @map("customer_reference")
+  amount           Decimal        @db.Decimal(12, 2)
+  paymentCode      String?        @map("payment_code")
+  paymentCodeType  String?        @map("payment_code_type")
+  status           PaymentStatus  @default(PENDING)
+  redirectUrl      String?        @map("redirect_url")
+  // PRD v4.0 §2.3 — Cross-border payment tracking
+  originCountry    ClientCountry? @map("origin_country")
+  originCurrency   Currency?      @map("origin_currency")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
 
   // Relations
   escrowTransaction EscrowTransaction @relation(fields: [escrowId], references: [id], onDelete: Cascade)

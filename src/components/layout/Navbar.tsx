@@ -148,6 +148,14 @@ export function Navbar() {
               Cara Kerja
             </a>
 
+            <Link
+              href="/global"
+              className="flex items-center gap-2 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors py-2"
+            >
+              <Icon name="globe" size={16} className="text-surface-500" />
+              Global
+            </Link>
+
             {/* Fitur Dropdown */}
             <Dropdown
               label="Fitur"
@@ -282,6 +290,7 @@ export function Navbar() {
             <MobileNavLink href="/talents" icon="users" label="Browse Talents" onClick={closeAll} />
             <MobileNavLink href="/perusahaan/tentang" icon="info" label="About Us" onClick={closeAll} />
             <MobileNavLink href="/#cara-kerja" icon="book" label="Cara Kerja" onClick={closeAll} />
+            <MobileNavLink href="/global" icon="globe" label="Global (MY)" onClick={closeAll} />
 
             <div className="pt-4 pb-2">
               <p className="text-xs font-semibold text-surface-400 uppercase tracking-wider px-3">Fitur</p>

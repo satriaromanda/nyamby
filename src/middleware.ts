@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { verifyToken } from './lib/auth';
 
 // PRD §2.4 & §11: Public Routes that do not require authentication
-const publicRoutes = ['/', '/talents', '/jobs', '/how-it-works', '/login', '/register', '/api', '/perusahaan', '/fitur', '/physical-mode', '/coming-soon'];
+const publicRoutes = ['/', '/talents', '/jobs', '/how-it-works', '/login', '/register', '/api', '/perusahaan', '/fitur', '/physical-mode', '/coming-soon', '/global'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

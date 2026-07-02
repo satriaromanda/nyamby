@@ -37,6 +37,7 @@ import {
   Plus,
   Zap,
   FlaskConical,
+  Globe,
   type LucideIcon,
 } from "lucide-react";
 
@@ -114,6 +115,7 @@ const lucideMap: Record<string, any> = {
   instagram: InstagramIcon,
   linkedin: LinkedinIcon,
   github: GithubIcon,
+  globe: Globe,
 };
 
 export type IconName = keyof typeof lucideMap;

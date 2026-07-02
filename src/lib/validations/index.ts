@@ -61,11 +61,20 @@ export const clientOnboardingSchema = z.object({
   industry: z.enum(["technology", "creative", "retail", "finance", "education", "other"], {
     message: "Industri wajib dipilih",
   }),
-  company_size: z.enum(["1-10", "11-50", "51-200", "200+"]).optional(),
+  company_size: z.enum(["1-10", "11-50", "51-200", "200+"]).optional().or(z.literal("")),
   location: z.string().min(2, { message: "Lokasi wajib diisi" }),
   description: z.string().optional(),
   website_url: z.string().url({ message: "Format URL tidak valid" }).optional().or(z.literal("")),
   whatsapp_number: z.string().optional(),
+  // PRD v4.0 §2.1 — Cross-Border fields
+  country: z.enum(["indonesia", "malaysia", "singapore", "other"]).default("indonesia"),
+  preferred_currency: z.enum(["IDR", "MYR", "SGD", "USD"]).default("IDR"),
+});
+
+// PRD v4.0 §3.3 — Business Verification (KYB Minimal)
+export const businessVerificationSchema = z.object({
+  business_email: z.string().email({ message: "Format email tidak valid" }),
+  company_url: z.string().url({ message: "Format URL tidak valid" }).optional().or(z.literal("")),
 });
 
 export const clientProfileUpdateSchema = z.object({

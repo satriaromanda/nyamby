@@ -44,53 +44,60 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if profile already exists
-    const existing = await prisma.talentProfile.findUnique({
+    // PRD Bugfix: Handle existing profile from previous failed onboarding attempts
+    let profile = await prisma.talentProfile.findUnique({
       where: { userId: session.userId },
     });
-    if (existing) {
-      return NextResponse.json(
-        { success: false, message: "Profil sudah ada. Gunakan PATCH untuk update." },
-        { status: 400 }
-      );
-    }
 
-    // Generate unique slug from fullName
-    const baseSlug = session.fullName
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim();
-    
-    let slug = baseSlug;
-    let counter = 1;
-    while (await prisma.talentProfile.findUnique({ where: { slug } })) {
-      slug = `${baseSlug}-${counter}`;
-      counter++;
-    }
+    const profileData = {
+      bio: bio || null,
+      category,
+      ratePerHour: rate_per_hour ? Math.min(rate_per_hour, 99999999) : null,
+      ratePerProject: rate_per_project ? Math.min(rate_per_project, 99999999) : null,
+      availability: availability || "available",
+      location: location || null,
+      portfolioUrl: portfolio_url || null,
+      portfolioFile: portfolio_file || null,
+      cvFile: cv_file || null,
+      cvText: truncateText(cv_text, 3000),
+      portfolioContext: truncateText(portfolio_context, 1000),
+      bankCode: bank_code || null,
+      bankAccount: bank_account || null,
+      bankAccountName: bank_account_name || null,
+    };
 
-    // Create talent profile
-    const profile = await prisma.talentProfile.create({
-      data: {
-        userId: session.userId,
-        slug,
-        bio: bio || null,
-        category,
-        ratePerHour: rate_per_hour ? Math.min(rate_per_hour, 99999999) : null,
-        ratePerProject: rate_per_project ? Math.min(rate_per_project, 99999999) : null,
-        availability: availability || "available",
-        location: location || null,
-        portfolioUrl: portfolio_url || null,
-        portfolioFile: portfolio_file || null,
-        cvFile: cv_file || null,
-        cvText: truncateText(cv_text, 3000),
-        portfolioContext: truncateText(portfolio_context, 1000),
-        bankCode: bank_code || null,
-        bankAccount: bank_account || null,
-        bankAccountName: bank_account_name || null,
-      },
-    });
+    if (profile) {
+      // Update existing
+      profile = await prisma.talentProfile.update({
+        where: { id: profile.id },
+        data: profileData,
+      });
+      // Clear old skills before re-inserting
+      await prisma.talentSkill.deleteMany({ where: { talentProfileId: profile.id } });
+    } else {
+      // Generate unique slug from fullName
+      const baseSlug = session.fullName
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .trim();
+      
+      let slug = baseSlug;
+      let counter = 1;
+      while (await prisma.talentProfile.findUnique({ where: { slug } })) {
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+
+      profile = await prisma.talentProfile.create({
+        data: {
+          userId: session.userId,
+          slug,
+          ...profileData,
+        },
+      });
+    }
 
     // Link skills
     for (const sk of skills) {
@@ -134,11 +141,21 @@ export async function POST(request: NextRequest) {
       avg_budget: data.count > 0 ? Math.round(data.totalBudget / data.count) : 0,
     }));
 
-    const skillGapResult = await generateSkillGapAnalysis(skillNames, category, marketDemand, {
-      bio: profile.bio,
-      cv_text: profile.cvText,
-      portfolio_context: profile.portfolioContext,
-    });
+    let skillGapResult;
+    try {
+      skillGapResult = await generateSkillGapAnalysis(skillNames, category, marketDemand, {
+        bio: profile.bio,
+        cv_text: profile.cvText,
+        portfolio_context: profile.portfolioContext,
+      });
+    } catch (aiError) {
+      console.error("[Onboarding] AI Skill Gap Analysis failed, using fallback:", aiError);
+      skillGapResult = {
+        recommendations: [],
+        summary: "Analisis AI saat ini tidak tersedia. Silakan lengkapi profil Anda secara manual.",
+        profile_completeness_score: 50,
+      };
+    }
 
     await prisma.skillGapAnalysis.updateMany({
       where: { talentProfileId: profile.id, isLatest: true },

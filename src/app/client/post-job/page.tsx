@@ -11,12 +11,28 @@ interface Skill {
   category: string;
 }
 
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  IDR: "Rp",
+  MYR: "RM",
+  SGD: "S$",
+  USD: "$",
+};
+
+const CURRENCY_PLACEHOLDERS: Record<string, { min: string; max: string }> = {
+  IDR: { min: "1000000", max: "3000000" },
+  MYR: { min: "300", max: "900" },
+  SGD: { min: "150", max: "500" },
+  USD: { min: "100", max: "400" },
+};
+
 export default function PostJobPage() {
   const router = useRouter();
   const [allSkills, setAllSkills] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(false);
   const [aiMatching, setAiMatching] = useState(false);
   const [error, setError] = useState("");
+  const [clientCurrency, setClientCurrency] = useState("IDR");
+  const [isExportClient, setIsExportClient] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -29,11 +45,24 @@ export default function PostJobPage() {
   });
 
   useEffect(() => {
+    // Fetch skills
     fetch("/api/skills")
       .then((r) => r.json())
       .then((d) => {
         if (d.success) setAllSkills(d.data);
       });
+
+    // PRD v4.0: Fetch client profile to get preferred currency
+    fetch("/api/client/profile")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.data) {
+          const currency = d.data.preferred_currency || d.data.preferredCurrency || "IDR";
+          setClientCurrency(currency);
+          setIsExportClient(currency !== "IDR");
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const filteredSkills = allSkills.filter((s) => {
@@ -105,6 +134,9 @@ export default function PostJobPage() {
     }
   };
 
+  const currencySymbol = CURRENCY_SYMBOLS[clientCurrency] || clientCurrency;
+  const placeholders = CURRENCY_PLACEHOLDERS[clientCurrency] || CURRENCY_PLACEHOLDERS.IDR;
+
   if (aiMatching) {
     return (
       <div className="min-h-screen gradient-hero flex items-center justify-center">
@@ -112,10 +144,10 @@ export default function PostJobPage() {
           <div className="w-20 h-20 mx-auto mb-6 rounded-2xl gradient-accent flex items-center justify-center text-4xl text-white animate-pulse-glow">
             <Icon name="ai" size={40} /></div>
           <h2 className="text-2xl font-bold mb-3 text-surface-900" >
-            AI sedang mencarikan talenta terbaik...
+            {isExportClient ? "AI is finding the best talent for you..." : "AI sedang mencarikan talenta terbaik..."}
           </h2>
           <p className="text-surface-500 text-sm mb-6">
-            Mengevaluasi seluruh talent pool dan menghitung match score
+            {isExportClient ? "Evaluating the entire talent pool and calculating match scores" : "Mengevaluasi seluruh talent pool dan menghitung match score"}
           </p>
           <div className="flex items-center justify-center gap-2">
             <div className="w-2 h-2 rounded-full bg-accent-500 animate-bounce" style={{ animationDelay: "0s" }} />
@@ -136,26 +168,50 @@ export default function PostJobPage() {
             <Logo height={32} />
           </Link>
           <Link href="/client/dashboard" className="text-sm text-surface-500 hover:text-surface-900">
-            <span className="inline-flex items-center gap-1"><Icon name="arrowLeft" size={14} />Kembali ke Dashboard</span>
+            <span className="inline-flex items-center gap-1">
+              <Icon name="arrowLeft" size={14} />
+              {isExportClient ? "Back to Dashboard" : "Kembali ke Dashboard"}
+            </span>
           </Link>
         </div>
       </nav>
 
       <main role="main" className="max-w-2xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold mb-2 text-surface-900" >
-          Post Job Baru
+          {isExportClient ? "Post a New Job" : "Post Job Baru"}
         </h1>
         <p className="text-surface-500 mb-8">
-          Deskripsikan kebutuhanmu dan AI akan mencarikan talenta terbaik.
+          {isExportClient
+            ? "Describe your needs and AI will find the best Indonesian talent."
+            : "Deskripsikan kebutuhanmu dan AI akan mencarikan talenta terbaik."}
         </p>
+
+        {/* PRD v4.0: Currency indicator for export clients */}
+        {isExportClient && (
+          <div className="mb-6 p-4 rounded-xl bg-primary-50 border border-primary-100 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center text-white font-bold text-sm">
+              {currencySymbol}
+            </div>
+            <div>
+              <p className="text-sm font-medium text-primary-700">
+                Budgets displayed in {clientCurrency}
+              </p>
+              <p className="text-xs text-primary-600">
+                Amounts are converted to IDR for processing. Exchange rates are locked at posting time.
+              </p>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8 space-y-6">
           <div>
-            <label className="block text-sm text-surface-600 mb-2">Judul Job *</label>
+            <label className="block text-sm text-surface-600 mb-2">
+              {isExportClient ? "Job Title *" : "Judul Job *"}
+            </label>
             <input
               type="text"
               className="input-dark"
-              placeholder="Contoh: Landing Page untuk UMKM Kuliner"
+              placeholder={isExportClient ? "e.g. Landing Page for F&B Business" : "Contoh: Landing Page untuk UMKM Kuliner"}
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               required
@@ -163,10 +219,12 @@ export default function PostJobPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-surface-600 mb-2">Deskripsi Lengkap *</label>
+            <label className="block text-sm text-surface-600 mb-2">
+              {isExportClient ? "Full Description *" : "Deskripsi Lengkap *"}
+            </label>
             <textarea
               className="input-dark min-h-[120px] resize-none"
-              placeholder="Jelaskan kebutuhan project secara detail..."
+              placeholder={isExportClient ? "Describe your project requirements in detail..." : "Jelaskan kebutuhan project secara detail..."}
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               required
@@ -174,7 +232,9 @@ export default function PostJobPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-surface-600 mb-2">Kategori *</label>
+            <label className="block text-sm text-surface-600 mb-2">
+              {isExportClient ? "Category *" : "Kategori *"}
+            </label>
             <div className="grid grid-cols-2 gap-3">
               {[
                 { value: "web_dev", label: "Web Development", icon: "code" as const },
@@ -198,7 +258,7 @@ export default function PostJobPage() {
 
           <div>
             <label className="block text-sm text-surface-600 mb-2">
-              Required Skills * ({form.required_skills.length} dipilih)
+              Required Skills * ({form.required_skills.length} {isExportClient ? "selected" : "dipilih"})
             </label>
             <div className="flex flex-wrap gap-2">
               {filteredSkills.map((skill) => {
@@ -223,21 +283,25 @@ export default function PostJobPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-surface-600 mb-2">Budget Min (IDR)</label>
+              <label className="block text-sm text-surface-600 mb-2">
+                Budget Min ({currencySymbol})
+              </label>
               <input
                 type="number"
                 className="input-dark"
-                placeholder="1000000"
+                placeholder={placeholders.min}
                 value={form.budget_min}
                 onChange={(e) => setForm({ ...form, budget_min: e.target.value })}
               />
             </div>
             <div>
-              <label className="block text-sm text-surface-600 mb-2">Budget Max (IDR)</label>
+              <label className="block text-sm text-surface-600 mb-2">
+                Budget Max ({currencySymbol})
+              </label>
               <input
                 type="number"
                 className="input-dark"
-                placeholder="3000000"
+                placeholder={placeholders.max}
                 value={form.budget_max}
                 onChange={(e) => setForm({ ...form, budget_max: e.target.value })}
               />

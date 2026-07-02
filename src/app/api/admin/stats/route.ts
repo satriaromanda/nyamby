@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 
-// GET /api/admin/stats — PRD v3.0 §8.3
+// GET /api/admin/stats — PRD v3.0 §8.3 + PRD v4.0 §4
 export async function GET() {
   try {
     await requireAdmin();
@@ -63,6 +63,40 @@ export async function GET() {
       ? Math.round((totalDisputes / totalCompleted) * 1000) / 10
       : 0;
 
+    // ─── PRD v4.0 §4 — Export Monitoring Stats ───────────────────────
+    // Count non-Indonesian clients
+    const totalClientsNonId = await prisma.clientProfile.count({
+      where: { country: { not: "indonesia" } },
+    });
+
+    // Count by country
+    const [malaysiaClients, singaporeClients, otherClients] = await Promise.all([
+      prisma.clientProfile.count({ where: { country: "malaysia" } }),
+      prisma.clientProfile.count({ where: { country: "singapore" } }),
+      prisma.clientProfile.count({ where: { country: "other" } }),
+    ]);
+
+    // Count jobs from export clients (non-Indonesian)
+    const exportClientUserIds = await prisma.clientProfile.findMany({
+      where: { country: { not: "indonesia" } },
+      select: { userId: true },
+    });
+    const exportUserIds = exportClientUserIds.map((c) => c.userId);
+
+    const totalJobsFromExport = exportUserIds.length > 0
+      ? await prisma.job.count({
+          where: { clientUserId: { in: exportUserIds } },
+        })
+      : 0;
+
+    // GMV from export (sum of escrow amounts for export client jobs)
+    const gmvExport = exportUserIds.length > 0
+      ? await prisma.escrowTransaction.aggregate({
+          _sum: { amount: true },
+          where: { clientUserId: { in: exportUserIds } },
+        })
+      : { _sum: { amount: null } };
+
     return NextResponse.json({
       success: true,
       data: {
@@ -94,6 +128,17 @@ export async function GET() {
           total_open: totalOpenDisputes,
           total_resolved: totalResolvedDisputes,
           dispute_rate: disputeRate,
+        },
+        // PRD v4.0 §4 — Export monitoring breakdown
+        export: {
+          total_clients_non_id: totalClientsNonId,
+          total_jobs_from_export: totalJobsFromExport,
+          gmv_export_idr_equivalent: Number(gmvExport._sum.amount || 0),
+          by_country: {
+            malaysia: malaysiaClients,
+            singapore: singaporeClients,
+            other: otherClients,
+          },
         },
       },
     });

@@ -35,7 +35,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { company_name, industry, company_size, location, description, website_url, whatsapp_number } = result.data;
+    const {
+      company_name, industry, company_size, location, description,
+      website_url, whatsapp_number, country, preferred_currency,
+    } = result.data;
 
     // Create client profile + set onboarding complete in a transaction
     const profile = await prisma.$transaction(async (tx) => {
@@ -49,6 +52,9 @@ export async function POST(request: NextRequest) {
           description: description || null,
           websiteUrl: website_url || null,
           whatsappNumber: whatsapp_number || null,
+          // PRD v4.0 §2.1 — Cross-Border fields
+          country: country || "indonesia",
+          preferredCurrency: preferred_currency || "IDR",
         },
       });
 
@@ -70,6 +76,9 @@ export async function POST(request: NextRequest) {
     });
     await setSessionCookie(newToken);
 
+    // PRD v4.0 §3.3: If non-Indonesian client, prompt business verification
+    const needsVerification = country && country !== "indonesia";
+
     return NextResponse.json(
       {
         success: true,
@@ -79,8 +88,11 @@ export async function POST(request: NextRequest) {
             id: profile.id,
             industry: profile.industry,
             location: profile.location,
+            country: profile.country,
+            preferred_currency: profile.preferredCurrency,
           },
-          redirect: "/dashboard/client",
+          needs_business_verification: needsVerification,
+          redirect: needsVerification ? "/client/dashboard?verify=true" : "/client/dashboard",
         },
       },
       { status: 201 }
@@ -96,3 +108,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 
-// GET /api/ai/smart-pricing — PRD v3.0 §6.2
+// GET /api/ai/smart-pricing — PRD v3.0 §6.2 + PRD v4.0 §3.4
 // Smart Pricing Guidance: aggregation-based pricing recommendations
+// PRD v4.0: Added ?market=export mode for cross-border benchmark
 export async function GET(request: NextRequest) {
   try {
     await requireAuth();
@@ -12,6 +13,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get("category");
     const skillsParam = searchParams.get("skills");
     const level = searchParams.get("level");
+    const market = searchParams.get("market"); // PRD v4.0 §3.4
 
     if (!category) {
       return NextResponse.json(
@@ -20,6 +22,36 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // ─── PRD v4.0 §3.4: Export Market Mode ─────────────────────────
+    if (market === "export") {
+      // Benchmark rates from secondary research (SEA freelance market)
+      const exportBenchmarks: Record<string, { min: number; max: number; median: number }> = {
+        web_dev: { min: 15, max: 50, median: 28 },
+        graphic_designer: { min: 12, max: 40, median: 22 },
+      };
+
+      const benchmark = exportBenchmarks[category] || exportBenchmarks.web_dev;
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          market: "export",
+          category,
+          benchmark: {
+            per_hour_usd: {
+              min: benchmark.min,
+              max: benchmark.max,
+              median: benchmark.median,
+            },
+            source: "estimasi riset sekunder SEA freelance market, belum tervalidasi khusus Malaysia",
+            confidence: "low — akan diperbarui setelah pilot",
+          },
+          disclaimer: "Angka ini adalah estimasi awal, bukan data transaksi riil Nyamby. Akan diperbarui otomatis begitu ada cukup data dari job ekspor yang selesai.",
+        },
+      });
+    }
+
+    // ─── Domestic Market Mode (existing logic) ─────────────────────
     const skills = skillsParam ? skillsParam.split(",").map((s) => s.trim()) : [];
 
     // Build where clause
@@ -120,6 +152,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
+        market: "domestic",
         category,
         skill_match: skills,
         level: level || null,

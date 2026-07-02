@@ -48,6 +48,7 @@ export function Footer() {
               <h3 className="font-semibold text-surface-900 mb-6">Perusahaan</h3>
               <ul className="flex flex-col gap-4">
                 <li><Link href="/perusahaan/tentang" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Tentang</Link></li>
+                <li><Link href="/global" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Global (MY)</Link></li>
                 <li><Link href="/coming-soon" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Karier</Link></li>
                 <li><Link href="/coming-soon" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Kontak</Link></li>
               </ul>
