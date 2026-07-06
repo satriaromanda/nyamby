@@ -15,6 +15,8 @@ interface ClientProfile {
   bank_code: string | null;
   bank_account: string | null;
   bank_account_name: string | null;
+  business_verified_at: string | null;
+  business_email_domain: string | null;
   stats: {
     total_jobs: number;
     active_jobs: number;
@@ -35,6 +37,9 @@ export default function ClientSettingsPage() {
     bank_account: "",
     bank_account_name: "",
   });
+
+  const [kybForm, setKybForm] = useState({ business_email: "", company_url: "" });
+  const [verifying, setVerifying] = useState(false);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ message, type });
@@ -100,6 +105,36 @@ export default function ClientSettingsPage() {
       showToast("Terjadi kesalahan", "error");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleVerifyBusiness = async () => {
+    if (!kybForm.business_email.trim()) {
+      showToast("Email bisnis wajib diisi", "error");
+      return;
+    }
+
+    setVerifying(true);
+    try {
+      const res = await fetch("/api/client/verify-business", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          business_email: kybForm.business_email.trim(),
+          company_url: kybForm.company_url.trim() || undefined,
+        }),
+      });
+      const d = await res.json();
+      if (d.success) {
+        showToast("Verifikasi bisnis berhasil! Profilmu sekarang punya badge Verified Client.");
+        fetchProfile();
+      } else {
+        showToast(d.message || "Verifikasi gagal", "error");
+      }
+    } catch {
+      showToast("Terjadi kesalahan", "error");
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -362,6 +397,92 @@ export default function ClientSettingsPage() {
                   </p>
                 </div>
               </div>
+            </div>
+
+            {/* Business Verification — PRD v4.0 §3.3 */}
+            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.09s" }}>
+              <div className="flex items-center justify-between gap-3 mb-1">
+                <h2 className="font-bold text-lg text-surface-900">
+                  <Icon name="shield" className="inline mr-1.5 text-primary-600" size={20} />Verifikasi Bisnis
+                </h2>
+                {profile.business_verified_at && (
+                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 font-semibold whitespace-nowrap inline-flex items-center gap-1">
+                    <Icon name="check" size={11} />
+                    Verified Client
+                  </span>
+                )}
+              </div>
+
+              {profile.business_verified_at ? (
+                <div className="mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+                  <p className="text-sm text-emerald-800">
+                    Bisnismu terverifikasi dengan domain{" "}
+                    <span className="font-semibold">@{profile.business_email_domain}</span>{" "}
+                    sejak{" "}
+                    {new Date(profile.business_verified_at).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                    . Badge Verified Client tampil di profil dan job posting-mu.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs text-surface-400 mb-5">
+                    Verifikasi dengan email bisnis (bukan Gmail/Yahoo/dsb) untuk mendapat badge
+                    Verified Client — meningkatkan kepercayaan talenta terhadap job posting-mu.
+                  </p>
+
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-surface-600 mb-2">
+                          Email Bisnis <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          className="input-dark"
+                          placeholder="nama@perusahaanmu.com"
+                          value={kybForm.business_email}
+                          onChange={(e) => setKybForm({ ...kybForm, business_email: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-surface-600 mb-2">
+                          Website Perusahaan <span className="text-surface-300">(opsional)</span>
+                        </label>
+                        <input
+                          type="url"
+                          className="input-dark"
+                          placeholder="https://perusahaanmu.com"
+                          value={kybForm.company_url}
+                          onChange={(e) => setKybForm({ ...kybForm, company_url: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        onClick={handleVerifyBusiness}
+                        disabled={verifying}
+                        className="btn-secondary px-6 py-2.5 text-sm disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {verifying ? (
+                          <>
+                            <div className="animate-spin w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full" />
+                            Memverifikasi...
+                          </>
+                        ) : (
+                          <span className="inline-flex items-center gap-2">
+                            <Icon name="shield" size={15} />
+                            Verifikasi Sekarang
+                          </span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Account Info (read-only) */}

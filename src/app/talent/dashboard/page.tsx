@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Icon, RatingStars, Logo } from "@/components/icons";
 import { NotificationBell } from "@/components/NotificationBell";
 import { JobStatusTracker } from "@/components/JobStatusTracker";
+import { SmartPricingCard } from "@/components/SmartPricingCard";
 
 interface SkillGapRec {
   skill_name: string;
@@ -225,6 +226,12 @@ export default function TalentDashboard() {
             <Link href="/jobs" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline">
               Browse Jobs
             </Link>
+            <Link href="/talent/earnings" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline">
+              Pendapatan
+            </Link>
+            <Link href="/talent/activity" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline">
+              Aktivitas
+            </Link>
             <NotificationBell />
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full gradient-primary flex items-center justify-center text-[10px] sm:text-xs font-bold text-white">
@@ -385,6 +392,21 @@ export default function TalentDashboard() {
                   </span>
                 ))}
               </div>
+            </div>
+
+            {/* Smart Pricing Benchmark */}
+            <div className="mt-4">
+              <SmartPricingCard
+                category={data.profile.category}
+                skills={data.profile.skills.map((s) => s.name)}
+                level={
+                  data.profile.skills.some((s) => s.level === "expert")
+                    ? "expert"
+                    : data.profile.skills.some((s) => s.level === "intermediate")
+                      ? "intermediate"
+                      : "beginner"
+                }
+              />
             </div>
 
             {/* Portfolio Analysis */}

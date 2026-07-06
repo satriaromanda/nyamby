@@ -7,6 +7,7 @@ import { Icon, Logo } from "@/components/icons";
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: "spark" as const },
   { href: "/admin/users", label: "Users", icon: "user" as const },
+  { href: "/admin/jobs", label: "Jobs", icon: "briefcase" as const },
   { href: "/admin/disputes", label: "Disputes", icon: "shield" as const },
   { href: "/admin/escrow", label: "Escrow", icon: "money" as const },
   { href: "/admin/ai-stats", label: "AI Stats", icon: "ai" as const },
