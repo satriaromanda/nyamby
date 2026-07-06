@@ -48,6 +48,9 @@ export function isWebhookTimestampValid(timestampStr: string): boolean {
 
 // ── Pay In ──────────────────────────────────────────────────────────────────
 
+// paymentChannel must be one of the sandbox's active channels
+// (GET /v1/payins/channels?currency=IDR): QRIS, BNI.VA, BRI.VA, MDR.VA,
+// CIMBN.VA, BDMN.VA, BMI.VA, BSS.VA, PTB.VA — BCA.VA is NOT available.
 export async function createPayIn(data: {
     initiatedAmount: number;
     currency?: string;
