@@ -246,7 +246,7 @@ async function main() {
     },
   });
 
-  // Admin: AyoNyamby Admin
+  // Admin: Nyamby Admin
   const admin = await prisma.user.upsert({
     where: { email: "admin@ayonyamby.com" },
     update: { onboardingComplete: true },
@@ -254,7 +254,7 @@ async function main() {
       email: "admin@ayonyamby.com",
       passwordHash,
       role: "admin",
-      fullName: "AyoNyamby Admin",
+      fullName: "Nyamby Admin",
       avatarUrl: null,
       onboardingComplete: true,
     },
