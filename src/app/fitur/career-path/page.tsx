@@ -2,6 +2,16 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Career Path AI — Rencanakan Jalur Kariermu",
+  description: "Rekomendasi jalur karier berbasis AI untuk talenta digital: dari nyambi pertama sampai karir profesional.",
+  alternates: {
+    canonical: "/fitur/career-path"
+  }
+};
+
 
 export default function CareerPathPage() {
   return (

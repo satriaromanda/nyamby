@@ -15,6 +15,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/fitur/escrow`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/fitur/career-path`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/perusahaan/tentang`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE_URL}/perusahaan/karier`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/perusahaan/kontak`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/blog`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/help`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE_URL}/legal/privacy`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${BASE_URL}/legal/terms`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${BASE_URL}/legal/security`, changeFrequency: "yearly", priority: 0.3 },
   ];
 
   // Dynamic entries — public talent profiles & active job listings.

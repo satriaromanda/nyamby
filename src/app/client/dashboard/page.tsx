@@ -152,7 +152,7 @@ export default function ClientDashboard() {
       <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Logo height={28} />
+            <Logo height={32} />
           </Link>
           <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
             <NotificationBell />

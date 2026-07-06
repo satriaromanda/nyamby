@@ -2,6 +2,16 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AI Job Matching — Rekomendasi Pekerjaan Akurat",
+  description: "AI Matching Nyamby menganalisis skill, portfolio, dan pengalaman untuk mencocokkan talenta dengan pekerjaan freelance yang tepat.",
+  alternates: {
+    canonical: "/fitur/ai-matching"
+  }
+};
+
 
 export default function AiMatchingPage() {
   return (

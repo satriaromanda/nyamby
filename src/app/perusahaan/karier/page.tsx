@@ -2,6 +2,16 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Karier di Nyamby — Bergabung dengan Tim Kami",
+  description: "Lowongan kerja di Nyamby. Bantu kami membangun platform AI career companion untuk talenta digital Indonesia.",
+  alternates: {
+    canonical: "/perusahaan/karier"
+  }
+};
+
 
 const values = [
   {

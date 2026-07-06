@@ -31,7 +31,7 @@ export default function AdminLayout({
       <aside className="w-64 bg-white border-r border-surface-200 flex flex-col shrink-0 sticky top-0 h-screen">
         <div className="p-6 border-b border-surface-200">
           <Link href="/" className="flex items-center gap-2">
-            <Logo height={28} />
+            <Logo height={32} />
           </Link>
           <span className="mt-2 inline-block text-[10px] font-bold bg-primary-100 text-primary-700 px-2 py-0.5 rounded-md uppercase tracking-wider">
             Admin Panel

@@ -2,6 +2,16 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Blog — Insight Karier Freelance & Update Produk",
+  description: "Artikel, tips karier freelance, update produk, dan cerita komunitas talenta digital Indonesia dari tim Nyamby.",
+  alternates: {
+    canonical: "/blog"
+  }
+};
+
 
 const categories = ["Semua", "Produk", "Tips Karier", "Engineering", "Komunitas"];
 

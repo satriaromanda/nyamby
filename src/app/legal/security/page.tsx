@@ -2,6 +2,16 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Keamanan Platform",
+  description: "Standar keamanan Nyamby: enkripsi data, perlindungan transaksi escrow, dan praktik keamanan infrastruktur.",
+  alternates: {
+    canonical: "/legal/security"
+  }
+};
+
 
 const securityFeatures = [
   {

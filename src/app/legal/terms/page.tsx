@@ -2,6 +2,16 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Syarat & Ketentuan",
+  description: "Syarat dan ketentuan penggunaan platform Nyamby untuk talenta digital dan klien di Indonesia.",
+  alternates: {
+    canonical: "/legal/terms"
+  }
+};
+
 
 const sections = [
   {

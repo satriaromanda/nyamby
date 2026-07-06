@@ -2,6 +2,16 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Escrow Payment — Transaksi Freelance Aman",
+  description: "Sistem escrow Nyamby melindungi pembayaran freelance: dana ditahan aman sampai pekerjaan selesai dan disetujui.",
+  alternates: {
+    canonical: "/fitur/escrow"
+  }
+};
+
 
 export default function EscrowPage() {
   return (

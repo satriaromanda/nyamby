@@ -61,7 +61,7 @@ export default function TalentsPage() {
       <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 md:h-20 flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Logo height={28} />
+            <Logo height={32} />
           </Link>
           <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm whitespace-nowrap">
             <Link href="/jobs" className="text-surface-500 hover:text-surface-900">Browse Jobs</Link>

@@ -73,6 +73,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Editorial display type — matches the reference design (DM Serif Display) */
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

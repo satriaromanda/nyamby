@@ -2,6 +2,16 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Skill Gap Analysis — Petakan Skill Kariermu",
+  description: "Analisis gap antara skill kamu dan kebutuhan pasar, lengkap dengan rekomendasi pembelajaran dari AI Nyamby.",
+  alternates: {
+    canonical: "/fitur/skill-gap"
+  }
+};
+
 
 export default function SkillGapPage() {
   return (

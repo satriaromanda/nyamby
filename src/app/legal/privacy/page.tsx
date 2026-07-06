@@ -2,6 +2,16 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Kebijakan Privasi",
+  description: "Bagaimana Nyamby mengumpulkan, menggunakan, dan melindungi data pribadi talenta dan klien di platform kami.",
+  alternates: {
+    canonical: "/legal/privacy"
+  }
+};
+
 
 const sections = [
   {
