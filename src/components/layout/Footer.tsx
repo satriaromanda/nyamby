@@ -49,8 +49,8 @@ export function Footer() {
               <ul className="flex flex-col gap-4">
                 <li><Link href="/perusahaan/tentang" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Tentang</Link></li>
                 <li><Link href="/global" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Global (MY)</Link></li>
-                <li><Link href="/coming-soon" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Karier</Link></li>
-                <li><Link href="/coming-soon" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Kontak</Link></li>
+                <li><Link href="/perusahaan/karier" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Karier</Link></li>
+                <li><Link href="/perusahaan/kontak" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Kontak</Link></li>
               </ul>
             </div>
 
@@ -58,8 +58,8 @@ export function Footer() {
             <div>
               <h3 className="font-semibold text-surface-900 mb-6">Resources</h3>
               <ul className="flex flex-col gap-4">
-                <li><Link href="/coming-soon" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Blog</Link></li>
-                <li><Link href="/coming-soon" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Help</Link></li>
+                <li><Link href="/blog" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Blog</Link></li>
+                <li><Link href="/help" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Help</Link></li>
                 <li><Link href="/coming-soon" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Status</Link></li>
               </ul>
             </div>
@@ -68,9 +68,9 @@ export function Footer() {
             <div>
               <h3 className="font-semibold text-surface-900 mb-6">Legal</h3>
               <ul className="flex flex-col gap-4">
-                <li><Link href="/coming-soon" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Privacy</Link></li>
-                <li><Link href="/coming-soon" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Terms</Link></li>
-                <li><Link href="/coming-soon" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Security</Link></li>
+                <li><Link href="/legal/privacy" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Privacy</Link></li>
+                <li><Link href="/legal/terms" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Terms</Link></li>
+                <li><Link href="/legal/security" className="text-surface-500 hover:text-surface-900 text-sm transition-colors">Security</Link></li>
               </ul>
             </div>
           </div>

@@ -9,7 +9,11 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Nyamby — AI-Powered Career Platform untuk Talenta Indonesia",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://nyamby.id"),
+  title: {
+    default: "Nyamby — AI-Powered Career Platform untuk Talenta Indonesia",
+    template: "%s | Nyamby",
+  },
   description:
     "Platform AI yang membantu talenta digital Indonesia bertransisi dari nyambi menjadi karir profesional. AI Job Matching, Skill Gap Analysis, dan escrow payment.",
   keywords: [
