@@ -209,7 +209,7 @@ export default function AdminDisputeDetailPage({ params }: { params: Promise<{ i
 
         <div className="grid lg:grid-cols-2 gap-6 mb-6">
           {/* Info Job & Escrow */}
-          <div className="glass rounded-xl p-6">
+          <div className="card p-6">
             <h3 className="font-bold text-lg mb-4 text-surface-900">Informasi Job & Escrow</h3>
             <div className="space-y-3">
               <div>
@@ -237,7 +237,7 @@ export default function AdminDisputeDetailPage({ params }: { params: Promise<{ i
           </div>
 
           {/* Info Client & Talent Bank */}
-          <div className="glass rounded-xl p-6">
+          <div className="card p-6">
             <h3 className="font-bold text-lg mb-4 text-surface-900">Rekening Tujuan</h3>
             
             <div className="mb-4">
@@ -273,7 +273,7 @@ export default function AdminDisputeDetailPage({ params }: { params: Promise<{ i
         </div>
 
         {/* Action Panel */}
-        <div className="glass rounded-xl p-6 border-2 border-primary-100">
+        <div className="card p-6 border-2 border-primary-100">
           <h3 className="font-bold text-lg mb-2 text-surface-900">Resolusi Arbitrasi</h3>
           
           {isResolved ? (

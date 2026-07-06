@@ -17,7 +17,7 @@ const steps = [
     icon: "user" as const,
     title: "Talenta melengkapi profil",
     description: "Skill, level, rate, bio, CV, dan portfolio digabung menjadi konteks terstruktur untuk matching.",
-    color: "#534AB7",
+    color: "#2563EB",
   },
   {
     icon: "ai" as const,
@@ -71,7 +71,7 @@ export default function HowItWorksPage() {
 
         <section className="grid md:grid-cols-2 gap-5 mb-10">
           {steps.map((step, index) => (
-            <div key={step.title} className="glass rounded-xl p-6">
+            <div key={step.title} className="card p-6">
               <div className="flex items-start gap-4">
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold text-white shrink-0"
@@ -92,7 +92,7 @@ export default function HowItWorksPage() {
         </section>
 
         <section className="grid lg:grid-cols-3 gap-5">
-          <div className="glass rounded-xl p-6">
+          <div className="card p-6">
             <h2 className="font-bold text-surface-900 mb-2" >
               Untuk Talenta
             </h2>
@@ -103,7 +103,7 @@ export default function HowItWorksPage() {
               Daftar sebagai talenta
             </Link>
           </div>
-          <div className="glass rounded-xl p-6">
+          <div className="card p-6">
             <h2 className="font-bold text-surface-900 mb-2" >
               Untuk Client
             </h2>
@@ -114,7 +114,7 @@ export default function HowItWorksPage() {
               Cari talenta
             </Link>
           </div>
-          <div className="glass rounded-xl p-6">
+          <div className="card p-6">
             <h2 className="font-bold text-surface-900 mb-2" >
               Untuk Demo
             </h2>

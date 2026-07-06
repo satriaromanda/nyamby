@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Icon, Logo } from "@/components/icons";
 
 export function Navbar() {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -105,11 +107,12 @@ export function Navbar() {
             <Logo height={36} />
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation — pill group */}
+          <div className="hidden md:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
             {/* Browse Dropdown */}
             <Dropdown
               label="Browse"
+              active={pathname.startsWith("/jobs") || pathname.startsWith("/talents")}
               isOpen={activeDropdown === "browse"}
               onToggle={() => toggleDropdown("browse")}
               onClose={closeAll}
@@ -134,31 +137,26 @@ export function Navbar() {
 
             <Link
               href="/perusahaan/tentang"
-              className="flex items-center gap-2 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors py-2"
+              className={`pill-tab ${pathname.startsWith("/perusahaan") ? "pill-tab-active" : ""}`}
             >
-              <Icon name="info" size={16} className="text-surface-500" />
               About Us
             </Link>
 
-            <a
-              href="/#cara-kerja"
-              className="flex items-center gap-2 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors py-2"
-            >
-              <Icon name="book" size={16} className="text-surface-500" />
+            <a href="/#cara-kerja" className="pill-tab">
               Cara Kerja
             </a>
 
             <Link
               href="/global"
-              className="flex items-center gap-2 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors py-2"
+              className={`pill-tab ${pathname.startsWith("/global") ? "pill-tab-active" : ""}`}
             >
-              <Icon name="globe" size={16} className="text-surface-500" />
               Global
             </Link>
 
             {/* Fitur Dropdown */}
             <Dropdown
               label="Fitur"
+              active={pathname.startsWith("/fitur")}
               isOpen={activeDropdown === "fitur"}
               onToggle={() => toggleDropdown("fitur")}
               onClose={closeAll}
@@ -358,12 +356,14 @@ export function Navbar() {
 
 function Dropdown({
   label,
+  active = false,
   isOpen,
   onToggle,
   onClose,
   children,
 }: {
   label: string;
+  active?: boolean;
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
@@ -381,7 +381,7 @@ function Dropdown({
   return (
     <div ref={ref} className="relative">
       <button
-        className="flex items-center gap-1.5 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors py-2"
+        className={`pill-tab ${active ? "pill-tab-active" : ""}`}
         aria-haspopup="true"
         aria-expanded={isOpen}
         onClick={onToggle}

@@ -92,7 +92,7 @@ export default function ClientDisputesPage() {
         </div>
 
         {disputes.length === 0 ? (
-          <div className="glass rounded-xl p-12 text-center">
+          <div className="card p-12 text-center">
             <Icon name="check" className="mx-auto mb-4 text-emerald-500" size={40} />
             <h3 className="text-lg font-bold text-surface-900 mb-2">Semua Aman</h3>
             <p className="text-sm text-surface-500">
@@ -105,7 +105,7 @@ export default function ClientDisputesPage() {
         ) : (
           <div className="space-y-4">
             {disputes.map((dispute) => (
-              <div key={dispute.id} className="glass rounded-xl p-6">
+              <div key={dispute.id} className="card p-6">
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">

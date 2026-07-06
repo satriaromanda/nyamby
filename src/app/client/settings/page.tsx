@@ -213,7 +213,7 @@ export default function ClientSettingsPage() {
           {/* ─── Sidebar: Profile Preview & Stats ──────────── */}
           <div className="space-y-4">
             {/* Profile Card */}
-            <div className="glass rounded-xl p-6 text-center animate-slide-up">
+            <div className="card p-6 text-center animate-slide-up">
               <div className="w-20 h-20 mx-auto rounded-2xl gradient-primary flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg shadow-primary-500/20">
                 {profile.avatar_url ? (
                   <img
@@ -248,7 +248,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Stats Card */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h3 className="font-bold text-sm mb-4 text-surface-900 flex items-center gap-2"><Icon name="chart" size={15} />Statistik</h3>
               <div className="space-y-3">
                 {[
@@ -276,7 +276,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h3 className="font-bold text-sm mb-3 text-surface-900"><Icon name="bolt" className="inline mr-1.5 text-action-500" size={15} />Aksi Cepat</h3>
               <div className="space-y-2">
                 <Link
@@ -304,7 +304,7 @@ export default function ClientSettingsPage() {
           {/* ─── Main: Edit Form ───────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
             {/* Editable Info */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
                 
@@ -335,7 +335,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Bank Info */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.075s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.075s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 Informasi Rekening Bank
               </h2>
@@ -400,7 +400,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Business Verification — PRD v4.0 §3.3 */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.09s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.09s" }}>
               <div className="flex items-center justify-between gap-3 mb-1">
                 <h2 className="font-bold text-lg text-surface-900">
                   <Icon name="shield" className="inline mr-1.5 text-primary-600" size={20} />Verifikasi Bisnis
@@ -486,7 +486,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Account Info (read-only) */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
                 
@@ -520,7 +520,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Platform Info */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
                 

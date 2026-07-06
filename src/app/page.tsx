@@ -186,12 +186,12 @@ export default function LandingPage() {
             </AnimateIn>
 
             <AnimateIn delay={100}>
-              <h1 className="font-display text-5xl lg:text-7xl leading-[1.05] text-slate-900">
+              <h1 className="text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-slate-900">
                 Nyambungin Skill, <br />
-                <em className="text-primary-600 italic">
+                <span className="text-primary-600">
                   Nyambungin <br className="hidden lg:block" />
                   Masa Depan.
-                </em>
+                </span>
               </h1>
             </AnimateIn>
 
@@ -324,10 +324,10 @@ export default function LandingPage() {
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-xs font-semibold text-slate-600 mb-4">
                   <Icon name="spark" size={12} /> How it works
                 </div>
-                <h2 className="font-display text-4xl lg:text-5xl text-slate-900 leading-tight mb-4">
+                <h2 className="text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4">
                   Nyamby Punya{" "}
                   <br className="hidden lg:block" />
-                  <em className="text-primary-600 italic">Jawabannya.</em>
+                  <span className="text-primary-600">Jawabannya.</span>
                 </h2>
                 <p className="text-slate-500 text-lg max-w-md">
                   Empat langkah sederhana untuk membawa karier kamu ke level
@@ -403,10 +403,10 @@ export default function LandingPage() {
               AI Matching
             </div>
 
-            <h2 className="font-display text-4xl lg:text-5xl text-slate-900 leading-tight">
+            <h2 className="text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">
               AI Matching <br />
               yang{" "}
-              <em className="text-primary-600 italic">Mengerti Kamu</em>
+              <span className="text-primary-600">Mengerti Kamu</span>
             </h2>
 
             <p className="text-slate-500 text-lg max-w-md">
@@ -469,9 +469,9 @@ export default function LandingPage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-xs font-semibold text-slate-600 mb-4">
                 <Icon name="users" size={12} /> Testimoni
               </div>
-              <h2 className="font-display text-4xl lg:text-5xl text-slate-900 leading-tight mb-4">
+              <h2 className="text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4">
                 Mereka Sudah{" "}
-                <em className="text-primary-600 italic">Merasakan</em>
+                <span className="text-primary-600">Merasakan</span>
               </h2>
               <p className="text-slate-500 text-lg max-w-md mx-auto">
                 Cerita nyata dari talenta yang sudah bergabung dengan Nyamby.
@@ -551,9 +551,9 @@ export default function LandingPage() {
 
         <div className="max-w-[1280px] mx-auto px-6 py-24 lg:py-32 relative z-10 grid md:grid-cols-2 gap-12 items-center">
           <AnimateIn className="space-y-6">
-            <h2 className="font-display text-5xl lg:text-6xl leading-tight">
+            <h2 className="text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
               Dari{" "}
-              <em className="text-amber-400 italic">Nyambi</em>
+              <span className="text-amber-400">Nyambi</span>
               <br />
               Menjadi Karier.
             </h2>

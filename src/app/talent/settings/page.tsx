@@ -194,7 +194,7 @@ export default function TalentSettingsPage() {
           {/* ─── Sidebar: Profile Preview ──────────────────── */}
           <div className="space-y-4">
             {/* Profile Card */}
-            <div className="glass rounded-xl p-6 text-center animate-slide-up">
+            <div className="card p-6 text-center animate-slide-up">
               <div className="w-20 h-20 mx-auto rounded-2xl gradient-primary flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg shadow-primary-500/20">
                 {profile.avatar_url ? (
                   <img
@@ -226,7 +226,7 @@ export default function TalentSettingsPage() {
             </div>
 
             {/* Skills Display */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h3 className="font-bold text-sm mb-3 text-surface-900 flex items-center gap-2"><Icon name="spark" size={15} />Skill-mu</h3>
               <div className="flex flex-wrap gap-2">
                 {profile.skills.map((s, i) => (
@@ -244,7 +244,7 @@ export default function TalentSettingsPage() {
             </div>
 
             {/* Public Profile Link */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h3 className="font-bold text-sm mb-2 text-surface-900 flex items-center gap-2"><Icon name="link" size={15} />Profil Publik</h3>
               <Link
                 href={`/talents/${profile.profile_id}`}
@@ -258,7 +258,7 @@ export default function TalentSettingsPage() {
           {/* ─── Main: Edit Form ───────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
             {/* Bio */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 Informasi Profil
               </h2>
@@ -309,7 +309,7 @@ export default function TalentSettingsPage() {
             </div>
 
             {/* Rate & Availability */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 Rate & Ketersediaan
               </h2>
@@ -391,7 +391,7 @@ export default function TalentSettingsPage() {
             </div>
 
             {/* Bank Info */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 Informasi Rekening Bank
               </h2>
@@ -456,7 +456,7 @@ export default function TalentSettingsPage() {
             </div>
 
             {/* Account Info (read-only) */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 <Icon name="lock" className="inline mr-1.5 text-trust-500" size={20} />
                 Informasi Akun

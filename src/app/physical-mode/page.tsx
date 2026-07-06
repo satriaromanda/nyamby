@@ -74,7 +74,7 @@ export default function PhysicalMode() {
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --purple: #534AB7;
+  --purple: #2563EB;
   --purple-light: #7F77DD;
   --purple-pale: #EEEDFE;
   --teal: #0F6E56;

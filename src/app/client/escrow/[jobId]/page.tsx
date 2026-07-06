@@ -68,7 +68,7 @@ export default async function EscrowPaymentPage({
       </nav>
 
       <main className="max-w-2xl mx-auto px-6 py-12">
-        <div className="glass rounded-2xl p-8 shadow-xl shadow-trust-500/5 border border-trust-100">
+        <div className="card p-8 shadow-xl shadow-trust-500/5 border border-trust-100">
           <div className="w-16 h-16 rounded-2xl bg-trust-50 text-trust-600 flex items-center justify-center mx-auto mb-6">
             <Icon name="shield" size={32} />
           </div>

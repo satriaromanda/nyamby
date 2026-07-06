@@ -336,7 +336,7 @@ export default function JobDetailPage() {
   if (!job) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
-        <div className="glass rounded-xl p-16 text-center max-w-md">
+        <div className="card p-16 text-center max-w-md">
           <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
           <h2
             className="text-xl font-bold mb-2 text-surface-900"
@@ -535,7 +535,7 @@ export default function JobDetailPage() {
             {/* AI Match Card */}
             {isTalent && (
               <div
-                className="glass rounded-xl p-6 animate-slide-up"
+                className="card p-6 animate-slide-up"
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="flex items-center gap-2 mb-4">
@@ -705,7 +705,7 @@ export default function JobDetailPage() {
             {/* Not logged in CTA */}
             {!user && (
               <div
-                className="glass rounded-xl p-6 animate-slide-up"
+                className="card p-6 animate-slide-up"
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="text-center">
@@ -735,7 +735,7 @@ export default function JobDetailPage() {
             {/* Client viewing */}
             {user?.role === "client" && (
               <div
-                className="glass rounded-xl p-6 animate-slide-up"
+                className="card p-6 animate-slide-up"
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="text-center">
@@ -771,7 +771,7 @@ export default function JobDetailPage() {
 
             {/* Quick Info Card */}
             <div
-              className="glass rounded-xl p-6 animate-slide-up"
+              className="card p-6 animate-slide-up"
               style={{ animationDelay: "0.2s" }}
             >
               <h3 className="text-sm font-bold text-surface-900 mb-4 flex items-center gap-2"><Icon name="briefcase" size={15} />Info Job</h3>

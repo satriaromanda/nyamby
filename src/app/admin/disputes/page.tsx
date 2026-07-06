@@ -101,7 +101,7 @@ export default function AdminDisputesPage() {
           </div>
         </div>
 
-        <div className="glass rounded-xl overflow-hidden border border-surface-200">
+        <div className="card overflow-hidden border border-surface-200">
           {loading ? (
             <div className="p-12 text-center text-surface-500">
               <div className="animate-spin w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full mx-auto mb-4" />

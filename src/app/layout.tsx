@@ -1,19 +1,11 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, DM_Serif_Display } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
-});
-
-const dmSerifDisplay = DM_Serif_Display({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  display: "swap",
-  variable: "--font-display",
 });
 
 export const metadata: Metadata = {
@@ -113,7 +105,7 @@ export default function RootLayout({
     <html lang="id">
       <body
         suppressHydrationWarning
-        className={`bg-surface-50 text-surface-900 min-h-screen antialiased ${plusJakartaSans.className} ${dmSerifDisplay.variable}`}
+        className={`bg-surface-50 text-surface-900 min-h-screen antialiased ${plusJakartaSans.className}`}
       >
         <script
           type="application/ld+json"

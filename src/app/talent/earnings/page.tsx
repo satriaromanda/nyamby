@@ -83,11 +83,18 @@ export default function TalentEarningsPage() {
             <Logo height={32} />
           </Link>
 
+          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
+            <Link href="/talent/dashboard" className="pill-tab">Home</Link>
+            <Link href="/jobs" className="pill-tab">Find Work</Link>
+            <span className="pill-tab pill-tab-active cursor-default">Pendapatan</span>
+            <Link href="/talent/activity" className="pill-tab">Aktivitas</Link>
+          </div>
+
           <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-            <Link href="/talent/dashboard" className="text-surface-500 hover:text-surface-900 transition-colors">
+            <Link href="/talent/dashboard" className="text-surface-500 hover:text-surface-900 transition-colors sm:hidden">
               Dashboard
             </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700 ml-4">
+            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
               Keluar
             </button>
           </div>
@@ -96,7 +103,7 @@ export default function TalentEarningsPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2 text-surface-900">Pendapatan Saya</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900">Pendapatan Saya</h1>
           <p className="text-surface-500 text-sm">
             Riwayat pembayaran dari job yang kamu kerjakan lewat escrow Nyamby.
           </p>
@@ -104,7 +111,7 @@ export default function TalentEarningsPage() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="glass rounded-xl p-5">
+          <div className="card p-5">
             <div className="flex items-center gap-2 text-xs text-surface-500 mb-2">
               <Icon name="check" className="text-emerald-500" size={14} />
               Total Diterima
@@ -113,7 +120,7 @@ export default function TalentEarningsPage() {
               {formatIDR(data?.summary.total_earned || 0)}
             </div>
           </div>
-          <div className="glass rounded-xl p-5">
+          <div className="card p-5">
             <div className="flex items-center gap-2 text-xs text-surface-500 mb-2">
               <Icon name="money" className="text-amber-500" size={14} />
               Dalam Escrow / Proses
@@ -122,7 +129,7 @@ export default function TalentEarningsPage() {
               {formatIDR(data?.summary.total_pending || 0)}
             </div>
           </div>
-          <div className="glass rounded-xl p-5">
+          <div className="card p-5">
             <div className="flex items-center gap-2 text-xs text-surface-500 mb-2">
               <Icon name="briefcase" className="text-primary-500" size={14} />
               Total Transaksi
@@ -135,7 +142,7 @@ export default function TalentEarningsPage() {
 
         {/* Transactions */}
         {!data || data.transactions.length === 0 ? (
-          <div className="glass rounded-xl p-12 text-center">
+          <div className="card p-12 text-center">
             <Icon name="money" className="mx-auto mb-4 text-surface-300" size={40} />
             <h3 className="text-lg font-bold text-surface-900 mb-2">Belum ada transaksi</h3>
             <p className="text-sm text-surface-500 mb-6">
@@ -148,7 +155,7 @@ export default function TalentEarningsPage() {
         ) : (
           <div className="space-y-3">
             {data.transactions.map((tx) => (
-              <div key={tx.escrow_id} className="glass rounded-xl p-5">
+              <div key={tx.escrow_id} className="card p-5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="min-w-0">
                     <Link

@@ -93,11 +93,18 @@ export default function TalentActivityPage() {
             <Logo height={32} />
           </Link>
 
+          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
+            <Link href="/talent/dashboard" className="pill-tab">Home</Link>
+            <Link href="/jobs" className="pill-tab">Find Work</Link>
+            <Link href="/talent/earnings" className="pill-tab">Pendapatan</Link>
+            <span className="pill-tab pill-tab-active cursor-default">Aktivitas</span>
+          </div>
+
           <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-            <Link href="/talent/dashboard" className="text-surface-500 hover:text-surface-900 transition-colors">
+            <Link href="/talent/dashboard" className="text-surface-500 hover:text-surface-900 transition-colors sm:hidden">
               Dashboard
             </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700 ml-4">
+            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
               Keluar
             </button>
           </div>
@@ -107,7 +114,7 @@ export default function TalentActivityPage() {
       <div className="max-w-3xl mx-auto px-6 py-8">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold mb-2 text-surface-900">Aktivitas</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900">Aktivitas</h1>
             <p className="text-surface-500 text-sm">
               Riwayat lengkap semua kejadian di akunmu — match baru, status job, pembayaran, dan dispute.
             </p>
@@ -129,7 +136,7 @@ export default function TalentActivityPage() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="glass rounded-xl p-12 text-center">
+          <div className="card p-12 text-center">
             <Icon name="bell" className="mx-auto mb-4 text-surface-300" size={40} />
             <h3 className="text-lg font-bold text-surface-900 mb-2">Belum ada aktivitas</h3>
             <p className="text-sm text-surface-500">
@@ -138,7 +145,7 @@ export default function TalentActivityPage() {
           </div>
         ) : (
           <>
-            <div className="glass rounded-xl overflow-hidden divide-y divide-surface-100">
+            <div className="card overflow-hidden divide-y divide-surface-100">
               {items.map((item) => {
                 const inner = (
                   <div className="flex items-start gap-3 p-4">

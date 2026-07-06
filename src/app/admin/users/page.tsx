@@ -117,7 +117,7 @@ export default function AdminUsersPage() {
         </select>
       </div>
 
-      <div className="glass rounded-xl overflow-hidden">
+      <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

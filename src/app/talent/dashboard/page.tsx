@@ -222,16 +222,14 @@ export default function TalentDashboard() {
             <Logo height={32} />
           </Link>
 
+          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
+            <span className="pill-tab pill-tab-active cursor-default">Home</span>
+            <Link href="/jobs" className="pill-tab">Find Work</Link>
+            <Link href="/talent/earnings" className="pill-tab">Pendapatan</Link>
+            <Link href="/talent/activity" className="pill-tab">Aktivitas</Link>
+          </div>
+
           <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-            <Link href="/jobs" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline">
-              Browse Jobs
-            </Link>
-            <Link href="/talent/earnings" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline">
-              Pendapatan
-            </Link>
-            <Link href="/talent/activity" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline">
-              Aktivitas
-            </Link>
             <NotificationBell />
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full gradient-primary flex items-center justify-center text-[10px] sm:text-xs font-bold text-white">
@@ -253,12 +251,12 @@ export default function TalentDashboard() {
         {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-surface-900" >
-              Halo, {data.profile.full_name.split(" ")[0]}!
-            </h1>
-            <p className="text-surface-500 text-sm">
-              Dashboard karirmu - lihat insight AI dan job yang cocok untukmu.
+            <p className="text-sm text-surface-500 mb-1">
+              Selamat datang kembali, {data.profile.full_name.split(" ")[0]}
             </p>
+            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-surface-900">
+              Siap dapat project berikutnya?
+            </h1>
           </div>
           <Link href="/talent/edit-profile" className="btn-secondary text-xs sm:text-sm inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 shrink-0 self-start">
             <Icon name="spark" size={14} /> Edit Profil
@@ -277,12 +275,16 @@ export default function TalentDashboard() {
               icon: "check" as const,
             },
           ].map((stat, i) => (
-            <div key={i} className="glass rounded-xl p-4 card-hover">
-              <Icon name={stat.icon} className="mb-1 text-primary-600" size={20} />
-              <div className="text-2xl font-bold text-surface-900" >
-                {stat.value}
+            <div key={i} className="card card-hover p-5 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-ai-50 text-primary-600 flex items-center justify-center shrink-0">
+                <Icon name={stat.icon} size={18} />
               </div>
-              <div className="text-xs text-surface-400">{stat.label}</div>
+              <div>
+                <div className="text-2xl font-extrabold text-surface-900 leading-none mb-1">
+                  {stat.value}
+                </div>
+                <div className="text-xs text-surface-400">{stat.label}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -308,7 +310,7 @@ export default function TalentDashboard() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* ─── Skill Gap Analysis Card ─────────────────────────── */}
           <div className="lg:col-span-1">
-            <div className="glass rounded-xl p-6 card-hover">
+            <div className="card p-6 card-hover">
               <div className="flex items-center justify-between gap-2 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-primary-500/10 flex items-center justify-center text-sm">
@@ -383,7 +385,7 @@ export default function TalentDashboard() {
             </div>
 
             {/* Skills */}
-            <div className="glass rounded-xl p-6 mt-4">
+            <div className="card p-6 mt-4">
               <h3 className="font-bold text-sm mb-3 text-surface-900">Skill-mu</h3>
               <div className="flex flex-wrap gap-2">
                 {data.profile.skills.map((s, i) => (
@@ -410,7 +412,7 @@ export default function TalentDashboard() {
             </div>
 
             {/* Portfolio Analysis */}
-            <div className="glass rounded-xl p-6 mt-4 card-hover">
+            <div className="card p-6 mt-4 card-hover">
               <div className="flex items-center justify-between gap-2 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-sm">
@@ -474,16 +476,16 @@ export default function TalentDashboard() {
           {/* ─── Recommended Jobs ────────────────────────────────── */}
           <div className="lg:col-span-2">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-surface-900" >
-              <Icon name="target" className="text-primary-600" size={20} />Job Untukmu
-              <span className="text-xs font-normal text-surface-500 bg-surface-100 px-2 py-1 rounded-full">
-                AI Matched
+              Job Untukmu
+              <span className="badge-match">
+                <Icon name="ai" size={12} /> AI Matched
               </span>
             </h2>
 
             {data.recommended_jobs && data.recommended_jobs.length > 0 ? (
               <div className="space-y-4">
                 {data.recommended_jobs.map((job) => (
-                  <Link key={job.match_id} href={`/jobs/${job.job_id}`} className="glass rounded-xl p-5 card-hover block focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
+                  <Link key={job.match_id} href={`/jobs/${job.job_id}`} className="card p-5 card-hover block focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -528,11 +530,11 @@ export default function TalentDashboard() {
                       </div>
 
                       {/* Match Score */}
-                      <div className="text-center shrink-0">
-                        <div className={`text-3xl font-bold ${Number(job.match_score) >= 80 ? "text-accent-600" : "text-primary-600"}`} >
-                          {Math.round(Number(job.match_score))}%
-                        </div>
-                        <div className="text-[10px] text-surface-400 mb-3">Match</div>
+                      <div className="text-center shrink-0 flex flex-col items-center gap-2">
+                        <span className="badge-match">
+                          <Icon name="ai" size={12} />
+                          {Math.round(Number(job.match_score))}% Match
+                        </span>
 
                         {job.match_status === "recommended" ? (
                           <button
@@ -560,7 +562,7 @@ export default function TalentDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="glass rounded-xl p-12 text-center">
+              <div className="card p-12 text-center">
                 <Icon name="search" className="mx-auto mb-4 text-surface-300" size={40} />
                 <p className="text-surface-500">
                   Belum ada job yang cocok. Job baru akan muncul saat client posting.
@@ -576,7 +578,7 @@ export default function TalentDashboard() {
                 </h2>
                 <div className="space-y-3">
                   {data.active_jobs.map((job) => (
-                    <div key={job.job_id} className="glass rounded-xl p-5">
+                    <div key={job.job_id} className="card p-5">
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <div className="font-medium text-sm text-surface-900">{job.title}</div>

@@ -83,22 +83,22 @@ export default function AdminAiStatsPage() {
         <div className="space-y-8">
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="glass rounded-xl p-6">
+            <div className="card p-6">
               <Icon name="ai" className="text-primary-600 mb-2" size={24} />
               <div className="text-sm text-surface-500 mb-1">Total AI Matches</div>
               <div className="text-3xl font-bold text-surface-900">{stats.total_matches_generated}</div>
             </div>
-            <div className="glass rounded-xl p-6">
+            <div className="card p-6">
               <Icon name="check" className="text-emerald-500 mb-2" size={24} />
               <div className="text-sm text-surface-500 mb-1">Match Diterima</div>
               <div className="text-3xl font-bold text-emerald-600">{stats.total_accepted}</div>
             </div>
-            <div className="glass rounded-xl p-6">
+            <div className="card p-6">
               <Icon name="x" className="text-red-500 mb-2" size={24} />
               <div className="text-sm text-surface-500 mb-1">Match Ditolak</div>
               <div className="text-3xl font-bold text-red-600">{stats.total_rejected}</div>
             </div>
-            <div className="glass rounded-xl p-6 relative overflow-hidden">
+            <div className="card p-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-6 opacity-10">
                 <Icon name="target" size={64} />
               </div>
@@ -110,7 +110,7 @@ export default function AdminAiStatsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Acceptance by Recommendation */}
-            <div className="glass rounded-xl p-6">
+            <div className="card p-6">
               <h2 className="text-lg font-bold text-surface-900 mb-6">Penerimaan Berdasarkan AI Confidence</h2>
               <div className="space-y-6">
                 {[
@@ -133,7 +133,7 @@ export default function AdminAiStatsPage() {
 
             {/* Average Scores & Rejection Reasons */}
             <div className="space-y-8">
-              <div className="glass rounded-xl p-6">
+              <div className="card p-6">
                 <h2 className="text-lg font-bold text-surface-900 mb-4">Rata-rata Match Score</h2>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
@@ -151,7 +151,7 @@ export default function AdminAiStatsPage() {
                 </div>
               </div>
 
-              <div className="glass rounded-xl p-6">
+              <div className="card p-6">
                 <h2 className="text-lg font-bold text-surface-900 mb-4">Top Alasan Penolakan</h2>
                 {stats.top_rejection_reasons.length > 0 ? (
                   <div className="space-y-4">

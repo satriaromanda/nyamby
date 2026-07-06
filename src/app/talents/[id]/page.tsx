@@ -2,8 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { Icon, RatingStars, Logo } from "@/components/icons";
+import { Icon, RatingStars } from "@/components/icons";
 import { AIBadge } from "@/components/AIBadge";
+import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
 export default async function TalentPublicProfilePage({
@@ -45,31 +46,16 @@ export default async function TalentPublicProfilePage({
 
   return (
     <div className="min-h-screen bg-surface-50">
-      <nav role="navigation" className="glass sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={32} />
-          </Link>
-          <div className="flex items-center gap-4 text-sm">
-            <Link href="/talents" className="text-surface-500 hover:text-surface-900">Talenta</Link>
-            <Link href="/jobs" className="text-surface-500 hover:text-surface-900">Jobs</Link>
-            {!session && (
-              <Link href={`/login?redirect=${encodeURIComponent(redirectPath)}`} className="btn-primary text-xs px-4 py-2">
-                Login
-              </Link>
-            )}
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
+      <main className="max-w-5xl mx-auto px-6 pt-28 pb-12">
         <div className="grid lg:grid-cols-3 gap-8">
           <aside className="space-y-4">
-            <div className="glass rounded-xl p-6 text-center">
-              <div className="w-24 h-24 rounded-2xl mx-auto gradient-primary flex items-center justify-center text-4xl font-bold text-white mb-4">
+            <div className="card p-6 text-center">
+              <div className="w-24 h-24 rounded-full mx-auto gradient-primary flex items-center justify-center text-4xl font-bold text-white mb-4">
                 {talent.user.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={talent.user.avatarUrl} alt={talent.user.fullName} className="w-full h-full rounded-2xl object-cover" />
+                  <img src={talent.user.avatarUrl} alt={talent.user.fullName} className="w-full h-full rounded-full object-cover" />
                 ) : (
                   talent.user.fullName[0]
                 )}
@@ -81,7 +67,7 @@ export default async function TalentPublicProfilePage({
               <p className="text-xs text-surface-400 mt-1">{talent.location || "Indonesia"}</p>
             </div>
 
-            <div className="glass rounded-xl p-6">
+            <div className="card p-6">
               <h2 className="font-bold text-sm text-surface-900 mb-3">Info Talenta</h2>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between gap-3">
@@ -96,14 +82,14 @@ export default async function TalentPublicProfilePage({
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-surface-400">AI Enrichment</span>
-                  <span className="font-medium text-[#854F0B]">
+                  <span className="font-medium text-money-500">
                     {talent.cvText || talent.portfolioContext ? "Aktif" : "Basic"}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="glass rounded-xl p-6">
+            <div className="card p-6">
               <h2 className="font-bold text-sm text-surface-900 mb-3">Rating & Review</h2>
               <div className="text-center mb-4">
                 <RatingStars rating={averageRating} reviewCount={reviewCount} size={16} />
@@ -135,7 +121,7 @@ export default async function TalentPublicProfilePage({
           </aside>
 
           <section className="lg:col-span-2 space-y-5">
-            <div className="glass rounded-xl p-7">
+            <div className="card p-7">
               <div className="flex items-center justify-between gap-3 mb-4">
                 <h2 className="text-xl font-bold text-surface-900" >
                   Profil Publik
@@ -153,7 +139,7 @@ export default async function TalentPublicProfilePage({
               )}
             </div>
 
-            <div className="glass rounded-xl p-7">
+            <div className="card p-7">
               <h2 className="text-lg font-bold text-surface-900 mb-4" >
                 Skill Map
               </h2>
@@ -167,7 +153,7 @@ export default async function TalentPublicProfilePage({
               </div>
             </div>
 
-            <div className="glass rounded-xl p-7 relative overflow-hidden">
+            <div className="card p-7 relative overflow-hidden">
               <div className="flex items-center justify-between gap-3 mb-4">
                 <h2 className="text-lg font-bold text-surface-900" >
                   AI Match Signals
@@ -187,9 +173,10 @@ export default async function TalentPublicProfilePage({
                           {match?.reasoning || "AI menilai kecocokan berdasarkan skill, CV, dan portfolio."}
                         </div>
                       </div>
-                      <div className="text-xl font-bold text-[#534AB7]" >
-                        {match ? `${Math.round(Number(match.matchScore))}%` : "87%"}
-                      </div>
+                      <span className="badge-match shrink-0">
+                        <Icon name="ai" size={12} />
+                        {match ? `${Math.round(Number(match.matchScore))}%` : "87%"} Match
+                      </span>
                     </div>
                   </div>
                 ))}

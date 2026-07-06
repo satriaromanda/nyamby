@@ -154,9 +154,15 @@ export default function ClientDashboard() {
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <Logo height={32} />
           </Link>
+          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
+            <span className="pill-tab pill-tab-active cursor-default">Home</span>
+            <Link href="/talents" className="pill-tab">Cari Talenta</Link>
+            <Link href="/client/disputes" className="pill-tab">Disputes</Link>
+          </div>
+
           <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
             <NotificationBell />
-            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap">
+            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap rounded-full">
               + Post Job
             </Link>
             <Link href="/client/settings" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline" title="Pengaturan">
@@ -172,7 +178,7 @@ export default function ClientDashboard() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-surface-900" >
+            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 text-surface-900">
               Dashboard Client
             </h1>
             <p className="text-surface-500">
@@ -189,10 +195,14 @@ export default function ClientDashboard() {
             { label: "In Progress", value: jobs.filter((j) => j.status === "in_progress").length, icon: "settings" as const },
             { label: "Selesai", value: jobs.filter((j) => j.status === "completed").length, icon: "check" as const },
           ].map((stat, i) => (
-            <div key={i} className="glass rounded-xl p-4">
-              <Icon name={stat.icon} className="mb-1 text-primary-600" size={20} />
-              <div className="text-2xl font-bold text-surface-900" >{stat.value}</div>
-              <div className="text-xs text-surface-400">{stat.label}</div>
+            <div key={i} className="card card-hover p-5 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-ai-50 text-primary-600 flex items-center justify-center shrink-0">
+                <Icon name={stat.icon} size={18} />
+              </div>
+              <div>
+                <div className="text-2xl font-extrabold text-surface-900 leading-none mb-1">{stat.value}</div>
+                <div className="text-xs text-surface-400">{stat.label}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -201,7 +211,7 @@ export default function ClientDashboard() {
         {jobs.length > 0 ? (
           <div className="space-y-4">
             {jobs.map((job) => (
-              <div key={job.id} className="glass rounded-xl overflow-hidden card-hover">
+              <div key={job.id} className="card overflow-hidden card-hover">
                 <div
                   className="p-6 cursor-pointer"
                   onClick={() => setExpandedJob(expandedJob === job.id ? null : job.id)}
@@ -448,7 +458,7 @@ export default function ClientDashboard() {
             ))}
           </div>
         ) : (
-          <div className="glass rounded-xl p-16 text-center">
+          <div className="card p-16 text-center">
             <Icon name="file" className="mx-auto text-surface-300" size={48} />
             <h3 className="text-xl font-bold mb-2 text-surface-900" >Belum ada job</h3>
             <p className="text-surface-500 text-sm mb-6">Post job pertamamu dan biarkan AI mencarikan talenta terbaik.</p>
