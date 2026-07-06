@@ -177,7 +177,7 @@ export default function PostJobPage() {
       </nav>
 
       <main role="main" className="max-w-2xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold mb-2 text-surface-900" >
+        <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900" >
           {isExportClient ? "Post a New Job" : "Post Job Baru"}
         </h1>
         <p className="text-surface-500 mb-8">
@@ -203,7 +203,7 @@ export default function PostJobPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="card p-8 space-y-6">
           <div>
             <label className="block text-sm text-surface-600 mb-2">
               {isExportClient ? "Job Title *" : "Judul Job *"}

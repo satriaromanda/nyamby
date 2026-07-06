@@ -120,7 +120,7 @@ function RegisterForm() {
         
         {step === 1 && (
           <div className="mt-12 md:mt-0">
-            <h1 className="text-3xl font-bold text-center mb-2 text-surface-900 tracking-tight" >
+            <h1 className="text-3xl font-extrabold text-center mb-2 text-surface-900 tracking-tight" >
               Bergabung dengan Nyamby
             </h1>
             <p className="text-surface-500 text-[15px] text-center mb-10">

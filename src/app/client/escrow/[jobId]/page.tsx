@@ -72,7 +72,7 @@ export default async function EscrowPaymentPage({
           <div className="w-16 h-16 rounded-2xl bg-trust-50 text-trust-600 flex items-center justify-center mx-auto mb-6">
             <Icon name="shield" size={32} />
           </div>
-          <h1 className="text-2xl font-bold text-center text-surface-900 mb-2">Pembayaran Escrow</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-center text-surface-900 mb-2">Pembayaran Escrow</h1>
           <p className="text-center text-surface-500 text-sm mb-8">
             Dana Anda akan disimpan dengan aman dan hanya diteruskan ke talenta setelah pekerjaan selesai.
           </p>

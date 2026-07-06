@@ -34,7 +34,7 @@ function CostCalculator() {
   const savingsPct = Math.round(((localCostMin - nyambyCostMax) / localCostMin) * 100);
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8">
+    <div className="card p-8">
       <h3 className="text-xl font-bold text-surface-900 mb-6 flex items-center gap-2">
         <Icon name="money" size={20} />
         Cost Comparison Calculator
@@ -323,7 +323,7 @@ export default function GlobalLandingPage() {
       {/* CTA */}
       <section className="py-20 px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-12">
+          <div className="card p-12">
             <h2 className="text-3xl font-bold text-surface-900 mb-4">
               Ready to Hire Indonesian Talent?
             </h2>

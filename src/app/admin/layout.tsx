@@ -45,10 +45,10 @@ export default function AdminLayout({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   isActive
-                    ? "bg-primary-50 text-primary-700 border border-primary-200"
-                    : "text-surface-500 hover:bg-surface-50 hover:text-surface-700"
+                    ? "bg-primary-600 text-white font-semibold shadow-sm shadow-primary-600/30"
+                    : "text-surface-500 hover:bg-surface-100 hover:text-surface-800"
                 }`}
               >
                 <Icon name={item.icon} size={18} />

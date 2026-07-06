@@ -169,41 +169,29 @@ export default function ClientSettingsPage() {
       )}
 
       {/* Nav */}
-      <nav className="glass sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
           </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/client/dashboard"
-              className="text-sm text-surface-500 hover:text-surface-900 transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/client/post-job"
-              className="text-sm text-surface-500 hover:text-surface-900 transition-colors"
-            >
-              Post Job
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="text-xs text-surface-400 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
-            >
-              Keluar
-            </button>
+          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
+            <Link href="/client/dashboard" className="pill-tab">Home</Link>
+            <Link href="/client/post-job" className="pill-tab">Post Job</Link>
+            <span className="pill-tab pill-tab-active cursor-default">Pengaturan</span>
           </div>
+          <button
+            onClick={handleLogout}
+            className="text-xs text-surface-400 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+          >
+            Keluar
+          </button>
         </div>
       </nav>
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1
-            className="text-3xl font-bold mb-2 text-surface-900"
-            
-          >
+          <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900">
             Pengaturan Profil
           </h1>
           <p className="text-surface-500">Kelola profil dan preferensi akun client-mu.</p>

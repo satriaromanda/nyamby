@@ -189,7 +189,7 @@ export default function AdminDisputeDetailPage({ params }: { params: Promise<{ i
       <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-8">
         <div className="mb-8 flex justify-between items-end">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-surface-900">
+            <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900">
               Detail Dispute
             </h1>
             <p className="text-surface-500">ID: {dispute.id}</p>

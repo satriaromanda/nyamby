@@ -71,7 +71,7 @@ export default function AdminJobsPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-surface-900">Job Management</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-surface-900">Job Management</h1>
         <p className="text-surface-500 text-sm mt-1">Pantau dan moderasi seluruh job posting di platform.</p>
       </div>
 

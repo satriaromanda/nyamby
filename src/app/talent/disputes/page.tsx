@@ -85,7 +85,7 @@ export default function TalentDisputesPage() {
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2 text-surface-900">Dispute Saya</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900">Dispute Saya</h1>
           <p className="text-surface-500 text-sm">
             Pantau status laporan masalah yang melibatkan Anda.
           </p>
