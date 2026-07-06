@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Icon, Logo } from "@/components/icons";
+import { Footer } from "@/components/layout/Footer";
 
 interface Job {
   id: string;
@@ -357,6 +358,7 @@ export default function JobsPage() {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   );
 }

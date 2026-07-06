@@ -396,7 +396,7 @@ export default function TalentSettingsPage() {
                 Informasi Rekening Bank
               </h2>
               <p className="text-xs text-surface-400 mb-5">
-                Rekening ini akan digunakan untuk pencairan dana dari AyoNyamby.
+                Rekening ini akan digunakan untuk pencairan dana dari Nyamby.
               </p>
 
               <div className="space-y-4">

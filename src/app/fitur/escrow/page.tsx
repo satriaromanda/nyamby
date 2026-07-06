@@ -20,7 +20,7 @@ export default function EscrowPage() {
             <span className="text-cyan-600">Sistem Pembayaran Escrow.</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            Tidak ada lagi drama klien kabur atau freelancer menghilang. Dana diamankan oleh pihak ketiga (AyoNyamby) hingga pekerjaan selesai dan disetujui bersama.
+            Tidak ada lagi drama klien kabur atau freelancer menghilang. Dana diamankan oleh pihak ketiga (Nyamby) hingga pekerjaan selesai dan disetujui bersama.
           </p>
         </div>
       </section>
@@ -61,7 +61,7 @@ export default function EscrowPage() {
       {/* 3. Alur Transaksi */}
       <section className="py-24 px-6 bg-slate-900 text-white">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-16">Bagaimana Escrow AyoNyamby Bekerja?</h2>
+          <h2 className="text-3xl font-bold mb-16">Bagaimana Escrow Nyamby Bekerja?</h2>
           <div className="grid md:grid-cols-4 gap-8 relative">
             {/* Connecting lines for desktop */}
             <div className="hidden md:block absolute top-12 left-[12.5%] right-[12.5%] h-0.5 bg-slate-700 -z-10"></div>
@@ -78,7 +78,7 @@ export default function EscrowPage() {
                 <Icon name="money" size={32} className="text-cyan-400" />
               </div>
               <h3 className="font-bold mb-2">2. Deposit Dana</h3>
-              <p className="text-slate-400 text-sm">Klien menyetor dana ke rekening bersama AyoNyamby (Escrow).</p>
+              <p className="text-slate-400 text-sm">Klien menyetor dana ke rekening bersama Nyamby (Escrow).</p>
             </div>
             <div className="relative">
               <div className="w-24 h-24 mx-auto bg-slate-800 rounded-full flex items-center justify-center border-4 border-slate-900 mb-6">
@@ -102,7 +102,7 @@ export default function EscrowPage() {
       <section className="bg-white py-20 px-6 text-center border-t border-slate-100">
         <h2 className="text-3xl md:text-4xl font-bold mb-6 text-slate-900">Mulai Proyek Pertamamu dengan Aman</h2>
         <p className="text-slate-500 mb-8 max-w-xl mx-auto">
-          Tinggalkan cara lama yang penuh risiko. Di AyoNyamby, semua pihak dilindungi.
+          Tinggalkan cara lama yang penuh risiko. Di Nyamby, semua pihak dilindungi.
         </p>
         <Link href="/register" className="btn-primary bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-3.5 rounded-full font-bold shadow-xl transition-colors inline-block">
           Daftar Gratis Sekarang

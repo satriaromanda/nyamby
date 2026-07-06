@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
         paymentChannel: "BCA.VA",
         referenceCode,
         customerReference,
-        customerName: session.fullName || "Client AyoNyamby",
+        customerName: session.fullName || "Client Nyamby",
         description: `Pembayaran Escrow untuk Job: ${job.title}`,
         callbackUrl: `${APP_URL}/api/webhooks/xenith/payin`,
         redirectUrl: `${APP_URL}/client/dashboard`,

@@ -82,7 +82,7 @@ export default function SkillGapPage() {
           <div className="flex-1 space-y-6">
             <h2 className="text-3xl font-bold">Bukan Hanya Masalah, Tapi Solusi.</h2>
             <p className="text-slate-400 text-lg">
-              Setelah menemukan *skill gap*, AI AyoNyamby akan secara otomatis menyarankan materi pembelajaran, kursus, atau proyek portofolio mini untuk menutup celah tersebut.
+              Setelah menemukan *skill gap*, AI Nyamby akan secara otomatis menyarankan materi pembelajaran, kursus, atau proyek portofolio mini untuk menutup celah tersebut.
             </p>
           </div>
           <div className="flex-1 bg-slate-800 p-8 rounded-3xl border border-slate-700">

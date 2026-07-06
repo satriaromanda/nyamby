@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icon, Logo } from "@/components/icons";
+import { Footer } from "@/components/layout/Footer";
 
 const steps = [
   {
@@ -116,6 +117,7 @@ export default function HowItWorksPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

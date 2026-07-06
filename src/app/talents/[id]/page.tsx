@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { Icon, RatingStars, Logo } from "@/components/icons";
+import { AIBadge } from "@/components/AIBadge";
+import { Footer } from "@/components/layout/Footer";
 
 export default async function TalentPublicProfilePage({
   params,
@@ -138,9 +140,7 @@ export default async function TalentPublicProfilePage({
                 <h2 className="text-xl font-bold text-surface-900" >
                   Profil Publik
                 </h2>
-                <span className="text-xs px-3 py-1 rounded-full bg-[#FAEEDA] text-[#854F0B]">
-                  AI enrichment
-                </span>
+                <AIBadge />
               </div>
               <p className="text-sm text-surface-600 leading-relaxed">
                 {talent.bio || "Talenta ini belum menulis bio, tetapi skill dan availability sudah tersedia untuk dieksplorasi."}
@@ -172,9 +172,7 @@ export default async function TalentPublicProfilePage({
                 <h2 className="text-lg font-bold text-surface-900" >
                   AI Match Signals
                 </h2>
-                <span className="text-xs px-3 py-1 rounded-full bg-[#FAEEDA] text-[#854F0B]">
-                  AI-powered
-                </span>
+                <AIBadge label="AI-powered" />
               </div>
 
               <div className={canSeeAi ? "space-y-3" : "space-y-3 blur-sm select-none pointer-events-none"}>
@@ -222,6 +220,7 @@ export default async function TalentPublicProfilePage({
           </section>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

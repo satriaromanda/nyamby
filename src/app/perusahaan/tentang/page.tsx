@@ -19,7 +19,7 @@ export default function TentangKamiPage() {
             Menjadi <span className="text-primary-600">Karier Profesional.</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            AyoNyamby lahir dari sebuah keresahan: banyak talenta digital luar biasa di Indonesia yang kesulitan menembus pasar kerja profesional, hanya karena mereka memulainya dari "nyambi" (pekerjaan sampingan).
+            Nyamby lahir dari sebuah keresahan: banyak talenta digital luar biasa di Indonesia yang kesulitan menembus pasar kerja profesional, hanya karena mereka memulainya dari "nyambi" (pekerjaan sampingan).
           </p>
         </div>
       </section>

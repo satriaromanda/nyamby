@@ -62,7 +62,7 @@ export default function ComingSoonPage() {
         </h1>
 
         <p className="hero-sub animate-[fadeUp_0.6s_ease_both_0.45s]">
-          Selama ini AyoNyamby membantu talenta digital menemukan klien yang tepat. 
+          Selama ini Nyamby membantu talenta digital menemukan klien yang tepat.
           Sekarang kami sedang membangun sesuatu yang lebih besar — 
           <strong>platform untuk semua jenis nyambi</strong>, 
           termasuk yang datang langsung ke pintu rumahmu.

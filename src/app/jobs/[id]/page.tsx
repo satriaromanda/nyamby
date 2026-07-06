@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Icon, RatingStars, Logo } from "@/components/icons";
 import { CancelEscrowModal } from "@/components/CancelEscrowModal";
+import { Footer } from "@/components/layout/Footer";
 
 interface JobDetail {
   id: string;
@@ -803,6 +804,8 @@ export default function JobDetailPage() {
           </div>
         </div>
       </main>
+
+      <Footer />
 
       {/* Apply Confirmation Modal */}
       {showApplyModal && (

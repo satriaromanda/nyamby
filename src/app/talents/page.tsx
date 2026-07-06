@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Icon, Logo } from "@/components/icons";
+import { Footer } from "@/components/layout/Footer";
+import { SkeletonCardGrid } from "@/components/Skeleton";
 
 const categories = [
   { value: "", label: "Semua Talenta" },
@@ -147,10 +149,7 @@ export default function TalentsPage() {
         </div>
 
         {loading ? (
-          <div className="glass rounded-xl p-16 text-center">
-            <div className="animate-spin w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full mx-auto mb-4" />
-            <h3 className="text-xl font-bold mb-2 text-surface-900">Memuat data talenta...</h3>
-          </div>
+          <SkeletonCardGrid count={6} />
         ) : !talents || talents.length === 0 ? (
           <div className="glass rounded-xl p-16 text-center">
             <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
@@ -225,6 +224,7 @@ export default function TalentsPage() {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   );
 }

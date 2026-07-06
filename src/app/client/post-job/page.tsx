@@ -279,6 +279,11 @@ export default function PostJobPage() {
                 );
               })}
             </div>
+            {form.required_skills.length === 0 && (
+              <p className="text-xs text-red-500 mt-2">
+                {isExportClient ? "Select at least 1 skill to post the job." : "Pilih minimal 1 skill untuk bisa post job."}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

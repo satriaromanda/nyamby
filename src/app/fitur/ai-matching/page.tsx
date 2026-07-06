@@ -20,7 +20,7 @@ export default function AiMatchingPage() {
             <span className="text-primary-600">Mengerti Konteks Kariermu.</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            Sistem kami tidak sekadar mencocokkan kata kunci. AI AyoNyamby membaca pengalaman, menganalisis gaya portofolio, dan memberikan skor relevansi yang sangat akurat untuk setiap kandidat.
+            Sistem kami tidak sekadar mencocokkan kata kunci. AI Nyamby membaca pengalaman, menganalisis gaya portofolio, dan memberikan skor relevansi yang sangat akurat untuk setiap kandidat.
           </p>
           <div className="pt-4 flex flex-wrap justify-center gap-4">
             <Link href="/register" className="btn-primary px-8 py-3 rounded-full font-medium text-sm shadow-lg hover:-translate-y-0.5 transition-transform">
@@ -54,7 +54,7 @@ export default function AiMatchingPage() {
                 <Icon name="spark" size={120} />
               </div>
               <h3 className="text-xl font-bold text-emerald-700 mb-4 flex items-center gap-2">
-                <Icon name="check" size={20} /> Cara AyoNyamby
+                <Icon name="check" size={20} /> Cara Nyamby
               </h3>
               <ul className="space-y-4 text-slate-700 relative z-10">
                 <li>AI menganalisis portofolio dan repo Github secara instan.</li>
@@ -104,7 +104,7 @@ export default function AiMatchingPage() {
                 <p className="text-sm text-slate-500">Tech Lead di Startup X</p>
               </div>
             </div>
-            <p className="italic text-slate-600">"Biasanya butuh 2 minggu cari freelancer React yang pas. Pake AyoNyamby, hari itu juga dapet 3 kandidat dengan skor 95%+ dan langsung interview."</p>
+            <p className="italic text-slate-600">"Biasanya butuh 2 minggu cari freelancer React yang pas. Pake Nyamby, hari itu juga dapet 3 kandidat dengan skor 95%+ dan langsung interview."</p>
           </div>
           <div className="flex-1 w-full bg-slate-100 rounded-3xl p-8 flex items-center justify-center min-h-[300px]">
             <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm space-y-4">

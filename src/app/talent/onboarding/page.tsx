@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Icon, Logo } from "@/components/icons";
+import { AIBadge } from "@/components/AIBadge";
 
 interface Skill {
   id: string;
@@ -78,6 +79,11 @@ export default function OnboardingPage() {
   };
 
   const handleSubmit = async () => {
+    if (!form.bank_code || !form.bank_account) {
+      setError("Data rekening bank wajib diisi agar kamu bisa menerima pembayaran dari client.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -419,9 +425,7 @@ export default function OnboardingPage() {
                   <label className="flex items-center gap-2 text-sm text-surface-600 mb-2">
                     <Icon name="link" className="text-[#0F6E56]" size={15} />
                     Portfolio URL
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-[#FAEEDA] text-[#854F0B]">
-                      AI enrichment
-                    </span>
+                    <AIBadge className="px-2 py-0.5" />
                   </label>
                   <input
                     type="url"
@@ -445,9 +449,7 @@ export default function OnboardingPage() {
                         <Icon name="upload" className="text-[#0F6E56]" size={15} />
                         CV PDF
                       </span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#FAEEDA] text-[#854F0B]">
-                        AI enrichment
-                      </span>
+                      <AIBadge className="px-2 py-0.5" />
                     </label>
                     <input
                       type="file"
@@ -471,9 +473,7 @@ export default function OnboardingPage() {
                         <Icon name="upload" className="text-[#0F6E56]" size={15} />
                         Portfolio File
                       </span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#FAEEDA] text-[#854F0B]">
-                        AI enrichment
-                      </span>
+                      <AIBadge className="px-2 py-0.5" />
                     </label>
                     <input
                       type="file"
@@ -504,11 +504,11 @@ export default function OnboardingPage() {
                     </span>
                   </label>
                   <p className="text-[10px] text-surface-400 mb-3">
-                    Dibutuhkan agar kamu bisa menerima pembayaran dari client melalui escrow.
+                    Wajib diisi agar kamu bisa menerima pembayaran dari client melalui escrow.
                   </p>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-xs text-surface-500 mb-1">Bank / E-Wallet</label>
+                      <label className="block text-xs text-surface-500 mb-1">Bank / E-Wallet <span className="text-red-500">*</span></label>
                       <select
                         className="input-dark text-sm"
                         value={form.bank_code}
@@ -526,7 +526,7 @@ export default function OnboardingPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs text-surface-500 mb-1">Nomor Rekening / HP</label>
+                      <label className="block text-xs text-surface-500 mb-1">Nomor Rekening / HP <span className="text-red-500">*</span></label>
                       <input
                         type="text"
                         className="input-dark"
