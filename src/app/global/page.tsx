@@ -139,7 +139,7 @@ export default function GlobalLandingPage() {
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-surface-900 leading-tight mb-6">
               Hire Verified{" "}
-              <span className="gradient-text">Indonesian Talent</span>
+              <span className="text-gradient-brand">Indonesian Talent</span>
               <br />at Competitive Rates
             </h1>
 

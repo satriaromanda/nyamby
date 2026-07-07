@@ -255,7 +255,7 @@ export default function TalentDashboard() {
               Selamat datang kembali, {data.profile.full_name.split(" ")[0]}
             </p>
             <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-surface-900">
-              Siap dapat project berikutnya?
+              Siap dapat <span className="text-gradient-brand">project berikutnya?</span>
             </h1>
           </div>
           <Link href="/talent/edit-profile" className="btn-secondary text-xs sm:text-sm inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 shrink-0 self-start">

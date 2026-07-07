@@ -20,13 +20,14 @@ export default function TentangKamiPage() {
 
       {/* 1. Hero */}
       <section className="pt-32 pb-20 px-6 overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-dots [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,black,transparent)] -z-10" aria-hidden="true" />
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 border border-slate-200 text-sm font-semibold text-slate-600">
             Misi Kami
           </div>
           <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900">
             Mengubah "Nyambi" <br className="hidden md:block" />
-            Menjadi <span className="text-primary-600">Karier Profesional.</span>
+            Menjadi <span className="text-gradient-brand">Karier Profesional.</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
             Nyamby lahir dari sebuah keresahan: banyak talenta digital luar biasa di Indonesia yang kesulitan menembus pasar kerja profesional, hanya karena mereka memulainya dari "nyambi" (pekerjaan sampingan).

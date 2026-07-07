@@ -143,7 +143,7 @@ export default function JobsPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
             <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-surface-900">
-              Explore Jobs
+              Explore <span className="text-gradient-brand">Jobs</span>
             </h1>
             <p className="text-surface-500 mt-1 text-sm">Temukan project yang sesuai dengan keahlianmu.</p>
           </div>
@@ -183,9 +183,9 @@ export default function JobsPage() {
 
           <div className="flex items-center gap-2 bg-white border border-surface-200 rounded-full pl-4 pr-2 py-1">
             <span className="text-xs text-surface-500">Budget</span>
-            <input type="number" placeholder="Min" className="text-sm py-1 px-2 w-20 bg-surface-50 rounded-full border-0 focus:outline-none focus:ring-1 focus:ring-primary-400" value={minBudget} onChange={e => setMinBudget(e.target.value)} />
+            <input type="number" placeholder="Min" className="text-sm py-1.5 px-2.5 w-20 bg-surface-50 rounded-full border-0 focus:outline-none focus:ring-1 focus:ring-primary-400" value={minBudget} onChange={e => setMinBudget(e.target.value)} />
             <span className="text-surface-300">–</span>
-            <input type="number" placeholder="Max" className="text-sm py-1 px-2 w-20 bg-surface-50 rounded-full border-0 focus:outline-none focus:ring-1 focus:ring-primary-400" value={maxBudget} onChange={e => setMaxBudget(e.target.value)} />
+            <input type="number" placeholder="Max" className="text-sm py-1.5 px-2.5 w-20 bg-surface-50 rounded-full border-0 focus:outline-none focus:ring-1 focus:ring-primary-400" value={maxBudget} onChange={e => setMaxBudget(e.target.value)} />
           </div>
 
           <select

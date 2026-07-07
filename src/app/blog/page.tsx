@@ -79,6 +79,7 @@ export default function BlogPage() {
 
       {/* Hero */}
       <section className="pt-32 pb-16 px-6 overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-dots [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,black,transparent)] -z-10" aria-hidden="true" />
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary-400/10 rounded-full blur-[120px] -z-10 -translate-x-1/3"></div>
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 text-sm font-semibold text-primary-600 shadow-sm">
@@ -86,7 +87,7 @@ export default function BlogPage() {
           </div>
           <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900">
             Insight & Cerita <br className="hidden md:block" />
-            <span className="text-primary-600">dari Nyamby.</span>
+            <span className="text-gradient-brand">dari Nyamby.</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
             Tips karier, update produk, cerita komunitas, dan di balik layar engineering — semua ada di sini.

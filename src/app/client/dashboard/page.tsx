@@ -179,7 +179,7 @@ export default function ClientDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 text-surface-900">
-              Dashboard Client
+              Dashboard <span className="text-gradient-brand">Client</span>
             </h1>
             <p className="text-surface-500">
               Kelola job posting dan lihat talenta terbaik yang direkomendasikan AI.

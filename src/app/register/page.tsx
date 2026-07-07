@@ -187,7 +187,7 @@ function RegisterForm() {
               </div>
             </div>
 
-            <h1 className="text-4xl font-bold text-surface-900 tracking-tight mb-3" >
+            <h1 className="text-4xl font-extrabold text-surface-900 tracking-tight mb-3" >
               {role === "talent" ? "Buat akun talent" : "Daftarkan perusahaan kamu"}
             </h1>
             <p className="text-surface-500 text-[16px] mb-8">

@@ -102,6 +102,7 @@ export default function SecurityPage() {
 
       {/* Hero */}
       <section className="pt-32 pb-20 px-6 overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-dots [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,black,transparent)] -z-10" aria-hidden="true" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-primary-400/8 rounded-full blur-[140px] -z-10"></div>
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 text-sm font-semibold text-primary-600 shadow-sm">
@@ -109,7 +110,7 @@ export default function SecurityPage() {
           </div>
           <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900">
             Keamanan Adalah <br className="hidden md:block" />
-            <span className="text-primary-600">Prioritas Utama.</span>
+            <span className="text-gradient-brand">Prioritas Utama.</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
             Nyamby dibangun di atas fondasi kepercayaan. Kami menerapkan standar keamanan tinggi untuk melindungi data, transaksi, dan identitas setiap pengguna.

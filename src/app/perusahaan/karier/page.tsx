@@ -78,6 +78,7 @@ export default function KarierPage() {
 
       {/* Hero */}
       <section className="pt-32 pb-20 px-6 overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-dots [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,black,transparent)] -z-10" aria-hidden="true" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary-400/10 rounded-full blur-[120px] -z-10"></div>
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 text-sm font-semibold text-primary-600 shadow-sm">
@@ -85,7 +86,7 @@ export default function KarierPage() {
           </div>
           <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900">
             Bangun Masa Depan <br className="hidden md:block" />
-            <span className="text-primary-600">Dunia Kerja Indonesia.</span>
+            <span className="text-gradient-brand">Dunia Kerja Indonesia.</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
             Di Nyamby, kami percaya setiap orang berhak mendapat kesempatan. Bergabunglah dengan tim kami dan bantu jutaan talenta Indonesia menemukan peluang karier terbaik mereka.

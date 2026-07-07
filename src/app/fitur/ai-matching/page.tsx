@@ -27,7 +27,7 @@ export default function AiMatchingPage() {
           </div>
           <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight">
             AI Job Matching yang <br className="hidden md:block"/>
-            <span className="text-primary-600">Mengerti Konteks Kariermu.</span>
+            <span className="text-gradient-brand">Mengerti Konteks Kariermu.</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
             Sistem kami tidak sekadar mencocokkan kata kunci. AI Nyamby membaca pengalaman, menganalisis gaya portofolio, dan memberikan skor relevansi yang sangat akurat untuk setiap kandidat.
@@ -103,7 +103,7 @@ export default function AiMatchingPage() {
       <section className="py-24 px-6 bg-white border-t border-slate-100">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
           <div className="flex-1 space-y-6">
-            <h2 className="text-3xl font-bold leading-tight">Menghemat <span className="text-primary-600">80% Waktu</span> Rekrutmen</h2>
+            <h2 className="text-3xl font-bold leading-tight">Menghemat <span className="text-gradient-brand">80% Waktu</span> Rekrutmen</h2>
             <p className="text-slate-500 text-lg">
               Klien kami melaporkan penurunan drastis dalam waktu yang dihabiskan untuk *screening* kandidat. Dengan AI Matching, Anda langsung berhadapan dengan top 5% talenta.
             </p>

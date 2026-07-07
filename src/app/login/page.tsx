@@ -69,7 +69,7 @@ function LoginForm() {
 
       <main role="main" className="w-full max-w-[440px] animate-scale-in">
         
-        <h1 className="text-4xl font-bold text-center mb-3 text-surface-900 tracking-tight" >
+        <h1 className="text-4xl font-extrabold text-center mb-3 text-surface-900 tracking-tight" >
           Masuk ke Nyamby
         </h1>
         <p className="text-surface-500 text-[15px] text-center mb-8">

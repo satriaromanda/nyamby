@@ -89,6 +89,7 @@ export default function HelpPage() {
 
       {/* Hero */}
       <section className="pt-32 pb-16 px-6 overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-dots [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,black,transparent)] -z-10" aria-hidden="true" />
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-primary-400/10 rounded-full blur-[120px] -z-10"></div>
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200 text-sm font-semibold text-primary-600 shadow-sm">
@@ -96,7 +97,7 @@ export default function HelpPage() {
           </div>
           <h1 className="text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900">
             Bagaimana Kami Bisa <br className="hidden md:block" />
-            <span className="text-primary-600">Membantumu?</span>
+            <span className="text-gradient-brand">Membantumu?</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
             Temukan jawaban untuk pertanyaan umum atau hubungi tim support kami.

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Icon, Logo } from "@/components/icons";
+import { Icon } from "@/components/icons";
+import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import type { Metadata } from "next";
 
@@ -42,27 +43,17 @@ const steps = [
 export default function HowItWorksPage() {
   return (
     <div className="min-h-screen bg-surface-50">
-      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-8 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={32} />
-          </Link>
-          <div className="flex items-center gap-4 text-sm">
-            <Link href="/talents" className="text-surface-500 hover:text-surface-900">Talenta</Link>
-            <Link href="/jobs" className="text-surface-500 hover:text-surface-900">Jobs</Link>
-            <Link href="/register" className="btn-primary text-xs px-4 py-2 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">Mulai</Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
-      <main role="main" className="max-w-6xl mx-auto px-6 py-12">
+      <main role="main" className="max-w-6xl mx-auto px-6 pt-28 pb-12">
         <section className="mb-10">
           <div className="inline-flex items-center gap-2 text-xs px-3 py-1 rounded-full bg-[#FAEEDA] text-[#854F0B] mb-5">
             <span>AI enrichment</span>
             <span>Trust-first marketplace</span>
           </div>
-          <h1 className="text-4xl font-bold text-surface-900 mb-4" >
-            Cara Nyamby Mengubah Nyambi Menjadi Karir
+          <h1 className="text-4xl font-extrabold tracking-tight text-surface-900 mb-4">
+            Cara Nyamby Mengubah{" "}
+            <span className="text-gradient-brand">Nyambi Menjadi Karir</span>
           </h1>
           <p className="text-surface-500 max-w-2xl">
             Nyamby membiarkan user menjelajah talenta dan job terlebih dahulu, lalu memakai AI untuk membuat keputusan matching lebih kredibel saat mereka siap daftar.
