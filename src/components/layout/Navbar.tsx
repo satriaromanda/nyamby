@@ -107,50 +107,13 @@ export function Navbar() {
             <Logo height={36} />
           </Link>
 
-          {/* Desktop Navigation — pill group */}
-          <div className="hidden md:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
-            {/* Browse Dropdown */}
-            <Dropdown
-              label="Browse"
-              active={pathname.startsWith("/jobs") || pathname.startsWith("/talents")}
-              isOpen={activeDropdown === "browse"}
-              onToggle={() => toggleDropdown("browse")}
-              onClose={closeAll}
-            >
-              <DropdownLink
-                href="/jobs"
-                icon="briefcase"
-                iconColor="blue"
-                title="Browse Jobs"
-                desc="Cari project untuk talent"
-                onClick={closeAll}
-              />
-              <DropdownLink
-                href="/talents"
-                icon="users"
-                iconColor="pink"
-                title="Browse Talents"
-                desc="Temukan talenta terbaik"
-                onClick={closeAll}
-              />
-            </Dropdown>
-
+          {/* Desktop Navigation — clean links per reference */}
+          <div className="hidden md:flex items-center gap-1">
             <Link
-              href="/perusahaan/tentang"
-              className={`pill-tab ${pathname.startsWith("/perusahaan") ? "pill-tab-active" : ""}`}
+              href="/how-it-works"
+              className={`pill-tab ${pathname.startsWith("/how-it-works") ? "pill-tab-active" : ""}`}
             >
-              About Us
-            </Link>
-
-            <a href="/#cara-kerja" className="pill-tab">
               Cara Kerja
-            </a>
-
-            <Link
-              href="/global"
-              className={`pill-tab ${pathname.startsWith("/global") ? "pill-tab-active" : ""}`}
-            >
-              Global
             </Link>
 
             {/* Fitur Dropdown */}
@@ -194,6 +157,20 @@ export function Navbar() {
                 onClick={closeAll}
               />
             </Dropdown>
+
+            <Link
+              href="/jobs"
+              className={`pill-tab ${pathname.startsWith("/jobs") ? "pill-tab-active" : ""}`}
+            >
+              Cari Kerja
+            </Link>
+
+            <Link
+              href="/talents"
+              className={`pill-tab ${pathname.startsWith("/talents") ? "pill-tab-active" : ""}`}
+            >
+              Untuk Client
+            </Link>
           </div>
 
           {/* Desktop Auth Buttons */}
