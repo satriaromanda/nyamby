@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Icon, Logo } from "@/components/icons";
-
+import Image from "next/image";
 
 interface ClientProfile {
   id: string;
@@ -202,12 +202,13 @@ export default function ClientSettingsPage() {
           <div className="space-y-4">
             {/* Profile Card */}
             <div className="card p-6 text-center animate-slide-up">
-              <div className="w-20 h-20 mx-auto rounded-2xl gradient-primary flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg shadow-primary-500/20">
+              <div className="w-20 h-20 mx-auto rounded-2xl gradient-primary flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg shadow-primary-500/20 relative overflow-hidden">
                 {profile.avatar_url ? (
-                  <img
+                  <Image
                     src={profile.avatar_url}
                     alt={profile.full_name}
-                    className="w-full h-full rounded-2xl object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   profile.full_name[0]

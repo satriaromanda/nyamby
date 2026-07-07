@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import Image from "next/image";
 import { useLang } from "@/lib/lang";
 
 const copy = {
@@ -119,10 +120,11 @@ export default function TentangKamiPage() {
               {/* Fallback Icon behind the image */}
               <Icon name="image" size={48} className="absolute z-0 text-slate-200" />
 
-              <img
+              <Image
                 src="/images/cerita-mascot.png"
                 alt="Nyamby Mascot"
-                className="w-full h-full object-contain p-4 z-10 relative"
+                fill
+                className="object-contain p-4 z-10"
               />
             </div>
           </div>
@@ -169,10 +171,11 @@ export default function TentangKamiPage() {
               <div key={i} className="space-y-4">
                 <div className="w-32 h-32 mx-auto bg-slate-100 rounded-full overflow-hidden flex items-center justify-center text-slate-400 relative border-4 border-white shadow-lg">
                   <Icon name="user" size={40} className="absolute z-0 opacity-50" />
-                  <img
+                  <Image
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full object-cover z-10 relative"
+                    fill
+                    className="object-cover z-10"
                   />
                 </div>
                 <div>

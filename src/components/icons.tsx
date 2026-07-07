@@ -40,6 +40,7 @@ import {
   Globe,
   type LucideIcon,
 } from "lucide-react";
+import NextImage from "next/image";
 
 const TwitterIcon = ({ size = 24, className = "", ...props }: any) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
@@ -136,16 +137,16 @@ export function Icon({
   return <LucideComponent aria-hidden="true" className={className} size={size} {...(fill ? { fill } : {})} />;
 }
 
-/** Nyamby full logo (icon + text) as inline SVG. Pass `height` to control size. */
 export function Logo({ height = 32, className = "" }: { height?: number; className?: string }) {
   const aspect = 840 / 302;
   const width = Math.round(height * aspect);
   return (
-    <img
+    <NextImage
       src="/logo-full.png"
       alt="Nyamby Logo"
+      width={width}
+      height={height}
       className={`object-contain ${className}`}
-      style={{ height: `${height}px`, width: 'auto' }}
     />
   );
 }

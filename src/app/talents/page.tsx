@@ -6,6 +6,7 @@ import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SkeletonCardGrid } from "@/components/Skeleton";
+import Image from "next/image";
 import { useLang } from "@/lib/lang";
 
 const copy = {
@@ -232,10 +233,9 @@ export default function TalentsPage() {
                 <Link key={talent.id} href={`/talents/${talent.id}`} className="card card-hover p-6 block">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full gradient-primary flex items-center justify-center text-white font-bold overflow-hidden shrink-0">
+                      <div className="w-12 h-12 rounded-full gradient-primary flex items-center justify-center text-white font-bold overflow-hidden shrink-0 relative">
                         {talent.avatar_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={talent.avatar_url} alt={talent.full_name} className="w-full h-full object-cover" />
+                          <Image src={talent.avatar_url} alt={talent.full_name} fill className="object-cover" />
                         ) : (
                           talent.full_name?.[0] || "?"
                         )}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
@@ -52,10 +53,9 @@ export default async function TalentPublicProfilePage({
         <div className="grid lg:grid-cols-3 gap-8">
           <aside className="space-y-4">
             <div className="card p-6 text-center">
-              <div className="w-24 h-24 rounded-full mx-auto gradient-primary flex items-center justify-center text-4xl font-bold text-white mb-4">
+              <div className="w-24 h-24 rounded-full mx-auto gradient-primary flex items-center justify-center text-4xl font-bold text-white mb-4 relative overflow-hidden">
                 {talent.user.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={talent.user.avatarUrl} alt={talent.user.fullName} className="w-full h-full rounded-full object-cover" />
+                  <Image src={talent.user.avatarUrl} alt={talent.user.fullName} fill className="object-cover" />
                 ) : (
                   talent.user.fullName[0]
                 )}
