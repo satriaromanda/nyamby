@@ -5,12 +5,108 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Icon } from "@/components/icons";
+import { useLang } from "@/lib/lang";
+
+const copy = {
+  id: {
+    oauthErrors: {
+      oauth_role_required: "Pilih role (Talent/Client) dulu sebelum daftar dengan Google/GitHub.",
+      oauth_not_configured: "Login Google/GitHub belum dikonfigurasi. Coba daftar dengan email.",
+      oauth_invalid_state: "Sesi OAuth tidak valid, silakan coba lagi.",
+      oauth_failed: "Gagal daftar dengan provider tersebut. Coba lagi atau gunakan email.",
+      oauth_invalid_provider: "Provider OAuth tidak dikenal.",
+    } as Record<string, string>,
+    errorFallback: "Terjadi kesalahan. Coba lagi.",
+    joinTitle: "Bergabung dengan Nyamby",
+    joinSub: "Pilih tipe akun yang sesuai dengan kebutuhanmu.",
+    talentTitle: "Saya Talent",
+    talentDesc: "Mencari pekerjaan *freelance* dan membangun karir independen.",
+    clientTitle: "Saya Client",
+    clientDesc: "Mencari talenta lokal terbaik untuk membantu proyek perusahaan saya.",
+    alreadyHaveAccount: "Sudah punya akun?",
+    loginNow: "Masuk sekarang",
+    changeRole: "Ganti tipe akun",
+    talentAccount: "talent Account",
+    clientAccount: "client Account",
+    talentRegTitle: "Buat akun talent",
+    clientRegTitle: "Daftarkan perusahaan kamu",
+    talentRegSub: "Gratis, tanpa kartu kredit. Onboarding cuma 2 menit.",
+    clientRegSub: "Mulai hire talent Indonesia dalam hitungan menit.",
+    orRegisterEmail: "atau daftar dengan email",
+    picName: "Nama PIC (Person in Charge)",
+    picPlaceholder: "Budi Santoso",
+    fullName: "Nama Lengkap",
+    fullNamePlaceholder: "Raka Pratama",
+    email: "Email",
+    emailTalentPlaceholder: "raka@email.com",
+    emailClientPlaceholder: "budi@perusahaan.com",
+    password: "Password",
+    passwordPlaceholder: "Min. 8 karakter",
+    agreePre: "Saya setuju dengan ",
+    tnc: "Syarat & Ketentuan",
+    agreeMid: " dan ",
+    privacy: "Kebijakan Privasi",
+    agreePost: " Nyamby.",
+    btnTalent: "Daftar & Mulai Onboarding",
+    btnClient: "Daftar & Mulai Hiring",
+    sparkTalent: "Setelah daftar, kamu akan melalui onboarding 2 menit untuk Nambi mengenal skill-mu.",
+    sparkClient: "Setelah daftar, lengkapi profil perusahaan Anda di proses onboarding untuk mulai mem-posting job.",
+  },
+  en: {
+    oauthErrors: {
+      oauth_role_required: "Select a role (Talent/Client) before signing up with Google/GitHub.",
+      oauth_not_configured: "Google/GitHub login is not configured. Try signing up with email.",
+      oauth_invalid_state: "Invalid OAuth session, please try again.",
+      oauth_failed: "Failed to sign up with that provider. Try again or use email.",
+      oauth_invalid_provider: "Unknown OAuth provider.",
+    } as Record<string, string>,
+    errorFallback: "Something went wrong. Try again.",
+    joinTitle: "Join Nyamby",
+    joinSub: "Choose the account type that fits your needs.",
+    talentTitle: "I'm a Talent",
+    talentDesc: "Looking for *freelance* work and building an independent career.",
+    clientTitle: "I'm a Client",
+    clientDesc: "Looking for the best local talent to help with my company's projects.",
+    alreadyHaveAccount: "Already have an account?",
+    loginNow: "Sign in now",
+    changeRole: "Change account type",
+    talentAccount: "talent Account",
+    clientAccount: "client Account",
+    talentRegTitle: "Create talent account",
+    clientRegTitle: "Register your company",
+    talentRegSub: "Free, no credit card required. Onboarding takes just 2 minutes.",
+    clientRegSub: "Start hiring Indonesian talent in minutes.",
+    orRegisterEmail: "or sign up with email",
+    picName: "PIC Name (Person in Charge)",
+    picPlaceholder: "John Doe",
+    fullName: "Full Name",
+    fullNamePlaceholder: "Jane Doe",
+    email: "Email",
+    emailTalentPlaceholder: "jane@email.com",
+    emailClientPlaceholder: "john@company.com",
+    password: "Password",
+    passwordPlaceholder: "Min. 8 characters",
+    agreePre: "I agree to Nyamby's ",
+    tnc: "Terms & Conditions",
+    agreeMid: " and ",
+    privacy: "Privacy Policy",
+    agreePost: ".",
+    btnTalent: "Sign Up & Start Onboarding",
+    btnClient: "Sign Up & Start Hiring",
+    sparkTalent: "After signing up, you'll go through a 2-minute onboarding so Nambi can get to know your skills.",
+    sparkClient: "After signing up, complete your company profile in onboarding to start posting jobs.",
+  },
+} as const;
+
 
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultRole = (searchParams.get("role") as "talent" | "client") || "talent";
   const redirectTo = searchParams.get("redirect");
+  
+  const [lang] = useLang();
+  const t = copy[lang];
 
   const [step, setStep] = useState<1 | 2>(1);
   const [role, setRole] = useState<"talent" | "client">(defaultRole);
@@ -24,14 +120,7 @@ function RegisterForm() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const oauthErrorMessages: Record<string, string> = {
-    oauth_role_required: "Pilih role (Talent/Client) dulu sebelum daftar dengan Google/GitHub.",
-    oauth_not_configured: "Login Google/GitHub belum dikonfigurasi. Coba daftar dengan email.",
-    oauth_invalid_state: "Sesi OAuth tidak valid, silakan coba lagi.",
-    oauth_failed: "Gagal daftar dengan provider tersebut. Coba lagi atau gunakan email.",
-    oauth_invalid_provider: "Provider OAuth tidak dikenal.",
-  };
-  const [error, setError] = useState(oauthErrorMessages[searchParams.get("error") || ""] || "");
+  const [error, setError] = useState(t.oauthErrors[searchParams.get("error") || ""] || "");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,7 +161,7 @@ function RegisterForm() {
         router.push("/client/onboarding");
       }
     } catch {
-      setError("Terjadi kesalahan. Coba lagi.");
+      setError(t.errorFallback);
     } finally {
       setLoading(false);
     }
@@ -121,10 +210,10 @@ function RegisterForm() {
         {step === 1 && (
           <div className="mt-12 md:mt-0">
             <h1 className="text-3xl font-extrabold text-center mb-2 text-surface-900 tracking-tight" >
-              Bergabung dengan Nyamby
+              {t.joinTitle}
             </h1>
             <p className="text-surface-500 text-[15px] text-center mb-10">
-              Pilih tipe akun yang sesuai dengan kebutuhanmu.
+              {t.joinSub}
             </p>
 
             <div className="space-y-4">
@@ -137,8 +226,8 @@ function RegisterForm() {
                   <Icon name="user" size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-surface-900 mb-1">Saya Talent</h3>
-                  <p className="text-sm text-surface-500">Mencari pekerjaan *freelance* dan membangun karir independen.</p>
+                  <h3 className="text-lg font-bold text-surface-900 mb-1">{t.talentTitle}</h3>
+                  <p className="text-sm text-surface-500">{t.talentDesc}</p>
                 </div>
               </button>
 
@@ -151,19 +240,19 @@ function RegisterForm() {
                   <Icon name="building" size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-surface-900 mb-1">Saya Client</h3>
-                  <p className="text-sm text-surface-500">Mencari talenta lokal terbaik untuk membantu proyek perusahaan saya.</p>
+                  <h3 className="text-lg font-bold text-surface-900 mb-1">{t.clientTitle}</h3>
+                  <p className="text-sm text-surface-500">{t.clientDesc}</p>
                 </div>
               </button>
             </div>
 
             <p className="text-center text-sm text-surface-500 mt-10">
-              Sudah punya akun?{" "}
+              {t.alreadyHaveAccount}{" "}
               <Link
                 href={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"}
                 className="text-primary-600 hover:text-primary-700 font-bold"
               >
-                Masuk sekarang
+                {t.loginNow}
               </Link>
             </p>
           </div>
@@ -175,7 +264,7 @@ function RegisterForm() {
               onClick={() => setStep(1)} 
               className="flex items-center gap-2 text-surface-500 hover:text-surface-900 text-sm font-medium mb-8 transition-colors"
             >
-              <Icon name="arrowLeft" size={16} /> Ganti tipe akun
+              <Icon name="arrowLeft" size={16} /> {t.changeRole}
             </button>
 
             <div className="flex items-center gap-3 mb-6">
@@ -183,24 +272,22 @@ function RegisterForm() {
                 <Icon name={role === "talent" ? "user" : "building"} size={20} />
               </div>
               <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${role === "talent" ? "bg-primary-100 text-primary-700" : "bg-warning-100 text-warning-700"}`}>
-                {role} Account
+                {role === "talent" ? t.talentAccount : t.clientAccount}
               </div>
             </div>
 
             <h1 className="text-4xl font-extrabold text-surface-900 tracking-tight mb-3" >
-              {role === "talent" ? "Buat akun talent" : "Daftarkan perusahaan kamu"}
+              {role === "talent" ? t.talentRegTitle : t.clientRegTitle}
             </h1>
             <p className="text-surface-500 text-[16px] mb-8">
-              {role === "talent" 
-                ? "Gratis, tanpa kartu kredit. Onboarding cuma 2 menit."
-                : "Mulai hire talent Indonesia dalam hitungan menit."}
+              {role === "talent" ? t.talentRegSub : t.clientRegSub}
             </p>
 
             <OAuthButtons />
 
             <div className="relative flex items-center mb-8">
               <div className="flex-grow border-t border-surface-200"></div>
-              <span className="flex-shrink-0 mx-4 text-surface-400 text-xs">atau daftar dengan email</span>
+              <span className="flex-shrink-0 mx-4 text-surface-400 text-xs">{t.orRegisterEmail}</span>
               <div className="flex-grow border-t border-surface-200"></div>
             </div>
 
@@ -208,7 +295,7 @@ function RegisterForm() {
               
               {role === "client" ? (
                 <div>
-                  <label className="block text-sm font-semibold text-surface-900 mb-2">Nama PIC (Person in Charge)</label>
+                  <label className="block text-sm font-semibold text-surface-900 mb-2">{t.picName}</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <Icon name="user" size={18} className="text-surface-400" />
@@ -216,7 +303,7 @@ function RegisterForm() {
                     <input
                       type="text"
                       className="w-full bg-white border border-surface-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] text-surface-900 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-shadow"
-                      placeholder="Budi Santoso"
+                      placeholder={t.picPlaceholder}
                       value={form.full_name}
                       onChange={(e) => setForm({ ...form, full_name: e.target.value })}
                       required
@@ -226,7 +313,7 @@ function RegisterForm() {
               ) : (
                 /* Fields specific to Talent */
                 <div>
-                  <label className="block text-sm font-semibold text-surface-900 mb-2">Nama Lengkap</label>
+                  <label className="block text-sm font-semibold text-surface-900 mb-2">{t.fullName}</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <Icon name="user" size={18} className="text-surface-400" />
@@ -234,7 +321,7 @@ function RegisterForm() {
                     <input
                       type="text"
                       className="w-full bg-white border border-surface-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] text-surface-900 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-shadow"
-                      placeholder="Raka Pratama"
+                      placeholder={t.fullNamePlaceholder}
                       value={form.full_name}
                       onChange={(e) => setForm({ ...form, full_name: e.target.value })}
                       required
@@ -245,7 +332,7 @@ function RegisterForm() {
 
               {/* Common Fields */}
               <div>
-                <label className="block text-sm font-semibold text-surface-900 mb-2">Email</label>
+                <label className="block text-sm font-semibold text-surface-900 mb-2">{t.email}</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <Icon name="mail" size={18} className="text-surface-400" />
@@ -253,7 +340,7 @@ function RegisterForm() {
                   <input
                     type="email"
                     className="w-full bg-white border border-surface-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] text-surface-900 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-shadow"
-                    placeholder={role === "talent" ? "raka@email.com" : "budi@perusahaan.com"}
+                    placeholder={role === "talent" ? t.emailTalentPlaceholder : t.emailClientPlaceholder}
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     required
@@ -264,7 +351,7 @@ function RegisterForm() {
 
 
               <div>
-                <label className="block text-sm font-semibold text-surface-900 mb-2">Password</label>
+                <label className="block text-sm font-semibold text-surface-900 mb-2">{t.password}</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <Icon name="lock" size={18} className="text-surface-400" />
@@ -272,7 +359,7 @@ function RegisterForm() {
                   <input
                     type={showPassword ? "text" : "password"}
                     className="w-full bg-white border border-surface-200 rounded-xl pl-11 pr-12 py-3.5 text-[15px] text-surface-900 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-shadow"
-                    placeholder="Min. 8 karakter"
+                    placeholder={t.passwordPlaceholder}
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
                     required
@@ -289,7 +376,7 @@ function RegisterForm() {
               </div>
 
               <div className="text-[13px] text-surface-500 mt-2">
-                Saya setuju dengan <Link href="/terms" className="text-primary-600 hover:underline">Syarat & Ketentuan</Link> dan <Link href="/privacy" className="text-primary-600 hover:underline">Kebijakan Privasi</Link> Nyamby.
+                {t.agreePre}<Link href="/terms" className="text-primary-600 hover:underline">{t.tnc}</Link>{t.agreeMid}<Link href="/privacy" className="text-primary-600 hover:underline">{t.privacy}</Link>{t.agreePost}
               </div>
 
               {error && (
@@ -310,7 +397,7 @@ function RegisterForm() {
                   </svg>
                 ) : (
                   <>
-                    {role === "talent" ? "Daftar & Mulai Onboarding" : "Daftar & Mulai Hiring"}
+                    {role === "talent" ? t.btnTalent : t.btnClient}
                     <Icon name="arrowRight" size={18} className="group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
@@ -320,19 +407,17 @@ function RegisterForm() {
             <div className="mt-6 p-4 rounded-xl bg-primary-50 flex items-start gap-3 border border-primary-100">
               <Icon name="spark" size={18} className="text-primary-600 mt-0.5 flex-shrink-0" />
               <p className="text-xs text-primary-800 leading-relaxed">
-                {role === "talent" 
-                  ? "Setelah daftar, kamu akan melalui onboarding 2 menit untuk Nambi mengenal skill-mu."
-                  : "Setelah daftar, lengkapi profil perusahaan Anda di proses onboarding untuk mulai mem-posting job."}
+                {role === "talent" ? t.sparkTalent : t.sparkClient}
               </p>
             </div>
 
             <p className="text-center text-sm text-surface-500 mt-8 pb-12">
-              Sudah punya akun?{" "}
+              {t.alreadyHaveAccount}{" "}
               <Link
                 href={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"}
                 className="text-primary-600 hover:text-primary-700 font-bold"
               >
-                Masuk sekarang
+                {t.loginNow}
               </Link>
             </p>
           </div>

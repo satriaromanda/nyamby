@@ -6,24 +6,70 @@ import { useState } from "react";
 import { Icon, Logo } from "@/components/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { useLang } from "@/lib/lang";
+
+const copy = {
+  id: {
+    h1: "Masuk ke Nyamby",
+    subtitle: "Lanjutkan perjalanan kariermu bersama Nambi.",
+    imTalent: "Saya Talent",
+    imClient: "Saya Client",
+    orEmail: "atau login dengan email",
+    emailLabel: "Email",
+    emailPlaceholder: "kamu@email.com",
+    passwordLabel: "Password",
+    rememberMe: "Ingat saya",
+    forgotPassword: "Lupa password?",
+    loginAs: (role: string) => `Masuk sebagai ${role === "talent" ? "Talent" : "Client"}`,
+    noAccount: "Belum punya akun?",
+    register: "Daftar gratis",
+    errorFallback: "Terjadi kesalahan. Coba lagi.",
+    oauthErrors: {
+      suspended: "Akun Anda telah disuspend. Hubungi admin untuk informasi lebih lanjut.",
+      oauth_role_required: "Pilih role (Talent/Client) dulu sebelum masuk dengan Google/GitHub.",
+      oauth_not_configured: "Login Google/GitHub belum dikonfigurasi. Coba masuk dengan email.",
+      oauth_invalid_state: "Sesi OAuth tidak valid, silakan coba lagi.",
+      oauth_failed: "Gagal masuk dengan provider tersebut. Coba lagi atau gunakan email.",
+      oauth_invalid_provider: "Provider OAuth tidak dikenal.",
+    } as Record<string, string>,
+  },
+  en: {
+    h1: "Sign in to Nyamby",
+    subtitle: "Continue your career journey with Nambi.",
+    imTalent: "I'm a Talent",
+    imClient: "I'm a Client",
+    orEmail: "or sign in with email",
+    emailLabel: "Email",
+    emailPlaceholder: "you@email.com",
+    passwordLabel: "Password",
+    rememberMe: "Remember me",
+    forgotPassword: "Forgot password?",
+    loginAs: (role: string) => `Sign in as ${role === "talent" ? "Talent" : "Client"}`,
+    noAccount: "Don't have an account?",
+    register: "Sign up free",
+    errorFallback: "Something went wrong. Try again.",
+    oauthErrors: {
+      suspended: "Your account has been suspended. Contact admin for more information.",
+      oauth_role_required: "Select a role (Talent/Client) before signing in with Google/GitHub.",
+      oauth_not_configured: "Google/GitHub login is not configured. Try signing in with email.",
+      oauth_invalid_state: "Invalid OAuth session, please try again.",
+      oauth_failed: "Failed to sign in with that provider. Try again or use email.",
+      oauth_invalid_provider: "Unknown OAuth provider.",
+    } as Record<string, string>,
+  },
+} as const;
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
+  const [lang] = useLang();
+  const t = copy[lang];
   
   const [role, setRole] = useState<"talent" | "client">("talent");
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const oauthErrorMessages: Record<string, string> = {
-    suspended: "Akun Anda telah disuspend. Hubungi admin untuk informasi lebih lanjut.",
-    oauth_role_required: "Pilih role (Talent/Client) dulu sebelum masuk dengan Google/GitHub.",
-    oauth_not_configured: "Login Google/GitHub belum dikonfigurasi. Coba masuk dengan email.",
-    oauth_invalid_state: "Sesi OAuth tidak valid, silakan coba lagi.",
-    oauth_failed: "Gagal masuk dengan provider tersebut. Coba lagi atau gunakan email.",
-    oauth_invalid_provider: "Provider OAuth tidak dikenal.",
-  };
-  const [error, setError] = useState(oauthErrorMessages[searchParams.get("error") || ""] || "");
+  const [error, setError] = useState(t.oauthErrors[searchParams.get("error") || ""] || "");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +81,7 @@ function LoginForm() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, role }), // Optional: pass role if API cares, though API checks by email
+        body: JSON.stringify({ ...form, role }),
       });
       const data = await res.json();
 
@@ -52,7 +98,7 @@ function LoginForm() {
         router.push("/client/dashboard");
       }
     } catch {
-      setError("Terjadi kesalahan. Coba lagi.");
+      setError(t.errorFallback);
     } finally {
       setLoading(false);
     }
@@ -70,10 +116,10 @@ function LoginForm() {
       <main role="main" className="w-full max-w-[440px] animate-scale-in">
         
         <h1 className="text-4xl font-extrabold text-center mb-3 text-surface-900 tracking-tight" >
-          Masuk ke Nyamby
+          {t.h1}
         </h1>
         <p className="text-surface-500 text-[15px] text-center mb-8">
-          Lanjutkan perjalanan kariermu bersama Nambi.
+          {t.subtitle}
         </p>
 
         {/* Role Toggle */}
@@ -88,7 +134,7 @@ function LoginForm() {
             }`}
           >
             <Icon name="user" size={18} />
-            Saya Talent
+            {t.imTalent}
           </button>
           <button
             type="button"
@@ -100,7 +146,7 @@ function LoginForm() {
             }`}
           >
             <Icon name="building" size={18} />
-            Saya Client
+            {t.imClient}
           </button>
         </div>
 
@@ -131,13 +177,13 @@ function LoginForm() {
 
         <div className="relative flex items-center mb-8">
           <div className="flex-grow border-t border-surface-200"></div>
-          <span className="flex-shrink-0 mx-4 text-surface-400 text-xs">atau login dengan email</span>
+          <span className="flex-shrink-0 mx-4 text-surface-400 text-xs">{t.orEmail}</span>
           <div className="flex-grow border-t border-surface-200"></div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-surface-900 mb-2">Email</label>
+            <label className="block text-sm font-semibold text-surface-900 mb-2">{t.emailLabel}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Icon name="mail" size={18} className="text-surface-400" />
@@ -145,7 +191,7 @@ function LoginForm() {
               <input
                 type="email"
                 className="w-full bg-white border border-surface-200 rounded-xl pl-11 pr-4 py-3.5 text-[15px] text-surface-900 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-shadow"
-                placeholder="kamu@email.com"
+                placeholder={t.emailPlaceholder}
                 autoComplete="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -155,7 +201,7 @@ function LoginForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-surface-900 mb-2">Password</label>
+            <label className="block text-sm font-semibold text-surface-900 mb-2">{t.passwordLabel}</label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Icon name="lock" size={18} className="text-surface-400" />
@@ -182,10 +228,10 @@ function LoginForm() {
           <div className="flex items-center justify-between mt-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" className="w-4 h-4 rounded border-surface-300 text-primary-600 focus:ring-primary-500" />
-              <span className="text-sm text-surface-600">Ingat saya</span>
+              <span className="text-sm text-surface-600">{t.rememberMe}</span>
             </label>
             <Link href="#" className="text-sm font-semibold text-primary-600 hover:text-primary-700">
-              Lupa password?
+              {t.forgotPassword}
             </Link>
           </div>
 
@@ -207,7 +253,7 @@ function LoginForm() {
               </svg>
             ) : (
               <>
-                Masuk sebagai {role === "talent" ? "Talent" : "Client"}
+                {t.loginAs(role)}
                 <Icon name="arrowRight" size={18} className="group-hover:translate-x-1 transition-transform" />
               </>
             )}
@@ -233,12 +279,12 @@ function LoginForm() {
         </div>
 
         <p className="text-center text-sm text-surface-500 mt-8">
-          Belum punya akun?{" "}
+          {t.noAccount}{" "}
           <Link
             href={redirectTo ? `/register?redirect=${encodeURIComponent(redirectTo)}` : "/register"}
             className="text-primary-600 hover:text-primary-700 font-bold"
           >
-            Daftar gratis
+            {t.register}
           </Link>
         </p>
       </main>
