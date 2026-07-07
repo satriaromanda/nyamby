@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Icon } from "@/components/icons";
 import { useLang } from "@/lib/lang";
+import { Navbar } from "@/components/layout/Navbar";
 
 const copy = {
   id: {
@@ -19,19 +20,19 @@ const copy = {
     errorFallback: "Terjadi kesalahan. Coba lagi.",
     joinTitle: "Bergabung dengan Nyamby",
     joinSub: "Pilih tipe akun yang sesuai dengan kebutuhanmu.",
-    talentTitle: "Saya Talent",
+    talentTitle: "Saya Talenta",
     talentDesc: "Mencari pekerjaan *freelance* dan membangun karir independen.",
-    clientTitle: "Saya Client",
+    clientTitle: "Saya Klien",
     clientDesc: "Mencari talenta lokal terbaik untuk membantu proyek perusahaan saya.",
     alreadyHaveAccount: "Sudah punya akun?",
     loginNow: "Masuk sekarang",
     changeRole: "Ganti tipe akun",
-    talentAccount: "talent Account",
-    clientAccount: "client Account",
-    talentRegTitle: "Buat akun talent",
+    talentAccount: "Akun Talenta",
+    clientAccount: "Akun Klien",
+    talentRegTitle: "Buat akun talenta",
     clientRegTitle: "Daftarkan perusahaan kamu",
-    talentRegSub: "Gratis, tanpa kartu kredit. Onboarding cuma 2 menit.",
-    clientRegSub: "Mulai hire talent Indonesia dalam hitungan menit.",
+    talentRegSub: "Gratis, tanpa kartu kredit. Orientasi cuma 2 menit.",
+    clientRegSub: "Mulai rekrut talenta Indonesia dalam hitungan menit.",
     orRegisterEmail: "atau daftar dengan email",
     picName: "Nama PIC (Person in Charge)",
     picPlaceholder: "Budi Santoso",
@@ -47,10 +48,10 @@ const copy = {
     agreeMid: " dan ",
     privacy: "Kebijakan Privasi",
     agreePost: " Nyamby.",
-    btnTalent: "Daftar & Mulai Onboarding",
-    btnClient: "Daftar & Mulai Hiring",
-    sparkTalent: "Setelah daftar, kamu akan melalui onboarding 2 menit untuk Nambi mengenal skill-mu.",
-    sparkClient: "Setelah daftar, lengkapi profil perusahaan Anda di proses onboarding untuk mulai mem-posting job.",
+    btnTalent: "Daftar & Mulai Orientasi",
+    btnClient: "Daftar & Mulai Rekrutmen",
+    sparkTalent: "Setelah daftar, kamu akan melalui orientasi 2 menit untuk Nambi mengenal keahlianmu.",
+    sparkClient: "Setelah daftar, lengkapi profil perusahaan Anda di proses orientasi untuk mulai memposting pekerjaan.",
   },
   en: {
     oauthErrors: {
@@ -194,18 +195,10 @@ function RegisterForm() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center py-12 md:py-24 relative px-6">
-      {/* Top Left Logo */}
-      <div className="absolute top-6 left-6 md:top-8 md:left-8">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-            N
-          </div>
-          <span className="font-semibold text-xl text-surface-900">Nyamby</span>
-        </Link>
-      </div>
+    <div className="min-h-screen bg-surface-50 flex flex-col">
+      <Navbar />
 
-      <main role="main" className="w-full max-w-[480px] animate-scale-in">
+      <main role="main" className="flex-1 flex flex-col justify-center w-full max-w-[480px] mx-auto px-6 pt-32 pb-16 animate-scale-in">
         
         {step === 1 && (
           <div className="mt-12 md:mt-0">

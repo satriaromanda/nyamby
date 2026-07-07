@@ -7,20 +7,21 @@ import { Icon, Logo } from "@/components/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useLang } from "@/lib/lang";
+import { Navbar } from "@/components/layout/Navbar";
 
 const copy = {
   id: {
     h1: "Masuk ke Nyamby",
     subtitle: "Lanjutkan perjalanan kariermu bersama Nambi.",
-    imTalent: "Saya Talent",
-    imClient: "Saya Client",
+    imTalent: "Saya Talenta",
+    imClient: "Saya Klien",
     orEmail: "atau login dengan email",
     emailLabel: "Email",
     emailPlaceholder: "kamu@email.com",
-    passwordLabel: "Password",
+    passwordLabel: "Kata Sandi",
     rememberMe: "Ingat saya",
-    forgotPassword: "Lupa password?",
-    loginAs: (role: string) => `Masuk sebagai ${role === "talent" ? "Talent" : "Client"}`,
+    forgotPassword: "Lupa kata sandi?",
+    loginAs: (role: string) => `Masuk sebagai ${role === "talent" ? "Talenta" : "Klien"}`,
     noAccount: "Belum punya akun?",
     register: "Daftar gratis",
     errorFallback: "Terjadi kesalahan. Coba lagi.",
@@ -105,15 +106,10 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center relative px-6 py-24">
-      {/* Top Left Logo */}
-      <div className="absolute top-6 left-6 md:top-8 md:left-8">
-        <Link href="/">
-          <Image src="/logo-full.png" alt="Nyamby" width={140} height={40} className="h-8 w-auto object-contain" priority />
-        </Link>
-      </div>
+    <div className="min-h-screen bg-surface-50 flex flex-col">
+      <Navbar />
 
-      <main role="main" className="w-full max-w-[440px] animate-scale-in">
+      <main role="main" className="flex-1 flex flex-col justify-center w-full max-w-[440px] mx-auto px-6 pt-32 pb-16 animate-scale-in">
         
         <h1 className="text-4xl font-extrabold text-center mb-3 text-surface-900 tracking-tight" >
           {t.h1}
