@@ -32,7 +32,8 @@ export default function EscrowPaymentClient({
       if (res.ok) {
         router.push("/client/dashboard?escrow_success=1");
       } else {
-        alert("Gagal memproses escrow. Silakan coba lagi.");
+        const body = await res.json().catch(() => null);
+        alert(body?.message || "Gagal memproses escrow. Silakan coba lagi.");
         setLoading(false);
       }
     } catch {
