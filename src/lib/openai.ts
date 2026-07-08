@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { logger } from "@/lib/logger";
 
 // Supports OpenAI, DeepSeek, or any OpenAI-compatible API.
 // Set AI_API_KEY + optional AI_BASE_URL and AI_MODEL in your .env
@@ -57,7 +58,10 @@ export async function generateJobMatches(
   retryCount = 0
 ): Promise<MatchResult[]> {
   if (!ai) {
-    console.warn("[AI] No AI_API_KEY - using mock job matching");
+    logger.warn("ai", "No AI_API_KEY — memakai mock job matching", {
+      job: job.title,
+      talent_count: talents.length,
+    });
     return generateMockMatches(talents);
   }
 
@@ -122,11 +126,15 @@ recommendation: highly_recommended, recommended, atau not_recommended. Jangan ta
     return matches as MatchResult[];
   } catch (error) {
     if (retryCount < 1) {
-      console.warn("[AI] Job matching failed, retrying in 5s...", error);
+      logger.warn("ai", "Job matching gagal, retry dalam 5s", { job: job.title, error });
       await new Promise((resolve) => setTimeout(resolve, 5000));
       return generateJobMatches(job, talents, retryCount + 1);
     }
-    console.error("[AI] Job matching failed twice, using mock:", error);
+    logger.error("ai", "Job matching gagal 2x, fallback ke mock", {
+      job: job.title,
+      model: aiModel,
+      error,
+    });
     return generateMockMatches(talents);
   }
 }
@@ -144,7 +152,7 @@ export async function generateSkillGapAnalysis(
   retryCount = 0
 ): Promise<SkillGapResult> {
   if (!ai) {
-    console.warn("[AI] No AI_API_KEY - using mock skill gap analysis");
+    logger.warn("ai", "No AI_API_KEY — memakai mock skill gap analysis", { category });
     return generateMockSkillGap(category);
   }
 
@@ -200,11 +208,15 @@ priority hanya: high, medium, atau low. Jangan tambahkan teks di luar JSON.`;
     return JSON.parse(content) as SkillGapResult;
   } catch (error) {
     if (retryCount < 1) {
-      console.warn("[AI] Skill gap analysis failed, retrying in 5s...", error);
+      logger.warn("ai", "Skill gap analysis gagal, retry dalam 5s", { category, error });
       await new Promise((resolve) => setTimeout(resolve, 5000));
       return generateSkillGapAnalysis(talentSkills, category, marketDemand, context, retryCount + 1);
     }
-    console.error("[AI] Skill gap analysis failed twice, using mock:", error);
+    logger.error("ai", "Skill gap analysis gagal 2x, fallback ke mock", {
+      category,
+      model: aiModel,
+      error,
+    });
     return generateMockSkillGap(category);
   }
 }

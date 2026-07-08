@@ -11,6 +11,7 @@ const navItems = [
   { href: "/admin/disputes", label: "Disputes", icon: "shield" as const },
   { href: "/admin/escrow", label: "Escrow", icon: "money" as const },
   { href: "/admin/ai-stats", label: "AI Stats", icon: "ai" as const },
+  { href: "/admin/logs", label: "Logs", icon: "file" as const },
 ];
 
 export default function AdminLayout({

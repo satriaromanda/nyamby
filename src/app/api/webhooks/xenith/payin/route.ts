@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyWebhookSignature, isWebhookTimestampValid } from "@/services/xenith";
+import { logger } from "@/lib/logger";
 
 // Webhook endpoint — tidak memerlukan auth (diakses langsung oleh Xenith)
 export async function POST(request: NextRequest) {
@@ -146,9 +147,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    logger.info("webhook", `PayIn ${status} diproses`, { xenithPayinId: id, escrowId: payment.escrowId });
     return NextResponse.json({ success: true, message: "OK" });
   } catch (error) {
-    console.error("[Webhook PayIn]", error);
+    logger.error("webhook", "PayIn webhook gagal diproses", error);
     return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
   }
 }
