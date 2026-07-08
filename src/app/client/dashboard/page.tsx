@@ -366,7 +366,7 @@ export default function ClientDashboard() {
                             </div>
                             <div className="flex items-center gap-3">
                               <span className={`text-xs px-3 py-1 rounded-full status-${job.escrow.status}`}>
-                                {job.escrow.status === "held" ? "Dana Ditahan" : job.escrow.status === "released" ? "Dana Dirilis" : job.escrow.status}
+                                {job.escrow.status === "held" ? "Dana Ditahan" : job.escrow.status === "released" ? "Dana Dirilis" : job.escrow.status === "pending" ? "Menunggu Pembayaran" : job.escrow.status === "refunded" ? "Dana Dikembalikan" : job.escrow.status}
                               </span>
                               <span className="text-sm text-surface-500">
                                 Rp {Number(job.escrow.amount).toLocaleString("id-ID")}
@@ -402,13 +402,36 @@ export default function ClientDashboard() {
                               Job sedang dikerjakan
                             </div>
                           )}
+                          {job.escrow.status === "pending" && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePayEscrow(job.id);
+                              }}
+                              className="bg-trust-500 hover:bg-trust-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-md flex items-center gap-1 animate-pulse"
+                            >
+                              <Icon name="shield" size={13} />
+                              Lanjutkan Pembayaran
+                            </button>
+                          )}
                         </div>
+
+                        {job.escrow.status === "held" && job.status !== "completed" && (
+                          <Link
+                            href={`/workspace/${job.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="mt-4 flex items-center justify-center gap-2 text-sm font-semibold text-primary-600 bg-primary-50 hover:bg-primary-100 py-2.5 rounded-xl transition-all"
+                          >
+                            <Icon name="users" size={16} />
+                            Buka Ruang Kerja
+                          </Link>
+                        )}
 
                         {/* Visual Escrow Flow */}
                         <div className="flex items-center gap-2 mt-4">
                           {[
-                            { label: "Dana Ditahan", active: true },
-                            { label: "In Progress", active: job.escrow.status !== "held" || job.status === "in_progress" },
+                            { label: "Dana Ditahan", active: job.escrow.status === "held" || job.escrow.status === "released" },
+                            { label: "In Progress", active: ["in_progress", "submitted_for_review", "revision_requested", "completed"].includes(job.status) },
                             { label: "Dana Dirilis", active: job.escrow.status === "released" },
                           ].map((step, i) => (
                             <div key={i} className="flex items-center gap-2 flex-1">

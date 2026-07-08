@@ -592,7 +592,17 @@ export default function TalentDashboard() {
                         </span>
                       </div>
                       <JobStatusTracker status={job.status} />
-                      
+
+                      {job.status !== "completed" && (
+                        <Link
+                          href={`/workspace/${job.job_id}`}
+                          className="mt-4 flex items-center justify-center gap-2 text-sm font-semibold text-primary-600 bg-primary-50 hover:bg-primary-100 py-2.5 rounded-xl transition-all"
+                        >
+                          <Icon name="users" size={16} />
+                          Buka Ruang Kerja
+                        </Link>
+                      )}
+
                       {/* Deliverable Actions */}
                       <div className="mt-4 pt-4 border-t border-surface-200">
                         {job.status === "in_progress" || job.status === "revision_requested" ? (

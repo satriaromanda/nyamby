@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Icon, Logo } from "@/components/icons";
-import EscrowPaymentClient from "./escrow-client";
+import EscrowPaymentClient, { PaymentInstructions } from "./escrow-client";
 
 export default async function EscrowPaymentPage({
   params,
@@ -44,15 +44,25 @@ export default async function EscrowPaymentPage({
   // Check if escrow already exists
   const existingEscrow = await prisma.escrowTransaction.findUnique({
     where: { jobId },
+    include: { payment: true },
   });
 
-  if (existingEscrow) {
+  // Escrow sudah dibayar (held/released/refunded) — tidak ada lagi yang perlu dilakukan di sini
+  if (existingEscrow && existingEscrow.status !== "pending") {
     redirect("/client/dashboard");
   }
 
-  const amount = Number(job.budgetMax || job.budgetMin || 1000000);
+  const amount = Number(job.budgetMax || job.budgetMin || 0);
   const talentName = acceptedMatch.talentProfile.user.fullName;
-  const talentUserId = acceptedMatch.talentProfile.userId;
+
+  // Escrow pending dengan pembayaran yang masih menunggu — tampilkan instruksi
+  // pembayaran yang sama agar client bisa melanjutkan (bukan dead-end redirect)
+  const pendingPayment =
+    existingEscrow?.status === "pending" &&
+    existingEscrow.payment &&
+    existingEscrow.payment.status === "PENDING"
+      ? existingEscrow.payment
+      : null;
 
   return (
     <div className="min-h-screen bg-surface-50">
@@ -72,7 +82,9 @@ export default async function EscrowPaymentPage({
           <div className="w-16 h-16 rounded-2xl bg-trust-50 text-trust-600 flex items-center justify-center mx-auto mb-6">
             <Icon name="shield" size={32} />
           </div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-center text-surface-900 mb-2">Pembayaran Escrow</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-center text-surface-900 mb-2">
+            {pendingPayment ? "Selesaikan Pembayaran" : "Pembayaran Escrow"}
+          </h1>
           <p className="text-center text-surface-500 text-sm mb-8">
             Dana Anda akan disimpan dengan aman dan hanya diteruskan ke talenta setelah pekerjaan selesai.
           </p>
@@ -82,23 +94,38 @@ export default async function EscrowPaymentPage({
               <span className="text-surface-500 text-sm">Project</span>
               <span className="font-semibold text-surface-900 text-sm">{job.title}</span>
             </div>
-            <div className="flex justify-between items-center pb-4 border-b border-surface-200">
+            <div className="flex justify-between items-center">
               <span className="text-surface-500 text-sm">Talenta</span>
               <span className="font-semibold text-surface-900 text-sm">{talentName}</span>
             </div>
-            <div className="flex justify-between items-center pt-2">
-              <span className="text-surface-500 font-medium">Total Dana Ditahan</span>
-              <span className="text-2xl font-bold text-trust-600">
-                Rp {amount.toLocaleString("id-ID")}
-              </span>
-            </div>
           </div>
 
-          <EscrowPaymentClient 
-            jobId={job.id} 
-            talentUserId={talentUserId} 
-            amount={amount} 
-          />
+          {pendingPayment ? (
+            <PaymentInstructions
+              payment={{
+                payment_code: pendingPayment.paymentCode,
+                payment_code_type: pendingPayment.paymentCodeType,
+                redirect_url: pendingPayment.redirectUrl,
+                total_amount: Number(pendingPayment.amount),
+                platform_fee: Number(existingEscrow!.platformFee),
+                amount: Number(existingEscrow!.amount),
+              }}
+            />
+          ) : amount > 0 ? (
+            <>
+              <div className="flex justify-between items-center mb-6 px-1">
+                <span className="text-surface-500 font-medium">Nilai Project (Dana Ditahan)</span>
+                <span className="text-2xl font-bold text-trust-600">
+                  Rp {amount.toLocaleString("id-ID")}
+                </span>
+              </div>
+              <EscrowPaymentClient jobId={job.id} amount={amount} />
+            </>
+          ) : (
+            <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-800 text-center">
+              Job ini belum memiliki budget. Lengkapi budget job terlebih dahulu sebelum melakukan pembayaran escrow.
+            </div>
+          )}
         </div>
       </main>
     </div>
