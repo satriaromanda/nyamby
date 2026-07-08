@@ -27,6 +27,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Akun ini terdaftar lewat ${user.provider === "google" ? "Google" : "GitHub"}. Silakan login pakai tombol ${user.provider === "google" ? "Google" : "GitHub"}.`,
+        },
+        { status: 401 }
+      );
+    }
+
     const isValid = await bcrypt.compare(password, user.passwordHash);
     if (!isValid) {
       return NextResponse.json(

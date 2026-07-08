@@ -52,7 +52,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-surface-900">
+        <h1 className="text-3xl font-extrabold tracking-tight text-surface-900">
           Admin Dashboard
         </h1>
         <p className="text-surface-500 text-sm mt-1">
@@ -72,7 +72,7 @@ export default function AdminDashboardPage() {
             { label: "Total Admin", value: stats.users.total_admin, icon: "shield" as const, color: "text-amber-600 bg-amber-50" },
             { label: "Baru Minggu Ini", value: stats.users.new_this_week, icon: "spark" as const, color: "text-emerald-600 bg-emerald-50" },
           ].map((stat, i) => (
-            <div key={i} className="glass rounded-xl p-5 card-hover">
+            <div key={i} className="card p-5 card-hover">
               <div className={`w-10 h-10 rounded-lg ${stat.color} flex items-center justify-center mb-3`}>
                 <Icon name={stat.icon} size={20} />
               </div>
@@ -91,7 +91,7 @@ export default function AdminDashboardPage() {
           <h2 className="text-sm font-bold text-surface-500 uppercase tracking-wider mb-4">
             Jobs
           </h2>
-          <div className="glass rounded-xl p-6 space-y-4">
+          <div className="card p-6 space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-surface-500">Total Jobs</span>
               <span className="text-lg font-bold text-surface-900">{stats.jobs.total_jobs}</span>
@@ -116,7 +116,7 @@ export default function AdminDashboardPage() {
           <h2 className="text-sm font-bold text-surface-500 uppercase tracking-wider mb-4">
             Financials
           </h2>
-          <div className="glass rounded-xl p-6 space-y-4">
+          <div className="card p-6 space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-surface-500">Total GMV</span>
               <span className="text-lg font-bold text-surface-900">{formatIDR(stats.financials.total_gmv_idr)}</span>
@@ -139,7 +139,7 @@ export default function AdminDashboardPage() {
           <h2 className="text-sm font-bold text-surface-500 uppercase tracking-wider mb-4">
             AI Matching
           </h2>
-          <div className="glass rounded-xl p-6 space-y-4">
+          <div className="card p-6 space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-surface-500">Total Matches</span>
               <span className="text-lg font-bold text-surface-900">{stats.ai.total_matches_generated}</span>
@@ -159,7 +159,7 @@ export default function AdminDashboardPage() {
           <h2 className="text-sm font-bold text-surface-500 uppercase tracking-wider mb-4">
             Disputes
           </h2>
-          <div className="glass rounded-xl p-6 space-y-4">
+          <div className="card p-6 space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-surface-500">Open</span>
               <span className={`text-lg font-bold ${stats.disputes.total_open > 0 ? "text-red-600" : "text-surface-900"}`}>

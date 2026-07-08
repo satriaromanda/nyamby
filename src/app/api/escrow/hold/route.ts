@@ -68,10 +68,10 @@ export async function POST(request: NextRequest) {
       const payInResult = await createPayIn({
         initiatedAmount: totalAmount,
         paymentMethod: "VIRTUAL_ACCOUNT",
-        paymentChannel: "BCA.VA",
+        paymentChannel: "BNI.VA",
         referenceCode,
         customerReference,
-        customerName: session.fullName || "Client AyoNyamby",
+        customerName: session.fullName || "Client Nyamby",
         description: `Pembayaran Escrow untuk Job: ${job.title}`,
         callbackUrl: `${APP_URL}/api/webhooks/xenith/payin`,
         redirectUrl: `${APP_URL}/client/dashboard`,

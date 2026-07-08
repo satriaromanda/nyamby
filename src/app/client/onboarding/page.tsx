@@ -112,11 +112,11 @@ export default function ClientOnboardingPage() {
           ))}
         </div>
 
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8 animate-slide-up">
+        <div className="card p-8 animate-slide-up">
           {/* Step 1: Industry, Location & Country */}
           {step === 1 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2 text-surface-900">
+              <h2 className="text-2xl font-extrabold tracking-tight mb-2 text-surface-900">
                 Informasi Perusahaan / Pribadi
               </h2>
               <p className="text-surface-500 text-sm mb-8">
@@ -235,7 +235,7 @@ export default function ClientOnboardingPage() {
           {/* Step 2: Details */}
           {step === 2 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2 text-surface-900">
+              <h2 className="text-2xl font-extrabold tracking-tight mb-2 text-surface-900">
                 {isExportClient ? "Profile Details" : "Detail Profil"}
               </h2>
               <p className="text-surface-500 text-sm mb-6">

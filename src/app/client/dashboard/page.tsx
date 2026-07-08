@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Icon, RatingStars, Logo } from "@/components/icons";
+import { Icon, Logo } from "@/components/icons";
 import { RatingModal } from "@/components/RatingModal";
+import { NotificationBell } from "@/components/NotificationBell";
+import { JobStatusTracker } from "@/components/JobStatusTracker";
 
 interface TopMatch {
   match_id: string;
@@ -31,222 +33,6 @@ interface JobItem {
   top_matches: TopMatch[];
   escrow: { status: string; amount: number } | null;
   has_rating: boolean;
-}
-
-interface Notification {
-  id: string;
-  type: string;
-  message: string;
-  related_job_id: string | null;
-  is_read: boolean;
-  created_at: string;
-}
-
-/* ─── Job Status Tracker ─────────────────────────────────────────── */
-
-function JobStatusTracker({ status }: { status: string }) {
-  const steps = [
-    { key: "active", label: "Posted", icon: "file" as const },
-    { key: "matched", label: "Matched", icon: "ai" as const },
-    { key: "in_progress", label: "In Progress", icon: "settings" as const },
-    { key: "completed", label: "Selesai", icon: "check" as const },
-  ];
-
-  const statusOrder: Record<string, number> = {
-    active: 0,
-    matched: 1,
-    in_progress: 2,
-    submitted_for_review: 2,
-    revision_requested: 2,
-    completed: 3,
-    cancelled: -1,
-  };
-
-  const currentIndex = statusOrder[status] ?? 0;
-
-  if (status === "cancelled") {
-    return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
-        <Icon name="x" className="text-red-600" size={14} />
-        <span className="text-xs text-red-600 font-medium">Dibatalkan</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-0 w-full">
-      {steps.map((step, i) => {
-        const isActive = i <= currentIndex;
-        const isCurrent = i === currentIndex;
-        return (
-          <div key={step.key} className="flex items-center flex-1 last:flex-none min-w-0">
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm transition-all duration-500 shrink-0 ${
-                  isCurrent
-                    ? "gradient-primary shadow-lg shadow-primary-500/20 scale-110 text-white"
-                    : isActive
-                      ? "bg-accent-500/10 text-accent-600"
-                      : "bg-surface-100 text-surface-400"
-                }`}
-              >
-                {isActive && i < currentIndex ? <Icon name="check" size={12} /> : <Icon name={step.icon} size={12} />}
-              </div>
-              <span
-                className={`text-[8px] sm:text-[9px] mt-1 font-medium transition-colors whitespace-nowrap ${
-                  isCurrent
-                    ? "text-primary-600"
-                    : isActive
-                      ? "text-accent-600"
-                      : "text-surface-300"
-                }`}
-              >
-                {step.label}
-              </span>
-            </div>
-            {i < steps.length - 1 && (
-              <div
-                className={`flex-1 h-0.5 mx-0.5 sm:mx-1 rounded-full transition-all duration-500 ${
-                  i < currentIndex ? "bg-accent-500/30" : "bg-surface-200"
-                }`}
-              />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/* ─── Notification Bell ──────────────────────────────────────────── */
-
-function NotificationBell() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  const fetchNotifications = useCallback(async () => {
-    try {
-      const res = await fetch("/api/notifications");
-      const d = await res.json();
-      if (d.success) {
-        setNotifications(d.data.notifications);
-        setUnreadCount(d.data.unread_count);
-      }
-    } catch {
-      // silent fail
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
-  }, [fetchNotifications]);
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const markAsRead = async (id: string) => {
-    await fetch(`/api/notifications/${id}/read`, { method: "PATCH" });
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-    );
-    setUnreadCount((prev) => Math.max(0, prev - 1));
-  };
-
-  const typeIcons: Record<string, "target" | "check" | "x" | "money" | "spark"> = {
-    new_match: "target",
-    job_accepted: "check",
-    job_rejected: "x",
-    payment_held: "money",
-    payment_released: "spark",
-  };
-
-  const timeAgo = (dateStr: string) => {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return "Baru saja";
-    if (mins < 60) return `${mins} menit lalu`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours} jam lalu`;
-    const days = Math.floor(hours / 24);
-    return `${days} hari lalu`;
-  };
-
-  return (
-    <div className="relative" ref={panelRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-xl hover:bg-surface-100 transition-colors"
-        aria-label="Notifications"
-      >
-        <Icon name="bell" className="text-surface-500" size={20} />
-        {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full gradient-primary flex items-center justify-center text-[10px] font-bold text-white animate-pulse">
-            {unreadCount > 9 ? "9+" : unreadCount}
-          </span>
-        )}
-      </button>
-
-      {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl overflow-hidden shadow-xl shadow-black/10 border border-surface-200 animate-scale-in z-50">
-          <div className="p-4 border-b border-surface-200">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm text-surface-900">Notifikasi</h3>
-              {unreadCount > 0 && (
-                <span className="text-[10px] text-primary-600 font-medium">
-                  {unreadCount} belum dibaca
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className="max-h-80 overflow-y-auto">
-            {notifications.length > 0 ? (
-              notifications.slice(0, 15).map((notif) => (
-                <button
-                  key={notif.id}
-                  onClick={() => !notif.is_read && markAsRead(notif.id)}
-                  className={`w-full text-left p-4 hover:bg-surface-50 transition-colors border-b border-surface-100 last:border-0 ${
-                    !notif.is_read ? "bg-primary-50/50" : ""
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <Icon name={typeIcons[notif.type] || "bell"} className="shrink-0 mt-0.5 text-primary-600" size={18} />
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-xs leading-relaxed ${!notif.is_read ? "text-surface-900" : "text-surface-500"}`}>
-                        {notif.message}
-                      </p>
-                      <span className="text-[10px] text-surface-400 mt-1 block">
-                        {timeAgo(notif.created_at)}
-                      </span>
-                    </div>
-                    {!notif.is_read && (
-                      <div className="w-2 h-2 rounded-full bg-primary-500 shrink-0 mt-1.5" />
-                    )}
-                  </div>
-                </button>
-              ))
-            ) : (
-              <div className="p-8 text-center">
-                <Icon name="bell" className="mx-auto mb-2 text-surface-300" size={26} />
-                <p className="text-xs text-surface-400">Belum ada notifikasi</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
 }
 
 /* ─── Main Dashboard ─────────────────────────────────────────────── */
@@ -366,11 +152,17 @@ export default function ClientDashboard() {
       <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Logo height={28} />
+            <Logo height={32} />
           </Link>
+          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
+            <span className="pill-tab pill-tab-active cursor-default">Home</span>
+            <Link href="/talents" className="pill-tab">Cari Talenta</Link>
+            <Link href="/client/disputes" className="pill-tab">Disputes</Link>
+          </div>
+
           <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
             <NotificationBell />
-            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap">
+            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap rounded-full">
               + Post Job
             </Link>
             <Link href="/client/settings" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline" title="Pengaturan">
@@ -386,8 +178,8 @@ export default function ClientDashboard() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-surface-900" >
-              Dashboard Client
+            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 text-surface-900">
+              Dashboard <span className="text-gradient-brand">Client</span>
             </h1>
             <p className="text-surface-500">
               Kelola job posting dan lihat talenta terbaik yang direkomendasikan AI.
@@ -403,10 +195,14 @@ export default function ClientDashboard() {
             { label: "In Progress", value: jobs.filter((j) => j.status === "in_progress").length, icon: "settings" as const },
             { label: "Selesai", value: jobs.filter((j) => j.status === "completed").length, icon: "check" as const },
           ].map((stat, i) => (
-            <div key={i} className="glass rounded-xl p-4">
-              <Icon name={stat.icon} className="mb-1 text-primary-600" size={20} />
-              <div className="text-2xl font-bold text-surface-900" >{stat.value}</div>
-              <div className="text-xs text-surface-400">{stat.label}</div>
+            <div key={i} className="card card-hover p-5 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-ai-50 text-primary-600 flex items-center justify-center shrink-0">
+                <Icon name={stat.icon} size={18} />
+              </div>
+              <div>
+                <div className="text-2xl font-extrabold text-surface-900 leading-none mb-1">{stat.value}</div>
+                <div className="text-xs text-surface-400">{stat.label}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -415,7 +211,7 @@ export default function ClientDashboard() {
         {jobs.length > 0 ? (
           <div className="space-y-4">
             {jobs.map((job) => (
-              <div key={job.id} className="glass rounded-xl overflow-hidden card-hover">
+              <div key={job.id} className="card overflow-hidden card-hover">
                 <div
                   className="p-6 cursor-pointer"
                   onClick={() => setExpandedJob(expandedJob === job.id ? null : job.id)}
@@ -639,6 +435,8 @@ export default function ClientDashboard() {
                                 const acceptedMatch = job.top_matches.find(m => m.status === "accepted");
                                 if (acceptedMatch) {
                                   setRatingModal({ isOpen: true, jobId: job.id, talentProfileId: acceptedMatch.talent_profile_id });
+                                } else {
+                                  alert("Tidak ditemukan talenta yang diterima untuk job ini. Rating tidak bisa diberikan.");
                                 }
                               }}
                               className="btn-primary text-xs px-4 py-2"
@@ -660,7 +458,7 @@ export default function ClientDashboard() {
             ))}
           </div>
         ) : (
-          <div className="glass rounded-xl p-16 text-center">
+          <div className="card p-16 text-center">
             <Icon name="file" className="mx-auto text-surface-300" size={48} />
             <h3 className="text-xl font-bold mb-2 text-surface-900" >Belum ada job</h3>
             <p className="text-surface-500 text-sm mb-6">Post job pertamamu dan biarkan AI mencarikan talenta terbaik.</p>
@@ -669,17 +467,9 @@ export default function ClientDashboard() {
             </Link>
 
             <div className="mt-8 pt-8 border-t border-surface-200">
-              <p className="text-xs text-surface-400 mb-2">Talenta yang telah menyelesaikan job:</p>
-              <div className="flex justify-center gap-6">
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-surface-900">Raka P.</div>
-                  <RatingStars rating={4.8} reviewCount={3} size={12} />
-                </div>
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-surface-900">Sari W.</div>
-                  <RatingStars rating={5.0} reviewCount={5} size={12} />
-                </div>
-              </div>
+              <p className="text-xs text-surface-400">
+                Setelah job selesai, kamu bisa memberi rating ke talenta yang mengerjakannya.
+              </p>
             </div>
           </div>
         )}

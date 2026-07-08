@@ -80,7 +80,7 @@ export default function AdminDisputesPage() {
       <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-8">
         <div className="flex justify-between items-end mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-surface-900">
+            <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900">
               Dispute Resolution
             </h1>
             <p className="text-surface-500">
@@ -101,7 +101,7 @@ export default function AdminDisputesPage() {
           </div>
         </div>
 
-        <div className="glass rounded-xl overflow-hidden border border-surface-200">
+        <div className="card overflow-hidden border border-surface-200">
           {loading ? (
             <div className="p-12 text-center text-surface-500">
               <div className="animate-spin w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full mx-auto mb-4" />

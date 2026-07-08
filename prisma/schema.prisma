@@ -120,9 +120,12 @@ enum Currency {
 // ─── Models ─────────────────────────────────────────────────────────────────
 
 model User {
-  id                  String   @id @default(uuid())
-  email               String   @unique
-  passwordHash        String   @map("password_hash")
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  passwordHash        String?   @map("password_hash")
+  provider            String?   @map("provider")
+  providerId          String?   @map("provider_id")
+  emailVerified       DateTime? @map("email_verified")
   role                Role
   fullName            String   @map("full_name")
   avatarUrl           String?  @map("avatar_url")
@@ -142,6 +145,7 @@ model User {
   initiatedDisputes DisputeTicket[]   @relation("DisputeInitiator")
   givenRatings    TalentRating[]      @relation("ClientRatings")
 
+  @@unique([provider, providerId])
   @@map("users")
 }
 
@@ -448,4 +452,16 @@ model PortfolioAnalysis {
   talentProfile TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
 
   @@map("portfolio_analyses")
+}
+
+// Waitlist signups for the "Physical Mode" coming-soon page — anonymous
+// (no User relation) since visitors sign up before they have an account.
+model PhysicalModeWaitlist {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  role      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("physical_mode_waitlist")
 }

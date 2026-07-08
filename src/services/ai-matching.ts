@@ -88,8 +88,9 @@ export async function runAiJobMatching(jobId: string, category: TalentCategory) 
 
     // Use transaction for bulk inserts to avoid N+1 DB calls
     await prisma.$transaction(async (tx) => {
-      // Safely delete old matches before inserting new ones
-      await tx.jobMatch.deleteMany({ where: { jobId } });
+      // Only clear stale AI-generated recommendations; keep matches the talent
+      // has already applied to / been accepted for (re-match must not erase them).
+      await tx.jobMatch.deleteMany({ where: { jobId, status: "recommended" } });
 
       // 1. Bulk Create Matches
       await tx.jobMatch.createMany({

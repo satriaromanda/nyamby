@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Icon, Logo } from "@/components/icons";
+import { Navbar } from "@/components/layout/Navbar";
 
 /* ─── Cost Calculator ──────────────────────────────────────────── */
 
@@ -33,7 +34,7 @@ function CostCalculator() {
   const savingsPct = Math.round(((localCostMin - nyambyCostMax) / localCostMin) * 100);
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8">
+    <div className="card p-8">
       <h3 className="text-xl font-bold text-surface-900 mb-6 flex items-center gap-2">
         <Icon name="money" size={20} />
         Cost Comparison Calculator
@@ -124,28 +125,7 @@ function CostCalculator() {
 export default function GlobalLandingPage() {
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Navbar */}
-      <nav className="glass sticky top-0 z-50" role="navigation">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={32} />
-            <span className="text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full border border-primary-100">
-              GLOBAL
-            </span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm text-surface-600 hover:text-surface-900 transition-colors font-medium">
-              Sign In
-            </Link>
-            <Link
-              href="/register?role=client&country=malaysia"
-              className="btn-primary text-sm px-5 py-2.5 rounded-xl"
-            >
-              Post a Job — Free
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero */}
       <section className="gradient-hero relative overflow-hidden">
@@ -159,7 +139,7 @@ export default function GlobalLandingPage() {
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-surface-900 leading-tight mb-6">
               Hire Verified{" "}
-              <span className="gradient-text">Indonesian Talent</span>
+              <span className="text-gradient-brand">Indonesian Talent</span>
               <br />at Competitive Rates
             </h1>
 
@@ -343,7 +323,7 @@ export default function GlobalLandingPage() {
       {/* CTA */}
       <section className="py-20 px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-12">
+          <div className="card p-12">
             <h2 className="text-3xl font-bold text-surface-900 mb-4">
               Ready to Hire Indonesian Talent?
             </h2>

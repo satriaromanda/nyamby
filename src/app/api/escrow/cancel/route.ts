@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
         data: {
           userId: otherUserId,
           type: "dispute_opened",
-          message: `${initiatorRole} mengajukan pembatalan untuk job "${escrow.job.title}". Tim AyoNyamby akan meninjau dan menentukan keputusan.`,
+          message: `${initiatorRole} mengajukan pembatalan untuk job "${escrow.job.title}". Tim Nyamby akan meninjau dan menentukan keputusan.`,
           relatedJobId: job_id,
           metadata: { dispute_id: ticket.id, reason: disputeReason },
         },
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
         data: {
           userId: session.userId,
           type: "dispute_opened",
-          message: `Pengajuan pembatalan untuk job "${escrow.job.title}" telah diterima. Tim AyoNyamby akan meninjau dalam 1-3 hari kerja.`,
+          message: `Pengajuan pembatalan untuk job "${escrow.job.title}" telah diterima. Tim Nyamby akan meninjau dalam 1-3 hari kerja.`,
           relatedJobId: job_id,
           metadata: { dispute_id: ticket.id },
         },
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Pengajuan pembatalan berhasil. Menunggu keputusan arbitrasi tim AyoNyamby.",
+      message: "Pengajuan pembatalan berhasil. Menunggu keputusan arbitrasi tim Nyamby.",
       data: {
         dispute_id: result.id,
         job_id,

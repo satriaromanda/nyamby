@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Icon, Logo } from "@/components/icons";
+import { AIBadge } from "@/components/AIBadge";
+import { SmartPricingCard } from "@/components/SmartPricingCard";
 
 interface Skill {
   id: string;
@@ -78,6 +80,11 @@ export default function OnboardingPage() {
   };
 
   const handleSubmit = async () => {
+    if (!form.bank_code || !form.bank_account) {
+      setError("Data rekening bank wajib diisi agar kamu bisa menerima pembayaran dari client.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -189,11 +196,11 @@ export default function OnboardingPage() {
           ))}
         </div>
 
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8 animate-slide-up">
+        <div className="card p-8 animate-slide-up">
           {/* Step 1: Category */}
           {step === 1 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2 text-surface-900" >
+              <h2 className="text-2xl font-extrabold tracking-tight mb-2 text-surface-900" >
                 Pilih Kategorimu
               </h2>
               <p className="text-surface-500 text-sm mb-8">
@@ -235,7 +242,7 @@ export default function OnboardingPage() {
           {/* Step 2: Skills */}
           {step === 2 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2 text-surface-900" >
+              <h2 className="text-2xl font-extrabold tracking-tight mb-2 text-surface-900" >
                 Pilih Skill-mu
               </h2>
               <p className="text-surface-500 text-sm mb-6">
@@ -314,7 +321,7 @@ export default function OnboardingPage() {
           {/* Step 3: Profile Details */}
           {step === 3 && (
             <div>
-              <h2 className="text-2xl font-bold mb-2 text-surface-900" >
+              <h2 className="text-2xl font-extrabold tracking-tight mb-2 text-surface-900" >
                 Detail Profilmu
               </h2>
               <p className="text-surface-500 text-sm mb-6">
@@ -335,49 +342,17 @@ export default function OnboardingPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
-                    {(() => {
-                      const getOverallLevel = () => {
-                        if (form.skills.length === 0) return "beginner";
-                        if (form.skills.some((s) => s.level === "expert")) return "expert";
-                        if (form.skills.some((s) => s.level === "intermediate")) return "intermediate";
-                        return "beginner";
-                      };
-                      
-                      const getPricingGuidance = (category: string, level: string) => {
-                        if (category === "web_dev") {
-                          if (level === "beginner") return { hourly: "Rp 50.000 - 100.000", project: "Rp 1jt - 3jt" };
-                          if (level === "intermediate") return { hourly: "Rp 150.000 - 250.000", project: "Rp 5jt - 10jt" };
-                          if (level === "expert") return { hourly: "Rp 300.000+", project: "Rp 15jt+" };
-                        } else if (category === "graphic_designer") {
-                          if (level === "beginner") return { hourly: "Rp 35.000 - 75.000", project: "Rp 500rb - 1.5jt" };
-                          if (level === "intermediate") return { hourly: "Rp 100.000 - 200.000", project: "Rp 2.5jt - 5jt" };
-                          if (level === "expert") return { hourly: "Rp 250.000+", project: "Rp 8jt+" };
-                        }
-                        return null;
-                      };
-
-                      const guidance = getPricingGuidance(form.category, getOverallLevel());
-
-                      if (!guidance) return null;
-
-                      return (
-                        <div className="bg-[#FAEEDA] p-4 rounded-xl border border-[#F5D8A9] flex items-start gap-3">
-                          <Icon name="info" className="text-[#854F0B] mt-0.5 shrink-0" size={18} />
-                          <div>
-                            <div className="text-sm font-bold text-[#854F0B] flex items-center gap-2">
-                              💡 Smart Pricing Guidance
-                            </div>
-                            <p className="text-xs text-[#854F0B]/80 mt-1">
-                              Berdasarkan kategori dan level keahlianmu, rate rekomendasi standar industri:
-                            </p>
-                            <div className="mt-2 flex gap-4 text-xs font-semibold text-[#854F0B]">
-                              <span>⏱️ {guidance.hourly}/jam</span>
-                              <span>📦 {guidance.project}/project</span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })()}
+                    <SmartPricingCard
+                      category={form.category}
+                      skills={form.skills.map((s) => s.name)}
+                      level={
+                        form.skills.some((s) => s.level === "expert")
+                          ? "expert"
+                          : form.skills.some((s) => s.level === "intermediate")
+                            ? "intermediate"
+                            : "beginner"
+                      }
+                    />
                   </div>
                   <div>
                     <label className="block text-sm text-surface-600 mb-2">Rate / Jam (IDR)</label>
@@ -419,9 +394,7 @@ export default function OnboardingPage() {
                   <label className="flex items-center gap-2 text-sm text-surface-600 mb-2">
                     <Icon name="link" className="text-[#0F6E56]" size={15} />
                     Portfolio URL
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-[#FAEEDA] text-[#854F0B]">
-                      AI enrichment
-                    </span>
+                    <AIBadge className="px-2 py-0.5" />
                   </label>
                   <input
                     type="url"
@@ -445,9 +418,7 @@ export default function OnboardingPage() {
                         <Icon name="upload" className="text-[#0F6E56]" size={15} />
                         CV PDF
                       </span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#FAEEDA] text-[#854F0B]">
-                        AI enrichment
-                      </span>
+                      <AIBadge className="px-2 py-0.5" />
                     </label>
                     <input
                       type="file"
@@ -471,9 +442,7 @@ export default function OnboardingPage() {
                         <Icon name="upload" className="text-[#0F6E56]" size={15} />
                         Portfolio File
                       </span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#FAEEDA] text-[#854F0B]">
-                        AI enrichment
-                      </span>
+                      <AIBadge className="px-2 py-0.5" />
                     </label>
                     <input
                       type="file"
@@ -504,11 +473,11 @@ export default function OnboardingPage() {
                     </span>
                   </label>
                   <p className="text-[10px] text-surface-400 mb-3">
-                    Dibutuhkan agar kamu bisa menerima pembayaran dari client melalui escrow.
+                    Wajib diisi agar kamu bisa menerima pembayaran dari client melalui escrow.
                   </p>
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-xs text-surface-500 mb-1">Bank / E-Wallet</label>
+                      <label className="block text-xs text-surface-500 mb-1">Bank / E-Wallet <span className="text-red-500">*</span></label>
                       <select
                         className="input-dark text-sm"
                         value={form.bank_code}
@@ -526,7 +495,7 @@ export default function OnboardingPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs text-surface-500 mb-1">Nomor Rekening / HP</label>
+                      <label className="block text-xs text-surface-500 mb-1">Nomor Rekening / HP <span className="text-red-500">*</span></label>
                       <input
                         type="text"
                         className="input-dark"
