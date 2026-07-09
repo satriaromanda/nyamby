@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    const { title, description, category, budget_min, budget_max, deadline, required_skills } = result.data;
+    const { title, description, category, budget_min, budget_max, deadline, required_skills, experience_level } = result.data;
 
     // 2. PRD v4.0 §3.2 — Check client's preferred currency for cross-border display
     const clientProfile = await prisma.clientProfile.findUnique({
@@ -64,6 +64,8 @@ export async function POST(request: NextRequest) {
         budgetMax: finalBudgetMax,
         deadline: deadline ? new Date(deadline) : null,
         status: "active",
+        // PRD v5.3 §6.4 — experience level for AI matching
+        experienceLevel: experience_level || null,
         // PRD v4.0 §2.2 — Currency display fields
         displayCurrency,
         fxRateAtPosting,

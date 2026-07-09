@@ -53,6 +53,8 @@ export async function runAiJobMatching(jobId: string, category: TalentCategory) 
       required_skills: jobWithSkills.requiredSkills.map((rs) => rs.skill.name),
       category: jobWithSkills.category,
       budget_range: `${jobWithSkills.budgetMin || 0} - ${jobWithSkills.budgetMax || "Negotiable"} IDR`,
+      // PRD v5.3 §6.4 — level requirement feeds the matching prompt
+      experience_level: jobWithSkills.experienceLevel || null,
     };
 
     const talentData = allTalents.map((t) => ({

@@ -23,6 +23,8 @@ export const jobCreateSchema = z.object({
   title: z.string().min(5, { message: "Judul minimal 5 karakter" }).max(255),
   description: z.string().min(20, { message: "Deskripsi minimal 20 karakter" }),
   category: z.enum(["web_dev", "graphic_designer"], { message: "Kategori tidak valid" }),
+  // PRD v5.3 §6.4 — required experience level (optional, backwards compatible)
+  experience_level: z.enum(["beginner", "intermediate", "expert"]).nullable().optional(),
   budget_min: z.number().nullable().optional(),
   budget_max: z.number().nullable().optional(),
   deadline: z.string().nullable().optional(),

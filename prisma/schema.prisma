@@ -256,6 +256,8 @@ model Job {
   submissionUrl    String?        @map("submission_url")
   submissionNotes  String?        @map("submission_notes")
   submittedAt      DateTime?      @map("submitted_at")
+  // PRD v5.3 §6.4 — Required experience level, feeds AI matching
+  experienceLevel  SkillLevel?    @map("experience_level")
   // PRD v4.0 §2.2 — Currency display for cross-border clients
   displayCurrency  Currency       @default(IDR) @map("display_currency")
   fxRateAtPosting  Decimal?       @map("fx_rate_at_posting") @db.Decimal(12, 6)
