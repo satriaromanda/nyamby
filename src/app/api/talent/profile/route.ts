@@ -31,6 +31,7 @@ export async function GET() {
       where: { userId: session.userId },
       include: {
         talentSkills: { include: { skill: true } },
+        experiences: { orderBy: { startDate: "desc" } },
       },
     });
 
@@ -70,6 +71,17 @@ export async function GET() {
           level: ts.level,
           category: ts.skill.category,
         })),
+        // PRD v5.3 §6.7 — structured experience
+        experiences: profile.experiences.map((ex) => ({
+          id: ex.id,
+          title: ex.title,
+          company: ex.company,
+          description: ex.description,
+          tech_stack: ex.techStack,
+          start_date: ex.startDate,
+          end_date: ex.endDate,
+          url: ex.url,
+        })),
       },
     });
   } catch (error) {
@@ -104,7 +116,7 @@ export async function PATCH(request: NextRequest) {
         { status: 400 }
       );
     }
-    const { bio, rate_per_hour, rate_per_project, availability, location, portfolio_url, cv_text, portfolio_context, skills, slug, bank_code, bank_account, bank_account_name } = result.data;
+    const { bio, rate_per_hour, rate_per_project, availability, location, portfolio_url, cv_text, portfolio_context, skills, slug, bank_code, bank_account, bank_account_name, experiences } = result.data;
 
     const profile = await prisma.talentProfile.findUnique({
       where: { userId: session.userId },
@@ -154,6 +166,27 @@ export async function PATCH(request: NextRequest) {
         // Trigger AI skill gap in background
         triggerAiSkillGapUpdate(profile.id, skills, updated.category, updated.bio, updated.cvText, updated.portfolioContext).catch(console.error);
       }
+    }
+
+    // PRD v5.3 §6.7 — replace-all experiences update (same semantics as skills)
+    if (experiences && Array.isArray(experiences)) {
+      await prisma.$transaction(async (tx) => {
+        await tx.talentExperience.deleteMany({ where: { talentProfileId: profile.id } });
+        if (experiences.length > 0) {
+          await tx.talentExperience.createMany({
+            data: experiences.map((ex) => ({
+              talentProfileId: profile.id,
+              title: ex.title,
+              company: ex.company || null,
+              description: ex.description || null,
+              techStack: ex.tech_stack || [],
+              startDate: ex.start_date ? new Date(ex.start_date) : null,
+              endDate: ex.end_date ? new Date(ex.end_date) : null,
+              url: ex.url || null,
+            })),
+          });
+        }
+      });
     }
 
     return NextResponse.json({

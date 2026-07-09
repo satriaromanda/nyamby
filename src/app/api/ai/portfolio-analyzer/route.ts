@@ -56,6 +56,8 @@ export async function POST(request: NextRequest) {
       where: { userId: session.userId },
       include: {
         talentSkills: { include: { skill: true } },
+        // PRD v5.3 §6.7 — structured experience strengthens the analysis
+        experiences: { orderBy: { startDate: "desc" }, take: 10 },
       },
     });
 
@@ -83,11 +85,25 @@ export async function POST(request: NextRequest) {
 
     // Build user prompt
     const skills = profile.talentSkills.map((ts) => `${ts.skill.name} (${ts.level})`).join(", ");
+    // PRD v5.3 §6.7 — structured experiences as concrete evidence
+    const experiencesText =
+      profile.experiences.length > 0
+        ? profile.experiences
+            .map(
+              (ex) =>
+                `- ${ex.title}${ex.company ? ` @ ${ex.company}` : ""}${
+                  ex.techStack.length > 0 ? ` [${ex.techStack.join(", ")}]` : ""
+                }${ex.description ? `: ${ex.description}` : ""}`
+            )
+            .join("\n")
+        : "Tidak ada";
     const userPrompt = `Analisis portofolio talenta berikut:
 
 Kategori: ${profile.category}
 Skills: ${skills}
 Bio: ${profile.bio || "Tidak ada"}
+Pengalaman Terstruktur:
+${experiencesText}
 Portfolio URL: ${profile.portfolioUrl || "Tidak ada"}
 Portfolio Context: ${profile.portfolioContext || "Tidak ada"}
 CV Text: ${profile.cvText || "Tidak ada"}
