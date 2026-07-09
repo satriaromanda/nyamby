@@ -166,7 +166,7 @@ export default function PostJobPage() {
     <div className="min-h-screen bg-surface-50">
       {/* Nav moved to DashboardSidebar via /client layout (PRD v5.3 §6.12) */}
       <main role="main" className="max-w-2xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold mb-2 text-surface-900" >
+        <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900" >
           {isExportClient ? "Post a New Job" : "Post Job Baru"}
         </h1>
         <p className="text-surface-500 mb-8">
@@ -192,7 +192,7 @@ export default function PostJobPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="card p-8 space-y-6">
           <div>
             <label className="block text-sm text-surface-600 mb-2">
               {isExportClient ? "Job Title *" : "Judul Job *"}
@@ -301,6 +301,11 @@ export default function PostJobPage() {
                 );
               })}
             </div>
+            {form.required_skills.length === 0 && (
+              <p className="text-xs text-red-500 mt-2">
+                {isExportClient ? "Select at least 1 skill to post the job." : "Pilih minimal 1 skill untuk bisa post job."}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

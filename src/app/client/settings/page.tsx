@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Icon } from "@/components/icons";
-
+import { Icon, Logo } from "@/components/icons";
+import Image from "next/image";
 
 interface ClientProfile {
   id: string;
@@ -15,6 +15,8 @@ interface ClientProfile {
   bank_code: string | null;
   bank_account: string | null;
   bank_account_name: string | null;
+  business_verified_at: string | null;
+  business_email_domain: string | null;
   stats: {
     total_jobs: number;
     active_jobs: number;
@@ -35,6 +37,9 @@ export default function ClientSettingsPage() {
     bank_account: "",
     bank_account_name: "",
   });
+
+  const [kybForm, setKybForm] = useState({ business_email: "", company_url: "" });
+  const [verifying, setVerifying] = useState(false);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ message, type });
@@ -103,6 +108,41 @@ export default function ClientSettingsPage() {
     }
   };
 
+  const handleVerifyBusiness = async () => {
+    if (!kybForm.business_email.trim()) {
+      showToast("Email bisnis wajib diisi", "error");
+      return;
+    }
+
+    setVerifying(true);
+    try {
+      const res = await fetch("/api/client/verify-business", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          business_email: kybForm.business_email.trim(),
+          company_url: kybForm.company_url.trim() || undefined,
+        }),
+      });
+      const d = await res.json();
+      if (d.success) {
+        showToast("Verifikasi bisnis berhasil! Profilmu sekarang punya badge Verified Client.");
+        fetchProfile();
+      } else {
+        showToast(d.message || "Verifikasi gagal", "error");
+      }
+    } catch {
+      showToast("Terjadi kesalahan", "error");
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
@@ -128,14 +168,30 @@ export default function ClientSettingsPage() {
         </div>
       )}
 
-      {/* Nav moved to DashboardSidebar via /client layout (PRD v5.3 §6.12) */}
+      {/* Nav */}
+      <nav className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <Logo height={32} />
+          </Link>
+          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
+            <Link href="/client/dashboard" className="pill-tab">Home</Link>
+            <Link href="/client/post-job" className="pill-tab">Post Job</Link>
+            <span className="pill-tab pill-tab-active cursor-default">Pengaturan</span>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="text-xs text-surface-400 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+          >
+            Keluar
+          </button>
+        </div>
+      </nav>
+
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1
-            className="text-3xl font-bold mb-2 text-surface-900"
-            
-          >
+          <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900">
             Pengaturan Profil
           </h1>
           <p className="text-surface-500">Kelola profil dan preferensi akun client-mu.</p>
@@ -145,13 +201,14 @@ export default function ClientSettingsPage() {
           {/* ─── Sidebar: Profile Preview & Stats ──────────── */}
           <div className="space-y-4">
             {/* Profile Card */}
-            <div className="glass rounded-xl p-6 text-center animate-slide-up">
-              <div className="w-20 h-20 mx-auto rounded-2xl gradient-primary flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg shadow-primary-500/20">
+            <div className="card p-6 text-center animate-slide-up">
+              <div className="w-20 h-20 mx-auto rounded-2xl gradient-primary flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg shadow-primary-500/20 relative overflow-hidden">
                 {profile.avatar_url ? (
-                  <img
+                  <Image
                     src={profile.avatar_url}
                     alt={profile.full_name}
-                    className="w-full h-full rounded-2xl object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   profile.full_name[0]
@@ -180,7 +237,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Stats Card */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h3 className="font-bold text-sm mb-4 text-surface-900 flex items-center gap-2"><Icon name="chart" size={15} />Statistik</h3>
               <div className="space-y-3">
                 {[
@@ -208,7 +265,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h3 className="font-bold text-sm mb-3 text-surface-900"><Icon name="bolt" className="inline mr-1.5 text-action-500" size={15} />Aksi Cepat</h3>
               <div className="space-y-2">
                 <Link
@@ -236,7 +293,7 @@ export default function ClientSettingsPage() {
           {/* ─── Main: Edit Form ───────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
             {/* Editable Info */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
                 
@@ -267,7 +324,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Bank Info */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.075s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.075s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 Informasi Rekening Bank
               </h2>
@@ -331,8 +388,94 @@ export default function ClientSettingsPage() {
               </div>
             </div>
 
+            {/* Business Verification — PRD v4.0 §3.3 */}
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.09s" }}>
+              <div className="flex items-center justify-between gap-3 mb-1">
+                <h2 className="font-bold text-lg text-surface-900">
+                  <Icon name="shield" className="inline mr-1.5 text-primary-600" size={20} />Verifikasi Bisnis
+                </h2>
+                {profile.business_verified_at && (
+                  <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 font-semibold whitespace-nowrap inline-flex items-center gap-1">
+                    <Icon name="check" size={11} />
+                    Verified Client
+                  </span>
+                )}
+              </div>
+
+              {profile.business_verified_at ? (
+                <div className="mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+                  <p className="text-sm text-emerald-800">
+                    Bisnismu terverifikasi dengan domain{" "}
+                    <span className="font-semibold">@{profile.business_email_domain}</span>{" "}
+                    sejak{" "}
+                    {new Date(profile.business_verified_at).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                    . Badge Verified Client tampil di profil dan job posting-mu.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs text-surface-400 mb-5">
+                    Verifikasi dengan email bisnis (bukan Gmail/Yahoo/dsb) untuk mendapat badge
+                    Verified Client — meningkatkan kepercayaan talenta terhadap job posting-mu.
+                  </p>
+
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-surface-600 mb-2">
+                          Email Bisnis <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          className="input-dark"
+                          placeholder="nama@perusahaanmu.com"
+                          value={kybForm.business_email}
+                          onChange={(e) => setKybForm({ ...kybForm, business_email: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-surface-600 mb-2">
+                          Website Perusahaan <span className="text-surface-300">(opsional)</span>
+                        </label>
+                        <input
+                          type="url"
+                          className="input-dark"
+                          placeholder="https://perusahaanmu.com"
+                          value={kybForm.company_url}
+                          onChange={(e) => setKybForm({ ...kybForm, company_url: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        onClick={handleVerifyBusiness}
+                        disabled={verifying}
+                        className="btn-secondary px-6 py-2.5 text-sm disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {verifying ? (
+                          <>
+                            <div className="animate-spin w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full" />
+                            Memverifikasi...
+                          </>
+                        ) : (
+                          <span className="inline-flex items-center gap-2">
+                            <Icon name="shield" size={15} />
+                            Verifikasi Sekarang
+                          </span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
             {/* Account Info (read-only) */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
                 
@@ -366,7 +509,7 @@ export default function ClientSettingsPage() {
             </div>
 
             {/* Platform Info */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h2
                 className="font-bold text-lg mb-1 text-surface-900"
                 

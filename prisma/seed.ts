@@ -246,7 +246,28 @@ async function main() {
     },
   });
 
-  // Admin: AyoNyamby Admin
+  // Client profile — wajib ada supaya verify-business, refund payout, dan
+  // cross-border flow bisa dites langsung dari akun demo.
+  await prisma.clientProfile.upsert({
+    where: { userId: budi.id },
+    update: {},
+    create: {
+      userId: budi.id,
+      companyName: "PT Karya Digital Indonesia",
+      industry: "tech",
+      companySize: "11-50",
+      location: "Jakarta",
+      description: "Perusahaan pengembangan produk digital untuk UMKM.",
+      websiteUrl: "https://karyadigital.co.id",
+      bankCode: "BCA",
+      bankAccount: "8880012345",
+      bankAccountName: "PT Karya Digital Indonesia",
+      country: "indonesia",
+      preferredCurrency: "IDR",
+    },
+  });
+
+  // Admin: Nyamby Admin
   const admin = await prisma.user.upsert({
     where: { email: "admin@ayonyamby.com" },
     update: { onboardingComplete: true },
@@ -254,7 +275,7 @@ async function main() {
       email: "admin@ayonyamby.com",
       passwordHash,
       role: "admin",
-      fullName: "AyoNyamby Admin",
+      fullName: "Nyamby Admin",
       avatarUrl: null,
       onboardingComplete: true,
     },

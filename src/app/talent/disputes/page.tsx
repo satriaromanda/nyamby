@@ -61,17 +61,33 @@ export default function TalentDisputesPage() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Nav moved to DashboardSidebar via /talent layout (PRD v5.3 §6.12) */}
+      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
+          <Link href="/talent/dashboard" className="flex items-center gap-2 shrink-0">
+            <Logo height={32} />
+          </Link>
+
+          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+            <Link href="/talent/dashboard" className="text-surface-500 hover:text-surface-900 transition-colors">
+              Dashboard
+            </Link>
+            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700 ml-4">
+              Keluar
+            </button>
+          </div>
+        </div>
+      </nav>
+
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2 text-surface-900">Dispute Saya</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900">Dispute Saya</h1>
           <p className="text-surface-500 text-sm">
             Pantau status laporan masalah yang melibatkan Anda.
           </p>
         </div>
 
         {disputes.length === 0 ? (
-          <div className="glass rounded-xl p-12 text-center">
+          <div className="card p-12 text-center">
             <Icon name="check" className="mx-auto mb-4 text-emerald-500" size={40} />
             <h3 className="text-lg font-bold text-surface-900 mb-2">Semua Aman</h3>
             <p className="text-sm text-surface-500">
@@ -84,7 +100,7 @@ export default function TalentDisputesPage() {
         ) : (
           <div className="space-y-4">
             {disputes.map((dispute) => (
-              <div key={dispute.id} className="glass rounded-xl p-6">
+              <div key={dispute.id} className="card p-6">
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">

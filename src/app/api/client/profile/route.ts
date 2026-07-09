@@ -26,6 +26,8 @@ export async function GET() {
             bankCode: true,
             bankAccount: true,
             bankAccountName: true,
+            businessVerifiedAt: true,
+            businessEmailDomain: true,
           }
         }
       },
@@ -56,6 +58,8 @@ export async function GET() {
         bank_code: user.clientProfile?.bankCode || null,
         bank_account: user.clientProfile?.bankAccount || null,
         bank_account_name: user.clientProfile?.bankAccountName || null,
+        business_verified_at: user.clientProfile?.businessVerifiedAt || null,
+        business_email_domain: user.clientProfile?.businessEmailDomain || null,
         stats: {
           total_jobs: totalJobs,
           active_jobs: activeJobs,

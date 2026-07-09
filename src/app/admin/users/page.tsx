@@ -80,7 +80,7 @@ export default function AdminUsersPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-surface-900">User Management</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-surface-900">User Management</h1>
         <p className="text-surface-500 text-sm mt-1">Kelola akun talent, client, dan admin.</p>
       </div>
 
@@ -117,7 +117,7 @@ export default function AdminUsersPage() {
         </select>
       </div>
 
-      <div className="glass rounded-xl overflow-hidden">
+      <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

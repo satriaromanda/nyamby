@@ -44,6 +44,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!bank_code || !bank_account) {
+      return NextResponse.json(
+        { success: false, message: "Data rekening bank wajib diisi agar bisa menerima pembayaran dari client." },
+        { status: 400 }
+      );
+    }
+
     // PRD Bugfix: Handle existing profile from previous failed onboarding attempts
     let profile = await prisma.talentProfile.findUnique({
       where: { userId: session.userId },

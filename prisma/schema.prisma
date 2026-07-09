@@ -120,9 +120,12 @@ enum Currency {
 // ─── Models ─────────────────────────────────────────────────────────────────
 
 model User {
-  id                  String   @id @default(uuid())
-  email               String   @unique
-  passwordHash        String   @map("password_hash")
+  id                  String    @id @default(uuid())
+  email               String    @unique
+  passwordHash        String?   @map("password_hash")
+  provider            String?   @map("provider")
+  providerId          String?   @map("provider_id")
+  emailVerified       DateTime? @map("email_verified")
   role                Role
   fullName            String   @map("full_name")
   avatarUrl           String?  @map("avatar_url")
@@ -141,7 +144,10 @@ model User {
   notifications   Notification[]
   initiatedDisputes DisputeTicket[]   @relation("DisputeInitiator")
   givenRatings    TalentRating[]      @relation("ClientRatings")
+  sentMessages    Message[]           @relation("SentMessages")
+  progressUpdates WorkProgress[]      @relation("AuthoredProgress")
 
+  @@unique([provider, providerId])
   @@map("users")
 }
 
@@ -289,6 +295,8 @@ model Job {
   escrowTransaction EscrowTransaction?
   disputeTickets    DisputeTicket[]
   talentRating      TalentRating?
+  messages          Message[]
+  workProgress      WorkProgress[]
 
   @@map("jobs")
 }
@@ -337,7 +345,7 @@ model EscrowTransaction {
   talentUserId String       @map("talent_user_id")
   amount       Decimal      @map("amount") @db.Decimal(12, 2)
   platformFee  Decimal      @map("platform_fee") @db.Decimal(12, 2)
-  status       EscrowStatus @default(held)
+  status       EscrowStatus @default(pending)
   heldAt       DateTime?    @map("held_at")
   releasedAt   DateTime?    @map("released_at")
 
@@ -454,6 +462,41 @@ model TalentRating {
   @@map("talent_ratings")
 }
 
+// ─── Collaboration — Chat & Progress Tracking ───────────────────────────────
+
+model Message {
+  id           String   @id @default(uuid())
+  jobId        String   @map("job_id")
+  senderUserId String   @map("sender_user_id")
+  body         String
+  isRead       Boolean  @default(false) @map("is_read")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  job    Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  sender User @relation("SentMessages", fields: [senderUserId], references: [id])
+
+  @@index([jobId, createdAt])
+  @@map("messages")
+}
+
+model WorkProgress {
+  id            String   @id @default(uuid())
+  jobId         String   @map("job_id")
+  authorUserId  String   @map("author_user_id")
+  progressPct   Int      @map("progress_pct")
+  note          String
+  attachmentUrl String?  @map("attachment_url")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  job    Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  author User @relation("AuthoredProgress", fields: [authorUserId], references: [id])
+
+  @@index([jobId, createdAt])
+  @@map("work_progress")
+}
+
 model PortfolioAnalysis {
   id              String   @id @default(uuid())
   talentProfileId String   @map("talent_profile_id")
@@ -469,4 +512,16 @@ model PortfolioAnalysis {
   talentProfile TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
 
   @@map("portfolio_analyses")
+}
+
+// Waitlist signups for the "Physical Mode" coming-soon page — anonymous
+// (no User relation) since visitors sign up before they have an account.
+model PhysicalModeWaitlist {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  role      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("physical_mode_waitlist")
 }
