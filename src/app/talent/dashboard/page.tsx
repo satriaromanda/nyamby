@@ -210,37 +210,7 @@ export default function TalentDashboard() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Top Nav */}
-      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Logo height={32} />
-          </Link>
 
-          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
-            <span className="pill-tab pill-tab-active cursor-default">Home</span>
-            <Link href="/jobs" className="pill-tab">Find Work</Link>
-            <Link href="/talent/earnings" className="pill-tab">Pendapatan</Link>
-            <Link href="/talent/activity" className="pill-tab">Aktivitas</Link>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-            <NotificationBell />
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full gradient-primary flex items-center justify-center text-[10px] sm:text-xs font-bold text-white">
-                {data.profile.full_name[0]}
-              </div>
-              <span className="text-xs sm:text-sm font-medium hidden sm:block text-surface-900">{data.profile.full_name}</span>
-            </div>
-            <Link href="/talent/settings" className="text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
-              <Icon name="settings" size={16} />
-            </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
-              Keluar
-            </button>
-          </div>
-        </div>
-      </nav>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}

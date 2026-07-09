@@ -31,13 +31,21 @@ const MENUS: Record<Role, MenuItem[]> = {
   ],
   client: [
     { label: "Dashboard", href: "/client/dashboard", icon: "chart" },
-    { label: "Cari Talenta", href: "/talents", icon: "users" },
+    { label: "Cari Talenta", href: "/client/talents", icon: "users" },
     { label: "Post Job", href: "/client/post-job", icon: "briefcase" },
     { label: "Disputes", href: "/client/disputes", icon: "alertTriangle" },
   ],
 };
 
-export function DashboardSidebar({ role }: { role: Role }) {
+export function DashboardSidebar({ 
+  role,
+  isMinimized = false,
+  onToggleMinimize
+}: { 
+  role: Role;
+  isMinimized?: boolean;
+  onToggleMinimize?: () => void;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [userName, setUserName] = useState<string>("");
@@ -62,7 +70,7 @@ export function DashboardSidebar({ role }: { role: Role }) {
     pathname === href || (href !== "/jobs" && href !== "/talents" && pathname.startsWith(href));
 
   const linkClass = (active: boolean) =>
-    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isMinimized ? "justify-center" : ""} ${
       active
         ? "gradient-primary text-white shadow-md shadow-primary-500/20"
         : "text-surface-500 hover:bg-surface-100 hover:text-surface-900"
@@ -71,24 +79,43 @@ export function DashboardSidebar({ role }: { role: Role }) {
   return (
     <>
       {/* Desktop / tablet sidebar */}
-      <aside className="hidden md:flex flex-col fixed inset-y-0 left-0 w-56 lg:w-60 bg-white border-r border-surface-200 z-40">
-        <div className="h-16 flex items-center px-5 border-b border-surface-200">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={28} />
-          </Link>
+      <aside className={`hidden md:flex flex-col fixed inset-y-0 left-0 bg-white border-r border-surface-200 z-40 transition-all duration-300 ${isMinimized ? "w-20" : "w-56 lg:w-60"}`}>
+        <div className={`h-16 flex items-center px-5 border-b border-surface-200 ${isMinimized ? "justify-center" : "justify-between"}`}>
+          {!isMinimized ? (
+            <Link href="/" className="flex items-center gap-2">
+              <Logo height={36} />
+            </Link>
+          ) : (
+            <Link href="/" className="flex items-center justify-center">
+              <div className="w-8 h-8 rounded gradient-primary text-white font-bold flex items-center justify-center">N</div>
+            </Link>
+          )}
+          
+          {!isMinimized && onToggleMinimize && (
+            <button onClick={onToggleMinimize} className="text-surface-400 hover:text-surface-900">
+              <Icon name="menu" size={18} />
+            </button>
+          )}
         </div>
 
-        <div className="px-3 pt-4 pb-2">
-          <p className="px-3 text-[10px] font-semibold tracking-widest text-surface-400 uppercase">
-            {role === "talent" ? "Talent Portal" : "Client Portal"}
-          </p>
+        <div className="px-3 pt-4 pb-2 flex flex-col gap-2">
+          {isMinimized && onToggleMinimize && (
+            <button onClick={onToggleMinimize} className="text-surface-400 hover:text-surface-900 mx-auto mb-2">
+              <Icon name="menu" size={18} />
+            </button>
+          )}
+          {!isMinimized && (
+            <p className="px-3 text-[10px] font-semibold tracking-widest text-surface-400 uppercase">
+              {role === "talent" ? "Talent Portal" : "Client Portal"}
+            </p>
+          )}
         </div>
 
         <nav className="flex-1 px-3 space-y-1 overflow-y-auto" aria-label="Dashboard navigation">
           {items.map((item) => (
             <Link key={item.href} href={item.href} className={linkClass(isActive(item.href))}>
               <Icon name={item.icon} size={17} />
-              <span>{item.label}</span>
+              {!isMinimized && <span>{item.label}</span>}
             </Link>
           ))}
         </nav>
@@ -96,21 +123,23 @@ export function DashboardSidebar({ role }: { role: Role }) {
         <div className="px-3 pb-4 space-y-1 border-t border-surface-200 pt-3">
           <Link href={settingsHref} className={linkClass(isActive(settingsHref))}>
             <Icon name="settings" size={17} />
-            <span>Settings</span>
+            {!isMinimized && <span>Settings</span>}
           </Link>
-          <div className="flex items-center gap-3 px-3 py-2.5">
+          <div className={`flex items-center gap-3 px-3 py-2.5 ${isMinimized ? "justify-center" : ""}`}>
             <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-xs font-bold text-white shrink-0">
               {userName ? userName.charAt(0).toUpperCase() : "?"}
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-surface-900 truncate">{userName || "…"}</p>
-              <button
-                onClick={handleLogout}
-                className="text-[11px] text-surface-400 hover:text-red-600 transition-colors"
-              >
-                Keluar
-              </button>
-            </div>
+            {!isMinimized && (
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-surface-900 truncate">{userName || "…"}</p>
+                <button
+                  onClick={handleLogout}
+                  className="text-[11px] text-surface-400 hover:text-red-600 transition-colors"
+                >
+                  Keluar
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </aside>

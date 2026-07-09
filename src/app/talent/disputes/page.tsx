@@ -61,22 +61,6 @@ export default function TalentDisputesPage() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
-          <Link href="/talent/dashboard" className="flex items-center gap-2 shrink-0">
-            <Logo height={32} />
-          </Link>
-
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-            <Link href="/talent/dashboard" className="text-surface-500 hover:text-surface-900 transition-colors">
-              Dashboard
-            </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700 ml-4">
-              Keluar
-            </button>
-          </div>
-        </div>
-      </nav>
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">

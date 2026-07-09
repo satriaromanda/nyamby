@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Icon, RatingStars, Logo } from "@/components/icons";
 import { CancelEscrowModal } from "@/components/CancelEscrowModal";
 import { Footer } from "@/components/layout/Footer";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 interface JobDetail {
   id: string;

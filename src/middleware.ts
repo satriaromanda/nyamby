@@ -50,10 +50,10 @@ export async function middleware(request: NextRequest) {
     }
 
     // 3. Role Guard: Talent can't access client routes, Client can't access talent routes
-    if (session.role === 'talent' && pathname.startsWith('/client')) {
+    if (session.role === 'talent' && (pathname.startsWith('/client/') || pathname === '/client')) {
       return NextResponse.redirect(new URL('/talent/dashboard', request.url));
     }
-    if (session.role === 'client' && pathname.startsWith('/talent')) {
+    if (session.role === 'client' && (pathname.startsWith('/talent/') || pathname === '/talent')) {
       return NextResponse.redirect(new URL('/client/dashboard', request.url));
     }
 

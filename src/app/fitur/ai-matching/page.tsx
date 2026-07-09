@@ -5,6 +5,7 @@ import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useLang } from "@/lib/lang";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 const copy = {
   id: {

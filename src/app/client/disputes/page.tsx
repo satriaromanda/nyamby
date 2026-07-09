@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Icon } from "@/components/icons";
+import { Icon, Logo } from "@/components/icons";
 
 interface Dispute {
   id: string;
@@ -47,6 +47,11 @@ export default function ClientDisputesPage() {
   useEffect(() => {
     fetchDisputes();
   }, [fetchDisputes]);
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/");
+  };
 
   if (loading) {
     return (

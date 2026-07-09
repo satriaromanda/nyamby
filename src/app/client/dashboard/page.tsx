@@ -123,6 +123,11 @@ export default function ClientDashboard() {
     }
   };
 
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/");
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
@@ -143,32 +148,7 @@ export default function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Nav */}
-      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Logo height={32} />
-          </Link>
-          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
-            <span className="pill-tab pill-tab-active cursor-default">Home</span>
-            <Link href="/talents" className="pill-tab">Cari Talenta</Link>
-            <Link href="/client/disputes" className="pill-tab">Disputes</Link>
-          </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-            <NotificationBell />
-            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap rounded-full">
-              + Post Job
-            </Link>
-            <Link href="/client/settings" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline" title="Pengaturan">
-              <Icon name="settings" size={16} />
-            </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700 hidden sm:inline">
-              Keluar
-            </button>
-          </div>
-        </div>
-      </nav>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">

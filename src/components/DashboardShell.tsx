@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 
@@ -19,6 +20,7 @@ export function DashboardShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [isMinimized, setIsMinimized] = useState(false);
 
   if (exempt.some((p) => pathname.startsWith(p))) {
     return <>{children}</>;
@@ -26,9 +28,15 @@ export function DashboardShell({
 
   return (
     <div className="min-h-screen bg-surface-50">
-      <DashboardSidebar role={role} />
+      <DashboardSidebar 
+        role={role} 
+        isMinimized={isMinimized} 
+        onToggleMinimize={() => setIsMinimized(!isMinimized)} 
+      />
       {/* offset for fixed sidebar (md+) and bottom bar (mobile) */}
-      <div className="md:pl-56 lg:pl-60 pb-16 md:pb-0">{children}</div>
+      <div className={`${isMinimized ? "md:pl-20" : "md:pl-56 lg:pl-60"} pb-16 md:pb-0 transition-all duration-300`}>
+        {children}
+      </div>
     </div>
   );
 }
