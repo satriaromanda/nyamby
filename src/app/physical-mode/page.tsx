@@ -20,15 +20,44 @@ export default function PhysicalMode() {
     });
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const btn = document.getElementById("submit-btn") as HTMLButtonElement;
+    const nameInput = document.getElementById("name-input") as HTMLInputElement;
+    const emailInput = document.getElementById("email-input") as HTMLInputElement;
+    const roleInput = document.getElementById("role-input") as HTMLSelectElement;
+
     if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Mengirim...";
+    }
+
+    try {
+      const res = await fetch("/api/waitlist/physical-mode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: nameInput?.value,
+          email: emailInput?.value,
+          role: roleInput?.value || null,
+        }),
+      });
+      const data = await res.json();
+
+      if (data.success && btn) {
         btn.textContent = "✓ Berhasil didaftarkan!";
         btn.classList.add("sent");
-        btn.disabled = true;
+        document.querySelectorAll(".notify-form input, .notify-form select").forEach(el => ((el as HTMLInputElement).disabled = true));
+      } else if (btn) {
+        btn.textContent = "Gagal, coba lagi →";
+        btn.disabled = false;
+      }
+    } catch {
+      if (btn) {
+        btn.textContent = "Gagal, coba lagi →";
+        btn.disabled = false;
+      }
     }
-    document.querySelectorAll(".notify-form input, .notify-form select").forEach(el => ((el as HTMLInputElement).disabled = true));
   };
 
   return (
@@ -45,7 +74,7 @@ export default function PhysicalMode() {
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --purple: #534AB7;
+  --purple: #2563EB;
   --purple-light: #7F77DD;
   --purple-pale: #EEEDFE;
   --teal: #0F6E56;

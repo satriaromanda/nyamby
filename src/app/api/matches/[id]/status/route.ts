@@ -57,11 +57,22 @@ export async function PATCH(
 
     await prisma.jobMatch.update({
       where: { id },
-      data: { 
+      data: {
         status,
         rejectionReason: rejection_reason || null
       },
     });
+
+    // Saat tawaran diterima, tandai job "matched" (menunggu pembayaran escrow).
+    // Job baru menjadi "in_progress" setelah dana escrow benar-benar ter-hold
+    // (webhook payin). Hanya transisi dari active/matched agar tidak menimpa
+    // job yang sudah berjalan.
+    if (status === "accepted" && (match.job.status === "active" || match.job.status === "matched")) {
+      await prisma.job.update({
+        where: { id: match.jobId },
+        data: { status: "matched" },
+      });
+    }
 
     // Send notification based on PRD 4B.4
     if (status === "applied") {

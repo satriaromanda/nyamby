@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
           data: {
             userId: notifyUserId,
             type: "payment_failed",
-            message: `Proses transfer dana gagal untuk job: ${escrow.job.title}. Tim AyoNyamby akan menindaklanjuti.`,
+            message: `Proses transfer dana gagal untuk job: ${escrow.job.title}. Tim Nyamby akan menindaklanjuti.`,
             relatedJobId: escrow.jobId,
           },
         });

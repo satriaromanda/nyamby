@@ -173,7 +173,7 @@ export default function EditProfilePage() {
 
       <div className="max-w-3xl mx-auto px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="glass rounded-xl p-6">
+          <div className="card p-6">
             <h2 className="text-lg font-bold mb-4 text-surface-900" >Informasi Dasar</h2>
             
             <div className="space-y-4">
@@ -273,7 +273,7 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          <div className="glass rounded-xl p-6">
+          <div className="card p-6">
             <h2 className="text-lg font-bold mb-4 flex items-center justify-between text-surface-900" >
               Keahlian & Skill
               <span className="text-[10px] bg-primary-50 text-primary-600 px-2 py-1 rounded-full font-medium tracking-wide flex items-center gap-1">

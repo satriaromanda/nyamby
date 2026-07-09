@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Icon, Logo } from "@/components/icons";
+import Image from "next/image";
 
 
 interface ProfileData {
@@ -150,41 +151,29 @@ export default function TalentSettingsPage() {
       )}
 
       {/* Nav */}
-      <nav className="glass sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
           </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/talent/dashboard"
-              className="text-sm text-surface-500 hover:text-surface-900 transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/jobs"
-              className="text-sm text-surface-500 hover:text-surface-900 transition-colors"
-            >
-              Browse Jobs
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="text-xs text-surface-400 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
-            >
-              Keluar
-            </button>
+          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
+            <Link href="/talent/dashboard" className="pill-tab">Home</Link>
+            <Link href="/jobs" className="pill-tab">Find Work</Link>
+            <span className="pill-tab pill-tab-active cursor-default">Pengaturan</span>
           </div>
+          <button
+            onClick={handleLogout}
+            className="text-xs text-surface-400 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+          >
+            Keluar
+          </button>
         </div>
       </nav>
 
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1
-            className="text-3xl font-bold mb-2 text-surface-900"
-            
-          >
+          <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900">
             Pengaturan Profil
           </h1>
           <p className="text-surface-500">Kelola profil dan preferensi akunmu.</p>
@@ -194,13 +183,14 @@ export default function TalentSettingsPage() {
           {/* ─── Sidebar: Profile Preview ──────────────────── */}
           <div className="space-y-4">
             {/* Profile Card */}
-            <div className="glass rounded-xl p-6 text-center animate-slide-up">
-              <div className="w-20 h-20 mx-auto rounded-2xl gradient-primary flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg shadow-primary-500/20">
+            <div className="card p-6 text-center animate-slide-up">
+              <div className="w-20 h-20 mx-auto rounded-2xl gradient-primary flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg shadow-primary-500/20 relative overflow-hidden">
                 {profile.avatar_url ? (
-                  <img
+                  <Image
                     src={profile.avatar_url}
                     alt={profile.full_name}
-                    className="w-full h-full rounded-2xl object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   profile.full_name[0]
@@ -226,7 +216,7 @@ export default function TalentSettingsPage() {
             </div>
 
             {/* Skills Display */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h3 className="font-bold text-sm mb-3 text-surface-900 flex items-center gap-2"><Icon name="spark" size={15} />Skill-mu</h3>
               <div className="flex flex-wrap gap-2">
                 {profile.skills.map((s, i) => (
@@ -244,7 +234,7 @@ export default function TalentSettingsPage() {
             </div>
 
             {/* Public Profile Link */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h3 className="font-bold text-sm mb-2 text-surface-900 flex items-center gap-2"><Icon name="link" size={15} />Profil Publik</h3>
               <Link
                 href={`/talents/${profile.profile_id}`}
@@ -258,7 +248,7 @@ export default function TalentSettingsPage() {
           {/* ─── Main: Edit Form ───────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
             {/* Bio */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.05s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 Informasi Profil
               </h2>
@@ -309,7 +299,7 @@ export default function TalentSettingsPage() {
             </div>
 
             {/* Rate & Availability */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 Rate & Ketersediaan
               </h2>
@@ -391,12 +381,12 @@ export default function TalentSettingsPage() {
             </div>
 
             {/* Bank Info */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 Informasi Rekening Bank
               </h2>
               <p className="text-xs text-surface-400 mb-5">
-                Rekening ini akan digunakan untuk pencairan dana dari AyoNyamby.
+                Rekening ini akan digunakan untuk pencairan dana dari Nyamby.
               </p>
 
               <div className="space-y-4">
@@ -456,7 +446,7 @@ export default function TalentSettingsPage() {
             </div>
 
             {/* Account Info (read-only) */}
-            <div className="glass rounded-xl p-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+            <div className="card p-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
               <h2 className="font-bold text-lg mb-1 text-surface-900" >
                 <Icon name="lock" className="inline mr-1.5 text-trust-500" size={20} />
                 Informasi Akun

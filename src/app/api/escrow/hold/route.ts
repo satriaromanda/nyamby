@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { createPayIn } from "@/services/xenith";
+import { logger } from "@/lib/logger";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
@@ -16,11 +17,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { job_id, talent_user_id, amount } = body;
+    const { job_id } = body;
 
-    if (!job_id || !talent_user_id || typeof amount !== "number" || amount <= 0) {
+    if (!job_id) {
       return NextResponse.json(
-        { success: false, message: "job_id, talent_user_id, dan amount (angka positif) wajib diisi" },
+        { success: false, message: "job_id wajib diisi" },
         { status: 400 }
       );
     }
@@ -34,11 +35,54 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Talent dan amount ditentukan server-side dari match yang sudah accepted —
+    // tidak menerima input client agar tidak bisa dimanipulasi
+    const acceptedMatch = await prisma.jobMatch.findFirst({
+      where: { jobId: job_id, status: "accepted" },
+      include: { talentProfile: { select: { userId: true } } },
+    });
+    if (!acceptedMatch) {
+      return NextResponse.json(
+        { success: false, message: "Belum ada talenta yang menerima tawaran untuk job ini" },
+        { status: 400 }
+      );
+    }
+    const talentUserId = acceptedMatch.talentProfile.userId;
+
+    const amount = Number(job.budgetMax || job.budgetMin || 0);
+    if (amount <= 0) {
+      return NextResponse.json(
+        { success: false, message: "Job belum memiliki budget. Lengkapi budget job terlebih dahulu." },
+        { status: 400 }
+      );
+    }
+
     // Check existing escrow
     const existing = await prisma.escrowTransaction.findUnique({
       where: { jobId: job_id },
+      include: { payment: true },
     });
     if (existing) {
+      // Escrow pending dengan pembayaran yang belum selesai — kembalikan
+      // instruksi pembayaran yang sama agar client bisa melanjutkan
+      if (existing.status === "pending" && existing.payment && existing.payment.status === "PENDING") {
+        return NextResponse.json({
+          success: true,
+          message: "Pembayaran sebelumnya masih menunggu. Silakan selesaikan pembayaran.",
+          data: {
+            escrow_id: existing.id,
+            amount: existing.amount,
+            total_amount: existing.payment.amount,
+            platform_fee: existing.platformFee,
+            status: existing.status,
+            payment: {
+              payment_code: existing.payment.paymentCode,
+              payment_code_type: existing.payment.paymentCodeType,
+              redirect_url: existing.payment.redirectUrl,
+            },
+          },
+        });
+      }
       return NextResponse.json(
         { success: false, message: "Escrow sudah ada untuk job ini" },
         { status: 400 }
@@ -56,7 +100,7 @@ export async function POST(request: NextRequest) {
       data: {
         jobId: job_id,
         clientUserId: session.userId,
-        talentUserId: talent_user_id,
+        talentUserId,
         amount,
         platformFee,
         status: "pending",
@@ -68,17 +112,12 @@ export async function POST(request: NextRequest) {
       const payInResult = await createPayIn({
         initiatedAmount: totalAmount,
         paymentMethod: "VIRTUAL_ACCOUNT",
-        // BCA.VA is NOT in Xenith's active channel list (verified via
-        // GET /v1/payins/channels, 2026-07-09) — it 400s INVALID_PAYMENT_CHANNEL.
-        // BNI.VA is active; override via env if business prefers another bank.
-        paymentChannel: process.env.XENITH_PAYIN_CHANNEL || "BNI.VA",
+        paymentChannel: "BNI.VA",
         referenceCode,
         customerReference,
-        customerName: session.fullName || "Client AyoNyamby",
+        customerName: session.fullName || "Client Nyamby",
         description: `Pembayaran Escrow untuk Job: ${job.title}`,
         callbackUrl: `${APP_URL}/api/webhooks/xenith/payin`,
-        // Return user to escrow page — it shows payment status + active
-        // "Cek Status" reconcile (PRD v5.3 §6.13), not the dashboard blind spot
         redirectUrl: `${APP_URL}/client/escrow/${job_id}`,
       });
 
@@ -109,6 +148,7 @@ export async function POST(request: NextRequest) {
             status: escrow.status,
             payment: {
               payment_code: payInResult.paymentCode,
+              payment_code_type: payInResult.paymentCodeType,
               redirect_url: payInResult.redirectUrl,
             },
           },
@@ -118,7 +158,12 @@ export async function POST(request: NextRequest) {
     } catch (xenithError) {
       // Rollback: hapus escrow jika Xenith API gagal
       await prisma.escrowTransaction.delete({ where: { id: escrow.id } });
-      console.error("[EscrowHold] Xenith API failed, rolled back escrow:", xenithError);
+      logger.error("escrow", "Xenith Pay In gagal, escrow di-rollback", {
+        job_id,
+        escrow_id: escrow.id,
+        total_amount: totalAmount,
+        error: xenithError,
+      });
       return NextResponse.json(
         { success: false, message: "Gagal membuat pembayaran. Silakan coba lagi." },
         { status: 502 }

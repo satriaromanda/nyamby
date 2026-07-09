@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Icon, RatingStars, Logo } from "@/components/icons";
+import { Icon, Logo } from "@/components/icons";
 import { RatingModal } from "@/components/RatingModal";
 import { NotificationBell } from "@/components/NotificationBell";
+import { JobStatusTracker } from "@/components/JobStatusTracker";
 
 interface TopMatch {
   match_id: string;
@@ -32,82 +33,6 @@ interface JobItem {
   top_matches: TopMatch[];
   escrow: { status: string; amount: number } | null;
   has_rating: boolean;
-}
-
-/* ─── Job Status Tracker ─────────────────────────────────────────── */
-
-function JobStatusTracker({ status }: { status: string }) {
-  const steps = [
-    { key: "active", label: "Posted", icon: "file" as const },
-    { key: "matched", label: "Matched", icon: "ai" as const },
-    { key: "in_progress", label: "In Progress", icon: "settings" as const },
-    { key: "completed", label: "Selesai", icon: "check" as const },
-  ];
-
-  const statusOrder: Record<string, number> = {
-    active: 0,
-    matched: 1,
-    in_progress: 2,
-    submitted_for_review: 2,
-    revision_requested: 2,
-    completed: 3,
-    cancelled: -1,
-  };
-
-  const currentIndex = statusOrder[status] ?? 0;
-
-  if (status === "cancelled") {
-    return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
-        <Icon name="x" className="text-red-600" size={14} />
-        <span className="text-xs text-red-600 font-medium">Dibatalkan</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-0 w-full">
-      {steps.map((step, i) => {
-        const isActive = i <= currentIndex;
-        const isCurrent = i === currentIndex;
-        return (
-          <div key={step.key} className="flex items-center flex-1 last:flex-none min-w-0">
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm transition-all duration-500 shrink-0 ${
-                  isCurrent
-                    ? "gradient-primary shadow-lg shadow-primary-500/20 scale-110 text-white"
-                    : isActive
-                      ? "bg-accent-500/10 text-accent-600"
-                      : "bg-surface-100 text-surface-400"
-                }`}
-              >
-                {isActive && i < currentIndex ? <Icon name="check" size={12} /> : <Icon name={step.icon} size={12} />}
-              </div>
-              <span
-                className={`text-[8px] sm:text-[9px] mt-1 font-medium transition-colors whitespace-nowrap ${
-                  isCurrent
-                    ? "text-primary-600"
-                    : isActive
-                      ? "text-accent-600"
-                      : "text-surface-300"
-                }`}
-              >
-                {step.label}
-              </span>
-            </div>
-            {i < steps.length - 1 && (
-              <div
-                className={`flex-1 h-0.5 mx-0.5 sm:mx-1 rounded-full transition-all duration-500 ${
-                  i < currentIndex ? "bg-accent-500/30" : "bg-surface-200"
-                }`}
-              />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
 }
 
 /* ─── Main Dashboard ─────────────────────────────────────────────── */
@@ -227,11 +152,17 @@ export default function ClientDashboard() {
       <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Logo height={28} />
+            <Logo height={32} />
           </Link>
+          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
+            <span className="pill-tab pill-tab-active cursor-default">Home</span>
+            <Link href="/talents" className="pill-tab">Cari Talenta</Link>
+            <Link href="/client/disputes" className="pill-tab">Disputes</Link>
+          </div>
+
           <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
             <NotificationBell />
-            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap">
+            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap rounded-full">
               + Post Job
             </Link>
             <Link href="/client/settings" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline" title="Pengaturan">
@@ -247,8 +178,8 @@ export default function ClientDashboard() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2 text-surface-900" >
-              Dashboard Client
+            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 text-surface-900">
+              Dashboard <span className="text-gradient-brand">Client</span>
             </h1>
             <p className="text-surface-500">
               Kelola job posting dan lihat talenta terbaik yang direkomendasikan AI.
@@ -264,10 +195,14 @@ export default function ClientDashboard() {
             { label: "In Progress", value: jobs.filter((j) => j.status === "in_progress").length, icon: "settings" as const },
             { label: "Selesai", value: jobs.filter((j) => j.status === "completed").length, icon: "check" as const },
           ].map((stat, i) => (
-            <div key={i} className="glass rounded-xl p-4">
-              <Icon name={stat.icon} className="mb-1 text-primary-600" size={20} />
-              <div className="text-2xl font-bold text-surface-900" >{stat.value}</div>
-              <div className="text-xs text-surface-400">{stat.label}</div>
+            <div key={i} className="card card-hover p-5 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-ai-50 text-primary-600 flex items-center justify-center shrink-0">
+                <Icon name={stat.icon} size={18} />
+              </div>
+              <div>
+                <div className="text-2xl font-extrabold text-surface-900 leading-none mb-1">{stat.value}</div>
+                <div className="text-xs text-surface-400">{stat.label}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -276,7 +211,7 @@ export default function ClientDashboard() {
         {jobs.length > 0 ? (
           <div className="space-y-4">
             {jobs.map((job) => (
-              <div key={job.id} className="glass rounded-xl overflow-hidden card-hover">
+              <div key={job.id} className="card overflow-hidden card-hover">
                 <div
                   className="p-6 cursor-pointer"
                   onClick={() => setExpandedJob(expandedJob === job.id ? null : job.id)}
@@ -440,7 +375,7 @@ export default function ClientDashboard() {
                             </div>
                             <div className="flex items-center gap-3">
                               <span className={`text-xs px-3 py-1 rounded-full status-${job.escrow.status}`}>
-                                {job.escrow.status === "held" ? "Dana Ditahan" : job.escrow.status === "released" ? "Dana Dirilis" : job.escrow.status}
+                                {job.escrow.status === "held" ? "Dana Ditahan" : job.escrow.status === "released" ? "Dana Dirilis" : job.escrow.status === "pending" ? "Menunggu Pembayaran" : job.escrow.status === "refunded" ? "Dana Dikembalikan" : job.escrow.status}
                               </span>
                               <span className="text-sm text-surface-500">
                                 Rp {Number(job.escrow.amount).toLocaleString("id-ID")}
@@ -476,13 +411,36 @@ export default function ClientDashboard() {
                               Job sedang dikerjakan
                             </div>
                           )}
+                          {job.escrow.status === "pending" && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePayEscrow(job.id);
+                              }}
+                              className="bg-trust-500 hover:bg-trust-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-md flex items-center gap-1 animate-pulse"
+                            >
+                              <Icon name="shield" size={13} />
+                              Lanjutkan Pembayaran
+                            </button>
+                          )}
                         </div>
+
+                        {job.escrow.status === "held" && job.status !== "completed" && (
+                          <Link
+                            href={`/workspace/${job.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="mt-4 flex items-center justify-center gap-2 text-sm font-semibold text-primary-600 bg-primary-50 hover:bg-primary-100 py-2.5 rounded-xl transition-all"
+                          >
+                            <Icon name="users" size={16} />
+                            Buka Ruang Kerja
+                          </Link>
+                        )}
 
                         {/* Visual Escrow Flow */}
                         <div className="flex items-center gap-2 mt-4">
                           {[
-                            { label: "Dana Ditahan", active: true },
-                            { label: "In Progress", active: job.escrow.status !== "held" || job.status === "in_progress" },
+                            { label: "Dana Ditahan", active: job.escrow.status === "held" || job.escrow.status === "released" },
+                            { label: "In Progress", active: ["in_progress", "submitted_for_review", "revision_requested", "completed"].includes(job.status) },
                             { label: "Dana Dirilis", active: job.escrow.status === "released" },
                           ].map((step, i) => (
                             <div key={i} className="flex items-center gap-2 flex-1">
@@ -509,6 +467,8 @@ export default function ClientDashboard() {
                                 const acceptedMatch = job.top_matches.find(m => m.status === "accepted");
                                 if (acceptedMatch) {
                                   setRatingModal({ isOpen: true, jobId: job.id, talentProfileId: acceptedMatch.talent_profile_id });
+                                } else {
+                                  alert("Tidak ditemukan talenta yang diterima untuk job ini. Rating tidak bisa diberikan.");
                                 }
                               }}
                               className="btn-primary text-xs px-4 py-2"
@@ -530,7 +490,7 @@ export default function ClientDashboard() {
             ))}
           </div>
         ) : (
-          <div className="glass rounded-xl p-16 text-center">
+          <div className="card p-16 text-center">
             <Icon name="file" className="mx-auto text-surface-300" size={48} />
             <h3 className="text-xl font-bold mb-2 text-surface-900" >Belum ada job</h3>
             <p className="text-surface-500 text-sm mb-6">Post job pertamamu dan biarkan AI mencarikan talenta terbaik.</p>
@@ -539,17 +499,9 @@ export default function ClientDashboard() {
             </Link>
 
             <div className="mt-8 pt-8 border-t border-surface-200">
-              <p className="text-xs text-surface-400 mb-2">Talenta yang telah menyelesaikan job:</p>
-              <div className="flex justify-center gap-6">
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-surface-900">Raka P.</div>
-                  <RatingStars rating={4.8} reviewCount={3} size={12} />
-                </div>
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-surface-900">Sari W.</div>
-                  <RatingStars rating={5.0} reviewCount={5} size={12} />
-                </div>
-              </div>
+              <p className="text-xs text-surface-400">
+                Setelah job selesai, kamu bisa memberi rating ke talenta yang mengerjakannya.
+              </p>
             </div>
           </div>
         )}

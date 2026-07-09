@@ -57,6 +57,22 @@ export async function PATCH(
       );
     }
 
+    // Gate: transisi kerja hanya boleh saat dana escrow sudah ter-hold.
+    // Mencegah talenta submit / client menyelesaikan sebelum dana diamankan.
+    const escrowGatedStatuses = ["submitted_for_review", "revision_requested", "completed"];
+    if (escrowGatedStatuses.includes(status)) {
+      const escrow = await prisma.escrowTransaction.findUnique({
+        where: { jobId: id },
+        select: { status: true },
+      });
+      if (!escrow || escrow.status !== "held") {
+        return NextResponse.json(
+          { success: false, message: "Dana escrow belum ditahan. Pembayaran harus diselesaikan terlebih dahulu." },
+          { status: 400 }
+        );
+      }
+    }
+
     // Deliverable Notifications based on PRD 4B.4
     if (status === "submitted_for_review") {
       await prisma.notification.create({

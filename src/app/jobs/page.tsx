@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Icon, Logo } from "@/components/icons";
+import { Icon } from "@/components/icons";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { useLang } from "@/lib/lang";
 
 interface Job {
   id: string;
@@ -29,7 +32,74 @@ interface MyMatch {
   status: string;
 }
 
+const copy = {
+  id: {
+    h1a: "Jelajahi ",
+    h1b: "Pekerjaan",
+    subtitle: "Temukan project yang sesuai dengan keahlianmu.",
+    searchPlaceholder: "Cari posisi atau skill...",
+    filters: {
+      all: "Semua",
+      webDev: "Pengembang Web",
+      design: "Desain & Kreatif",
+    },
+    budgetLabel: "Anggaran",
+    minLabel: "Min",
+    maxLabel: "Max",
+    sortNewest: "Terbaru",
+    sortBudgetDesc: "Anggaran Tertinggi",
+    sortBudgetAsc: "Anggaran Terendah",
+    sortDeadline: "Tenggat Terdekat",
+    resultsText: (count: number) => `${count} Hasil Pekerjaan`,
+    checkMatch: "Cek Kecocokan",
+    matchText: (score: number) => `${score}% Kecocokan`,
+    webDevLabel: "Pengembangan Web",
+    designLabel: "Desain Grafis",
+    flexBudget: "Anggaran fleksibel",
+    applied: "Dilamar",
+    accepted: "Diterima",
+    detail: "Detail",
+    emptyTitle: "Belum ada job aktif",
+    emptyDesc: "Coba ubah kriteria pencarianmu.",
+    pageInfo: (page: number, total: number) => `Halaman ${page} dari ${total}`,
+  },
+  en: {
+    h1a: "Explore ",
+    h1b: "Jobs",
+    subtitle: "Find projects that match your skills.",
+    searchPlaceholder: "Search for role or skill...",
+    filters: {
+      all: "All",
+      webDev: "Web Dev",
+      design: "Design & Creative",
+    },
+    budgetLabel: "Budget",
+    minLabel: "Min",
+    maxLabel: "Max",
+    sortNewest: "Newest",
+    sortBudgetDesc: "Highest Budget",
+    sortBudgetAsc: "Lowest Budget",
+    sortDeadline: "Closest Deadline",
+    resultsText: (count: number) => `${count} Job Results`,
+    checkMatch: "Check Match",
+    matchText: (score: number) => `${score}% Match`,
+    webDevLabel: "Web Development",
+    designLabel: "Graphic Design",
+    flexBudget: "Flexible budget",
+    applied: "Applied",
+    accepted: "Accepted",
+    detail: "Detail",
+    emptyTitle: "No active jobs yet",
+    emptyDesc: "Try changing your search criteria.",
+    pageInfo: (page: number, total: number) => `Page ${page} of ${total}`,
+  },
+} as const;
+
+
 export default function JobsPage() {
+  const [lang] = useLang();
+  const t = copy[lang];
+
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -134,192 +204,174 @@ export default function JobsPage() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 md:h-20 flex items-center justify-between gap-3">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Logo height={28} />
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
-            {user ? (
-              <>
-                <Link
-                  href={user.role === "talent" ? "/talent/dashboard" : "/client/dashboard"}
-                  className="text-surface-500 hover:text-surface-900 transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <Link href="/talents" className="text-surface-500 hover:text-surface-900 transition-colors">
-                  Talenta
-                </Link>
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full gradient-primary flex items-center justify-center text-[10px] font-bold text-white">
-                    {user.full_name[0]}
-                  </div>
-                  <span className="text-xs sm:text-sm font-medium text-surface-700 hidden md:block">{user.full_name}</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <Link href="/talents" className="text-surface-500 hover:text-surface-900">Talenta</Link>
-                <Link href="/login" className="text-surface-500 hover:text-surface-900">Masuk</Link>
-                <Link href="/register" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg">Daftar</Link>
-              </>
-            )}
+      <Navbar />
+
+      <main role="main" className="max-w-7xl mx-auto px-6 pt-28 pb-12">
+        {/* Title row — big heading left, search right */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-surface-900">
+              {t.h1a} <span className="text-gradient-brand">{t.h1b}</span>
+            </h1>
+            <p className="text-surface-500 mt-1 text-sm">{t.subtitle}</p>
           </div>
-        </div>
-      </nav>
-
-      <main role="main" className="max-w-7xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold mb-2 text-surface-900 flex items-center gap-3" >
-          <Icon name="briefcase" className="text-primary-600" size={28} />
-          Job Aktif
-        </h1>
-        <p className="text-surface-500 mb-8">Temukan project yang sesuai dengan keahlianmu.</p>
-
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="flex-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-surface-400">
-              <Icon name="search" size={18} />
+          <div className="relative w-full md:w-72">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-surface-400">
+              <Icon name="search" size={16} />
             </div>
             <input
               type="text"
-              placeholder="Cari posisi atau skill..."
-              className="input-dark pl-10 w-full"
+              placeholder={t.searchPlaceholder}
+              className="w-full pl-11 pr-4 py-2.5 text-sm bg-white border border-surface-200 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 transition-all"
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+        </div>
+
+        {/* Filter chips row */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 mb-8">
+          
+          <div className="flex overflow-x-auto pb-2 lg:pb-0 hide-scrollbar gap-2 w-full lg:w-auto">
             {[
-              { value: "", label: "Semua", icon: null },
-              { value: "web_dev", label: "Web Dev", icon: "code" as const },
-              { value: "graphic_designer", label: "Design", icon: "design" as const },
+              { value: "", label: t.filters.all },
+              { value: "web_dev", label: t.filters.webDev },
+              { value: "graphic_designer", label: t.filters.design },
             ].map((f) => (
               <button
                 key={f.value}
                 onClick={() => setCategory(f.value)}
-                className={`text-sm px-4 py-2 rounded-xl whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
+                className={`text-sm px-4 py-2 rounded-full whitespace-nowrap border transition-all shrink-0 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
                   category === f.value
-                    ? "gradient-primary text-white"
-                    : "bg-white border border-surface-200 text-surface-500 hover:border-primary-200"
+                    ? "bg-surface-900 border-surface-900 text-white font-semibold"
+                    : "bg-white border-surface-200 text-surface-600 hover:border-surface-300"
                 }`}
               >
-                <span className="inline-flex items-center gap-2">
-                  {f.icon && <Icon name={f.icon} size={14} />}
-                  {f.label}
-                </span>
+                {f.label}
               </button>
             ))}
           </div>
+
+          <div className="flex items-center gap-2 bg-white border border-surface-200 rounded-full pl-4 pr-2 py-1 w-full lg:w-auto">
+            <span className="text-xs text-surface-500 shrink-0">{t.budgetLabel}</span>
+            <input type="number" placeholder={t.minLabel} className="text-sm py-1.5 px-2.5 flex-1 min-w-[60px] max-w-[100px] bg-surface-50 rounded-full border-0 focus:outline-none focus:ring-1 focus:ring-primary-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" value={minBudget} onChange={e => setMinBudget(e.target.value)} />
+            <span className="text-surface-300 shrink-0">–</span>
+            <input type="number" placeholder={t.maxLabel} className="text-sm py-1.5 px-2.5 flex-1 min-w-[60px] max-w-[100px] bg-surface-50 rounded-full border-0 focus:outline-none focus:ring-1 focus:ring-primary-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" value={maxBudget} onChange={e => setMaxBudget(e.target.value)} />
+          </div>
+
+          <select
+            className="w-full lg:w-auto lg:ml-auto text-sm py-2 pl-4 pr-10 bg-white border border-surface-200 rounded-full text-surface-600 focus:outline-none focus:ring-2 focus:ring-primary-500/30 cursor-pointer appearance-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+              backgroundPosition: `right 0.75rem center`,
+              backgroundRepeat: `no-repeat`,
+              backgroundSize: `1.5em 1.5em`,
+            }}
+            value={sort}
+            onChange={e => setSort(e.target.value)}
+          >
+            <option value="newest">{t.sortNewest}</option>
+            <option value="budget_desc">{t.sortBudgetDesc}</option>
+            <option value="budget_asc">{t.sortBudgetAsc}</option>
+            <option value="deadline_soon">{t.sortDeadline}</option>
+          </select>
         </div>
 
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-8 p-4 bg-white rounded-xl border border-surface-200 shadow-sm">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-surface-500">Budget:</span>
-            <input type="number" placeholder="Min" className="input-dark text-sm py-1.5 px-3 w-24" value={minBudget} onChange={e => setMinBudget(e.target.value)} />
-            <span className="text-surface-300">-</span>
-            <input type="number" placeholder="Max" className="input-dark text-sm py-1.5 px-3 w-24" value={maxBudget} onChange={e => setMaxBudget(e.target.value)} />
-          </div>
-          <div className="flex items-center gap-2 sm:ml-auto">
-            <span className="text-sm text-surface-500">Urutkan:</span>
-            <select className="input-dark text-sm py-1.5 px-3" value={sort} onChange={e => setSort(e.target.value)}>
-              <option value="newest">Terbaru</option>
-              <option value="budget_desc">Budget Tertinggi</option>
-              <option value="budget_asc">Budget Terendah</option>
-              <option value="deadline_soon">Deadline Terdekat</option>
-            </select>
-          </div>
-        </div>
+        {/* Result count */}
+        {!loading && (
+          <p className="text-sm font-semibold text-surface-900 mb-4">{t.resultsText(jobs.length)}</p>
+        )}
 
         {loading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="skeleton h-40 rounded-xl" />
+          <div className="grid md:grid-cols-2 gap-5">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="skeleton h-56 rounded-2xl" />
             ))}
           </div>
         ) : jobs.length > 0 ? (
-          <div className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-5">
             {jobs.map((job) => {
               const existingMatch = getMatch(job.id);
               return (
-                <Link key={job.id} href={`/jobs/${job.id}`} className="block">
-                  <div className="glass rounded-xl p-6 card-hover cursor-pointer">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold mb-1 text-surface-900">{job.title}</h3>
-                        <p className="text-sm text-surface-500 mb-3">
-                          oleh {job.client_name} - {job.category === "web_dev" ? "Web Development" : "Graphic Design"}
-                        </p>
-                        <p className="text-sm text-surface-400 mb-3 line-clamp-2">{job.description}</p>
-                        <div className="flex flex-wrap gap-1.5 mb-3">
-                          {job.required_skills.map((s, i) => (
-                            <span
-                              key={i}
-                              className={`text-[10px] px-2 py-0.5 rounded-full ${
-                                s.is_mandatory ? "bg-primary-50 text-primary-600" : "bg-surface-100 text-surface-500"
-                              }`}
-                            >
-                              {s.name} {s.is_mandatory && <Icon name="spark" className="inline ml-1" size={10} />}
-                            </span>
-                          ))}
-                        </div>
-                        <div className="flex flex-wrap gap-4 text-xs text-surface-400">
-                          {job.budget_max && (
-                            <span className="inline-flex items-center gap-1">
-                              <Icon name="money" size={13} />
-                              Rp {Number(job.budget_min || 0).toLocaleString("id-ID")} - {Number(job.budget_max).toLocaleString("id-ID")}
-                            </span>
-                          )}
-                          {job.deadline && (
-                            <span className="inline-flex items-center gap-1">
-                              <Icon name="calendar" size={13} />
-                              Deadline: {new Date(job.deadline).toLocaleDateString("id-ID")}
-                            </span>
-                          )}
-                        </div>
+                <Link key={job.id} href={`/jobs/${job.id}`} className="block h-full">
+                  <div className="card card-hover p-5 sm:p-6 cursor-pointer h-full flex flex-col">
+                    {/* Header: Category Badge + Status + Match Badge */}
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-50 text-primary-700 text-xs font-semibold">
+                          <Icon name={job.category === "web_dev" ? "code" : "image"} size={14} />
+                          {job.category === "web_dev" ? t.webDevLabel : t.designLabel}
+                        </span>
+                        <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold">
+                          {lang === "id" ? "Aktif" : "Active"}
+                        </span>
                       </div>
-                      <div className="shrink-0 flex flex-col items-center gap-2">
+                      
+                      <div className="flex items-center gap-2 shrink-0">
                         {existingMatch ? (
-                          <>
-                            <div
-                              className={`text-2xl font-bold ${
-                                existingMatch.match_score >= 80 ? "text-accent-600" : "text-primary-600"
-                              }`}
-                              
-                            >
-                              {Math.round(existingMatch.match_score)}%
-                            </div>
-                            <span className="text-[10px] text-surface-400">AI Match</span>
-                            {existingMatch.status === "applied" && (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full status-applied">Dilamar</span>
-                            )}
-                            {existingMatch.status === "accepted" && (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-accent-600">Diterima</span>
-                            )}
-                          </>
+                          <span className="badge-match whitespace-nowrap">
+                            <Icon name="ai" size={12} />
+                            {t.matchText(Math.round(existingMatch.match_score))}
+                          </span>
                         ) : user?.role === "talent" ? (
                           <button
                             onClick={(e) => handleQuickAnalyze(e, job.id)}
                             disabled={analyzingId === job.id}
-                            className="btn-primary text-xs px-3 py-1.5 disabled:opacity-50"
+                            className="badge-match hover:bg-ai-100 transition-colors disabled:opacity-50 whitespace-nowrap"
                           >
                             {analyzingId === job.id ? (
-                              <div className="animate-spin w-3 h-3 border-2 border-white border-t-transparent rounded-full" />
+                              <div className="animate-spin w-3 h-3 border-2 border-ai-600 border-t-transparent rounded-full" />
                             ) : (
-                              <span className="inline-flex items-center gap-1">
-                                <Icon name="ai" size={12} /> Cek Kecocokan
-                              </span>
+                              <>
+                                <Icon name="ai" size={12} /> {t.checkMatch}
+                              </>
                             )}
                           </button>
-                        ) : (
-                          <span className="btn-primary text-xs px-4 py-2">
-                            <span className="inline-flex items-center gap-1">
-                              Lamar
-                              <Icon name="arrowRight" size={13} />
-                            </span>
-                          </span>
-                        )}
+                        ) : null}
                       </div>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-xl font-bold text-surface-900 mb-2 line-clamp-2">{job.title}</h3>
+                    
+                    {/* Meta: Client & Deadline */}
+                    <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-surface-500 mb-4">
+                      <span>{lang === "id" ? "diposting oleh" : "posted by"} <strong className="text-surface-700">{job.client_name}</strong></span>
+                      {job.deadline && (
+                        <>
+                          <span>–</span>
+                          <span>{new Date(job.deadline).toLocaleDateString(lang === "id" ? "id-ID" : "en-US", { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                        </>
+                      )}
+                    </div>
+
+                    <p className="text-sm text-surface-600 mb-5 line-clamp-2 leading-relaxed">{job.description}</p>
+
+                    {/* Skill chips */}
+                    <div className="flex flex-wrap gap-2 mb-5">
+                      {job.required_skills.map((s, i) => (
+                        <span key={i} className={`px-3 py-1 rounded-full text-xs font-medium ${s.is_mandatory ? "bg-ai-50 text-ai-700 border border-ai-200" : "bg-surface-100 text-surface-600 border border-surface-200"}`}>
+                          {s.name}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Footer: budget + status */}
+                    <div className="mt-auto pt-4 border-t border-surface-100 flex items-center justify-between gap-3">
+                      <span className="text-base font-extrabold text-surface-900 shrink-0">
+                        {job.budget_max
+                          ? `Rp ${Number(job.budget_min || 0).toLocaleString(lang === "id" ? "id-ID" : "en-US")} – ${Number(job.budget_max).toLocaleString(lang === "id" ? "id-ID" : "en-US")}`
+                          : t.flexBudget}
+                      </span>
+                      {existingMatch?.status === "applied" ? (
+                        <span className="chip !bg-amber-50 !text-amber-700 shrink-0">{t.applied}</span>
+                      ) : existingMatch?.status === "accepted" ? (
+                        <span className="chip !bg-emerald-50 !text-emerald-700 shrink-0">{t.accepted}</span>
+                      ) : (
+                        <span className="text-sm font-semibold text-primary-600 inline-flex items-center gap-1.5 shrink-0 hover:text-primary-700 transition-colors">
+                          {t.detail} <Icon name="arrowRight" size={14} />
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Link>
@@ -327,10 +379,10 @@ export default function JobsPage() {
             })}
           </div>
         ) : (
-          <div className="glass rounded-xl p-16 text-center">
+          <div className="card p-16 text-center">
             <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
-            <h3 className="text-xl font-bold mb-2 text-surface-900" >Belum ada job aktif</h3>
-            <p className="text-surface-400 text-sm">Coba ubah kriteria pencarianmu.</p>
+            <h3 className="text-xl font-bold mb-2 text-surface-900" >{t.emptyTitle}</h3>
+            <p className="text-surface-400 text-sm">{t.emptyDesc}</p>
           </div>
         )}
 
@@ -345,7 +397,7 @@ export default function JobsPage() {
               <Icon name="arrowLeft" size={16} />
             </button>
             <span className="text-sm font-medium text-surface-600">
-              Halaman {page} dari {totalPages}
+              {t.pageInfo(page, totalPages)}
             </span>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
@@ -357,6 +409,7 @@ export default function JobsPage() {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   );
 }

@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { Icon } from "@/components/icons";
 
-interface NotificationItem {
+interface Notification {
   id: string;
   type: string;
   message: string;
@@ -13,15 +12,8 @@ interface NotificationItem {
   created_at: string;
 }
 
-/**
- * Shared notification bell (PRD v5.3 §6.3).
- * Previously inlined in talent + client dashboards with click = markAsRead only.
- * Now: click deep-links to /workspace/{related_job_id} (§6.2 page) and the icon
- * map covers all notification types the backend actually emits.
- */
 export function NotificationBell() {
-  const router = useRouter();
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -63,31 +55,12 @@ export function NotificationBell() {
     setUnreadCount((prev) => Math.max(0, prev - 1));
   };
 
-  // Deep-link: open the page matching the notification content (§6.3)
-  const handleNotifClick = (notif: NotificationItem) => {
-    if (!notif.is_read) markAsRead(notif.id);
-    if (notif.related_job_id) {
-      setIsOpen(false);
-      router.push(`/workspace/${notif.related_job_id}`);
-    }
-  };
-
-  const typeIcons: Record<
-    string,
-    "target" | "check" | "x" | "money" | "spark" | "file" | "arrowLeft" | "alertTriangle" | "star"
-  > = {
+  const typeIcons: Record<string, "target" | "check" | "x" | "money" | "spark"> = {
     new_match: "target",
     job_accepted: "check",
     job_rejected: "x",
     payment_held: "money",
-    payment_success: "money",
-    payment_failed: "x",
     payment_released: "spark",
-    deliverable_submitted: "file",
-    revision_requested: "arrowLeft",
-    job_completed: "check",
-    dispute_opened: "alertTriangle",
-    new_rating: "star",
   };
 
   const timeAgo = (dateStr: string) => {
@@ -134,30 +107,19 @@ export function NotificationBell() {
               notifications.slice(0, 15).map((notif) => (
                 <button
                   key={notif.id}
-                  onClick={() => handleNotifClick(notif)}
+                  onClick={() => !notif.is_read && markAsRead(notif.id)}
                   className={`w-full text-left p-4 hover:bg-surface-50 transition-colors border-b border-surface-100 last:border-0 ${
                     !notif.is_read ? "bg-primary-50/50" : ""
-                  } ${notif.related_job_id ? "cursor-pointer" : ""}`}
+                  }`}
                 >
                   <div className="flex items-start gap-3">
-                    <Icon
-                      name={typeIcons[notif.type] || "bell"}
-                      className="shrink-0 mt-0.5 text-primary-600"
-                      size={18}
-                    />
+                    <Icon name={typeIcons[notif.type] || "bell"} className="shrink-0 mt-0.5 text-primary-600" size={18} />
                     <div className="flex-1 min-w-0">
-                      <p
-                        className={`text-xs leading-relaxed ${
-                          !notif.is_read ? "text-surface-900" : "text-surface-500"
-                        }`}
-                      >
+                      <p className={`text-xs leading-relaxed ${!notif.is_read ? "text-surface-900" : "text-surface-500"}`}>
                         {notif.message}
                       </p>
                       <span className="text-[10px] text-surface-400 mt-1 block">
                         {timeAgo(notif.created_at)}
-                        {notif.related_job_id && (
-                          <span className="text-primary-500 ml-2">Buka ruang kerja →</span>
-                        )}
                       </span>
                     </div>
                     {!notif.is_read && (
@@ -178,5 +140,3 @@ export function NotificationBell() {
     </div>
   );
 }
-
-export default NotificationBell;

@@ -5,8 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Icon, RatingStars, Logo } from "@/components/icons";
 import { CancelEscrowModal } from "@/components/CancelEscrowModal";
-import { JobStatusTracker } from "@/components/JobStatusTracker";
-import { Breadcrumb } from "@/components/Breadcrumb";
+import { Footer } from "@/components/layout/Footer";
 
 interface JobDetail {
   id: string;
@@ -233,8 +232,8 @@ export default function JobDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50">
-        <nav className="glass sticky top-0 z-50">
-          <div className="max-w-5xl mx-auto px-6 py-3 flex items-center gap-2">
+        <nav className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200">
+          <div className="max-w-5xl mx-auto px-6 h-16 flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2">
               <Logo height={32} />
             </Link>
@@ -252,7 +251,7 @@ export default function JobDetailPage() {
   if (!job) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
-        <div className="glass rounded-xl p-16 text-center max-w-md">
+        <div className="card p-16 text-center max-w-md">
           <Icon name="search" className="mx-auto mb-4 text-surface-300" size={44} />
           <h2
             className="text-xl font-bold mb-2 text-surface-900"
@@ -293,31 +292,29 @@ export default function JobDetailPage() {
       )}
 
       {/* Nav */}
-      <nav role="navigation" aria-label="Main navigation" className="glass sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav role="navigation" aria-label="Main navigation" className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo height={32} />
           </Link>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => router.back()}
-              className="text-sm text-surface-500 hover:text-surface-900 transition-colors"
-            >
-              <span className="inline-flex items-center gap-1"><Icon name="arrowLeft" size={14} />Kembali</span>
+          <div className="flex items-center gap-2">
+            <button onClick={() => router.back()} className="pill-tab">
+              <Icon name="arrowLeft" size={14} />
+              Kembali
             </button>
             {user ? (
               <Link
                 href={user.role === "talent" ? "/talent/dashboard" : "/client/dashboard"}
-                className="text-sm text-surface-500 hover:text-surface-900 transition-colors"
+                className="pill-tab"
               >
                 Dashboard
               </Link>
             ) : (
               <>
-                <Link href={`/login?redirect=${encodeURIComponent(`/jobs/${jobId}`)}`} className="text-sm text-surface-500 hover:text-surface-900">
+                <Link href={`/login?redirect=${encodeURIComponent(`/jobs/${jobId}`)}`} className="pill-tab">
                   Masuk
                 </Link>
-                <Link href={`/register?redirect=${encodeURIComponent(`/jobs/${jobId}`)}`} className="btn-primary text-xs px-4 py-2">
+                <Link href={`/register?redirect=${encodeURIComponent(`/jobs/${jobId}`)}`} className="btn-primary text-xs px-4 py-2 rounded-full">
                   Daftar
                 </Link>
               </>
@@ -340,7 +337,7 @@ export default function JobDetailPage() {
           {/* ─── Main Content ────────────────────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
             {/* Job Header */}
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_20px_60px_-20px_rgba(15,23,42,0.18)] p-8 animate-slide-up">
+            <div className="card p-8 animate-slide-up">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
@@ -358,10 +355,7 @@ export default function JobDetailPage() {
                             : job.status}
                     </span>
                   </div>
-                  <h1
-                    className="text-2xl font-bold text-surface-900 mb-1"
-                    
-                  >
+                  <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-surface-900 mb-1">
                     {job.title}
                   </h1>
                   <p className="text-sm text-surface-500">
@@ -451,7 +445,7 @@ export default function JobDetailPage() {
             {/* AI Match Card */}
             {isTalent && (
               <div
-                className="glass rounded-xl p-6 animate-slide-up"
+                className="card p-6 animate-slide-up"
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="flex items-center gap-2 mb-4">
@@ -621,7 +615,7 @@ export default function JobDetailPage() {
             {/* Not logged in CTA */}
             {!user && (
               <div
-                className="glass rounded-xl p-6 animate-slide-up"
+                className="card p-6 animate-slide-up"
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="text-center">
@@ -651,7 +645,7 @@ export default function JobDetailPage() {
             {/* Client viewing */}
             {user?.role === "client" && (
               <div
-                className="glass rounded-xl p-6 animate-slide-up"
+                className="card p-6 animate-slide-up"
                 style={{ animationDelay: "0.1s" }}
               >
                 <div className="text-center">
@@ -687,7 +681,7 @@ export default function JobDetailPage() {
 
             {/* Quick Info Card */}
             <div
-              className="glass rounded-xl p-6 animate-slide-up"
+              className="card p-6 animate-slide-up"
               style={{ animationDelay: "0.2s" }}
             >
               <h3 className="text-sm font-bold text-surface-900 mb-4 flex items-center gap-2"><Icon name="briefcase" size={15} />Info Job</h3>
@@ -720,6 +714,8 @@ export default function JobDetailPage() {
           </div>
         </div>
       </main>
+
+      <Footer />
 
       {/* Apply Confirmation Modal */}
       {showApplyModal && (
