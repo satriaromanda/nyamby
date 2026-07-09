@@ -36,9 +36,10 @@ export async function GET() {
       orderBy: { generatedAt: "desc" },
     });
 
-    // Get recommended jobs (matched)
+    // Get recommended jobs (matched) — only surface strong matches (>= 60%)
+    // PRD v5.3 §6.8: dashboard "Job Untukmu" hanya tampilkan match score >= 60
     const jobMatches = await prisma.jobMatch.findMany({
-      where: { talentProfileId: profile.id },
+      where: { talentProfileId: profile.id, matchScore: { gte: 60 } },
       include: {
         job: {
           include: {
