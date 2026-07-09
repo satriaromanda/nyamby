@@ -68,7 +68,10 @@ export async function POST(request: NextRequest) {
       const payInResult = await createPayIn({
         initiatedAmount: totalAmount,
         paymentMethod: "VIRTUAL_ACCOUNT",
-        paymentChannel: "BCA.VA",
+        // BCA.VA is NOT in Xenith's active channel list (verified via
+        // GET /v1/payins/channels, 2026-07-09) — it 400s INVALID_PAYMENT_CHANNEL.
+        // BNI.VA is active; override via env if business prefers another bank.
+        paymentChannel: process.env.XENITH_PAYIN_CHANNEL || "BNI.VA",
         referenceCode,
         customerReference,
         customerName: session.fullName || "Client AyoNyamby",
