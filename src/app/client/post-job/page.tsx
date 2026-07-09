@@ -164,21 +164,7 @@ export default function PostJobPage() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Nav */}
-      <nav className="glass sticky top-0 z-50" role="navigation">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={32} />
-          </Link>
-          <Link href="/client/dashboard" className="text-sm text-surface-500 hover:text-surface-900">
-            <span className="inline-flex items-center gap-1">
-              <Icon name="arrowLeft" size={14} />
-              {isExportClient ? "Back to Dashboard" : "Kembali ke Dashboard"}
-            </span>
-          </Link>
-        </div>
-      </nav>
-
+      {/* Nav moved to DashboardSidebar via /client layout (PRD v5.3 §6.12) */}
       <main role="main" className="max-w-2xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold mb-2 text-surface-900" >
           {isExportClient ? "Post a New Job" : "Post Job Baru"}

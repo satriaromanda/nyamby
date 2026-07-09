@@ -162,16 +162,14 @@ export default function EditProfilePage() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200">
-        <div className="max-w-3xl mx-auto px-6 h-16 flex items-center gap-4">
+      {/* Nav moved to DashboardSidebar via /talent layout (PRD v5.3 §6.12) */}
+      <div className="max-w-3xl mx-auto px-6 py-8">
+        <div className="mb-6 flex items-center gap-3">
           <Link href="/talent/dashboard" className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-100 transition-colors text-surface-500">
             <Icon name="arrowLeft" size={20} />
           </Link>
-          <h1 className="font-bold text-surface-900" >Edit Profil</h1>
+          <h1 className="text-2xl font-bold text-surface-900">Edit Profil</h1>
         </div>
-      </nav>
-
-      <div className="max-w-3xl mx-auto px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="glass rounded-xl p-6">
             <h2 className="text-lg font-bold mb-4 text-surface-900" >Informasi Dasar</h2>

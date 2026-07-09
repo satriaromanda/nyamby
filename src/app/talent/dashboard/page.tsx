@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Icon, RatingStars, Logo } from "@/components/icons";
+import { Icon, RatingStars } from "@/components/icons";
 import { NotificationBell } from "@/components/NotificationBell";
 
 interface SkillGapRec {
@@ -266,11 +266,6 @@ export default function TalentDashboard() {
     }
   };
 
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
@@ -289,38 +284,14 @@ export default function TalentDashboard() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Top Nav */}
-      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Logo height={28} />
-          </Link>
-
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-            <Link href="/jobs" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline">
-              Browse Jobs
-            </Link>
-            <NotificationBell />
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full gradient-primary flex items-center justify-center text-[10px] sm:text-xs font-bold text-white">
-                {data.profile.full_name[0]}
-              </div>
-              <span className="text-xs sm:text-sm font-medium hidden sm:block text-surface-900">{data.profile.full_name}</span>
-            </div>
-            <Link href="/talent/settings" className="text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
-              <Icon name="settings" size={16} />
-            </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
-              Keluar
-            </button>
-          </div>
-        </div>
-      </nav>
-
+      {/* Nav moved to DashboardSidebar via /talent layout (PRD v5.3 §6.12) */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
           <div>
+            <p className="text-[10px] font-semibold tracking-widest text-primary-600 uppercase mb-1">
+              Talent Portal
+            </p>
             <h1 className="text-3xl font-bold mb-2 text-surface-900" >
               Halo, {data.profile.full_name.split(" ")[0]}!
             </h1>
@@ -328,9 +299,12 @@ export default function TalentDashboard() {
               Dashboard karirmu - lihat insight AI dan job yang cocok untukmu.
             </p>
           </div>
-          <Link href="/talent/edit-profile" className="btn-secondary text-xs sm:text-sm inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 shrink-0 self-start">
-            <Icon name="spark" size={14} /> Edit Profil
-          </Link>
+          <div className="flex items-center gap-3 shrink-0 self-start">
+            <NotificationBell />
+            <Link href="/talent/edit-profile" className="btn-secondary text-xs sm:text-sm inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2">
+              <Icon name="spark" size={14} /> Edit Profil
+            </Link>
+          </div>
         </div>
 
         {/* Quick Stats */}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Icon, Logo } from "@/components/icons";
+import { Icon } from "@/components/icons";
 
 
 interface ClientProfile {
@@ -103,11 +103,6 @@ export default function ClientSettingsPage() {
     }
   };
 
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
@@ -133,35 +128,7 @@ export default function ClientSettingsPage() {
         </div>
       )}
 
-      {/* Nav */}
-      <nav className="glass sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={32} />
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/client/dashboard"
-              className="text-sm text-surface-500 hover:text-surface-900 transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/client/post-job"
-              className="text-sm text-surface-500 hover:text-surface-900 transition-colors"
-            >
-              Post Job
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="text-xs text-surface-400 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
-            >
-              Keluar
-            </button>
-          </div>
-        </div>
-      </nav>
-
+      {/* Nav moved to DashboardSidebar via /client layout (PRD v5.3 §6.12) */}
       <div className="max-w-4xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">

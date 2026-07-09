@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Icon, RatingStars, Logo } from "@/components/icons";
+import { Icon, RatingStars } from "@/components/icons";
 import { RatingModal } from "@/components/RatingModal";
 import { NotificationBell } from "@/components/NotificationBell";
 
@@ -198,11 +198,6 @@ export default function ClientDashboard() {
     }
   };
 
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
@@ -223,36 +218,25 @@ export default function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Nav */}
-      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Logo height={28} />
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-            <NotificationBell />
-            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap">
-              + Post Job
-            </Link>
-            <Link href="/client/settings" className="text-surface-500 hover:text-surface-900 transition-colors hidden sm:inline" title="Pengaturan">
-              <Icon name="settings" size={16} />
-            </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700 hidden sm:inline">
-              Keluar
-            </button>
-          </div>
-        </div>
-      </nav>
-
+      {/* Nav moved to DashboardSidebar via /client layout (PRD v5.3 §6.12) */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
           <div>
+            <p className="text-[10px] font-semibold tracking-widest text-primary-600 uppercase mb-1">
+              Client Portal
+            </p>
             <h1 className="text-3xl font-bold mb-2 text-surface-900" >
               Dashboard Client
             </h1>
             <p className="text-surface-500">
               Kelola job posting dan lihat talenta terbaik yang direkomendasikan AI.
             </p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0 self-start">
+            <NotificationBell />
+            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap">
+              + Post Job Baru
+            </Link>
           </div>
         </div>
 
