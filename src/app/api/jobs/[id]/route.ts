@@ -63,11 +63,17 @@ export async function GET(
           description: job.description,
           category: job.category,
           client_name: job.client.fullName,
+          client_avatar: job.client.avatarUrl,
+          client_user_id: job.clientUserId,
           budget_min: job.budgetMin,
           budget_max: job.budgetMax,
           deadline: job.deadline,
           status: job.status,
           created_at: job.createdAt,
+          // PRD v5.3 §6.2 — workspace needs deliverable info
+          submission_url: job.submissionUrl,
+          submission_notes: job.submissionNotes,
+          submitted_at: job.submittedAt,
           required_skills: job.requiredSkills.map((rs) => ({
             name: rs.skill.name,
             is_mandatory: rs.isMandatory,
