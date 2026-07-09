@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { Icon, RatingStars, Logo } from "@/components/icons";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default async function TalentPublicProfilePage({
   params,
@@ -61,6 +62,14 @@ export default async function TalentPublicProfilePage({
       </nav>
 
       <main className="max-w-5xl mx-auto px-6 py-8">
+        {/* Breadcrumb — SEO JSON-LD included (PRD v5.3 §6.11) */}
+        <Breadcrumb
+          items={[
+            { label: "Beranda", href: "/" },
+            { label: "Talenta", href: "/talents" },
+            { label: talent.user.fullName },
+          ]}
+        />
         <div className="grid lg:grid-cols-3 gap-8">
           <aside className="space-y-4">
             <div className="glass rounded-xl p-6 text-center">

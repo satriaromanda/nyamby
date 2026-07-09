@@ -2,11 +2,21 @@ import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export default function AiMatchingPage() {
   return (
     <div className="min-h-screen bg-[#FAFAF8] text-slate-900 font-sans">
       <Navbar />
+      {/* SEO breadcrumb JSON-LD only — hero has no room for visible trail (PRD v5.3 §6.11) */}
+      <Breadcrumb
+        jsonLdOnly
+        items={[
+          { label: "Beranda", href: "/" },
+          { label: "Fitur", href: "/#fitur" },
+          { label: "AI Job Matching", href: "/fitur/ai-matching" },
+        ]}
+      />
 
       {/* 1. Hero Section */}
       <section className="pt-32 pb-20 px-6 overflow-hidden relative">

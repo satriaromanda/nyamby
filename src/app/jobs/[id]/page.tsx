@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Icon, RatingStars, Logo } from "@/components/icons";
 import { CancelEscrowModal } from "@/components/CancelEscrowModal";
 import { JobStatusTracker } from "@/components/JobStatusTracker";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 interface JobDetail {
   id: string;
@@ -326,14 +327,14 @@ export default function JobDetailPage() {
       </nav>
 
       <main role="main" className="max-w-5xl mx-auto px-6 py-8">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-surface-400 mb-6">
-          <Link href="/jobs" className="hover:text-primary-600 transition-colors">
-            Jobs
-          </Link>
-          <span>/</span>
-          <span className="text-surface-600">{job.title}</span>
-        </div>
+        {/* Breadcrumb — SEO JSON-LD included (PRD v5.3 §6.11) */}
+        <Breadcrumb
+          items={[
+            { label: "Beranda", href: "/" },
+            { label: "Jobs", href: "/jobs" },
+            { label: job.title },
+          ]}
+        />
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* ─── Main Content ────────────────────────────────────── */}
