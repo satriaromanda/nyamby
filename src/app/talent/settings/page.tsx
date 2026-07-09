@@ -117,11 +117,6 @@ export default function TalentSettingsPage() {
     }
   };
 
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">

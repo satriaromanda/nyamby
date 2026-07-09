@@ -123,11 +123,6 @@ export default function ClientDashboard() {
     }
   };
 
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
@@ -176,7 +171,7 @@ export default function ClientDashboard() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 text-surface-900">
               Dashboard <span className="text-gradient-brand">Client</span>
@@ -184,6 +179,12 @@ export default function ClientDashboard() {
             <p className="text-surface-500">
               Kelola job posting dan lihat talenta terbaik yang direkomendasikan AI.
             </p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0 self-start">
+            <NotificationBell />
+            <Link href="/client/post-job" className="btn-primary text-xs px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap">
+              + Post Job Baru
+            </Link>
           </div>
         </div>
 

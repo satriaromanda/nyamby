@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Icon, RatingStars, Logo } from "@/components/icons";
+import { Icon, RatingStars } from "@/components/icons";
 import { NotificationBell } from "@/components/NotificationBell";
 import { JobStatusTracker } from "@/components/JobStatusTracker";
 import { SmartPricingCard } from "@/components/SmartPricingCard";
@@ -192,11 +192,6 @@ export default function TalentDashboard() {
     }
   };
 
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
@@ -258,9 +253,12 @@ export default function TalentDashboard() {
               Siap dapat <span className="text-gradient-brand">project berikutnya?</span>
             </h1>
           </div>
-          <Link href="/talent/edit-profile" className="btn-secondary text-xs sm:text-sm inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 shrink-0 self-start">
-            <Icon name="spark" size={14} /> Edit Profil
-          </Link>
+          <div className="flex items-center gap-3 shrink-0 self-start">
+            <NotificationBell />
+            <Link href="/talent/edit-profile" className="btn-secondary text-xs sm:text-sm inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2">
+              <Icon name="spark" size={14} /> Edit Profil
+            </Link>
+          </div>
         </div>
 
         {/* Quick Stats */}
