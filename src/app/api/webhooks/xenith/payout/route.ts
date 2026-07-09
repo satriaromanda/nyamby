@@ -22,7 +22,8 @@ export async function POST(request: NextRequest) {
     }
 
     const payload = JSON.parse(payloadText);
-    const { id, status } = payload.data;
+    const { id } = payload.data;
+    const status = ((payload.data.status as string) || "").toUpperCase();
 
     const payout = await prisma.payout.findUnique({
       where: { xenithPayoutId: id },

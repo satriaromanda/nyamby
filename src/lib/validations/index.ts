@@ -94,8 +94,8 @@ export const businessVerificationSchema = z.object({
 export const clientProfileUpdateSchema = z.object({
   full_name: z.string().min(2).max(255).optional(),
   company_name: z.string().max(255).optional(),
-  industry: z.enum(["tech", "creative", "retail", "f&b", "education", "other"]).optional(),
-  company_size: z.enum(["solo", "2-10", "11-50", "51+"]).optional(),
+  industry: z.enum(["technology", "creative", "retail", "finance", "education", "other"]).optional(),
+  company_size: z.enum(["1-10", "11-50", "51-200", "200+"]).optional().or(z.literal("")),
   location: z.string().min(2).optional(),
   description: z.string().optional(),
   website_url: z.string().url().optional().or(z.literal("")),

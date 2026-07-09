@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyWebhookSignature, isWebhookTimestampValid } from "@/services/xenith";
 import { logger } from "@/lib/logger";
+import { applyPayInStatus } from "@/lib/payment-reconciliation";
 
 // Webhook endpoint — tidak memerlukan auth (diakses langsung oleh Xenith)
 export async function POST(request: NextRequest) {
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     const payment = await prisma.payment.findUnique({
       where: { xenithPayinId: id },
-      select: { id: true },
+      select: { id: true, escrowId: true },
     });
 
     if (!payment) {
