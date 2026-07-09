@@ -781,6 +781,118 @@ function TestimonialsSection({ t }: { t: Copy }) {
 
 /* ─── Page ─────────────────────────────────────────────────────── */
 
+/* ─── Latest Jobs (PRD v5.3 §6.9 — job-portal feel) ─────────────── */
+
+interface HomeJob {
+  id: string;
+  title: string;
+  category: string;
+  budget_min: number | null;
+  budget_max: number | null;
+  deadline: string | null;
+  required_skills: { name: string; is_mandatory: boolean }[];
+  client: { full_name: string; company_name: string | null };
+}
+
+function LatestJobs() {
+  const [jobs, setJobs] = useState<HomeJob[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/jobs?per_page=6&status=active")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && Array.isArray(d.data)) setJobs(d.data.slice(0, 6));
+      })
+      .catch(() => {})
+      .finally(() => setLoaded(true));
+  }, []);
+
+  // Graceful: hide entire section when no jobs (fresh DB / API error)
+  if (loaded && jobs.length === 0) return null;
+
+  return (
+    <section className="py-24 px-6 bg-white">
+      <div className="max-w-[1280px] mx-auto">
+        <AnimateIn>
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-xs font-semibold text-slate-600 mb-4">
+              <Icon name="briefcase" size={12} /> Job Terbaru
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight mb-4">
+              Peluang yang baru{" "}
+              <span className="text-primary-600">dibuka</span>
+            </h2>
+            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+              Project nyata dari client terverifikasi — langsung lamar dengan bantuan AI match.
+            </p>
+          </div>
+        </AnimateIn>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          {!loaded
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="skeleton h-48 rounded-2xl" />
+              ))
+            : jobs.map((job, i) => (
+                <AnimateIn key={job.id} delay={i * 80}>
+                  <Link
+                    href={`/jobs/${job.id}`}
+                    className="block h-full bg-[#FAFAF8] rounded-2xl border border-slate-200 p-6 hover:border-primary-300 hover:shadow-lg hover:shadow-primary-500/5 transition-all group"
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-[11px] px-2.5 py-1 rounded-full bg-primary-50 text-primary-600 font-medium">
+                        {job.category === "web_dev" ? "Web Development" : "Graphic Design"}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-slate-900 mb-1 group-hover:text-primary-600 transition-colors line-clamp-2">
+                      {job.title}
+                    </h3>
+                    <p className="text-xs text-slate-400 mb-4">
+                      {job.client.company_name || job.client.full_name}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {job.required_skills.slice(0, 3).map((s, si) => (
+                        <span
+                          key={si}
+                          className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-500"
+                        >
+                          {s.name}
+                        </span>
+                      ))}
+                      {job.required_skills.length > 3 && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-400">
+                          +{job.required_skills.length - 3}
+                        </span>
+                      )}
+                    </div>
+                    {job.budget_max && (
+                      <p className="text-sm font-bold text-slate-900">
+                        Rp {Number(job.budget_min || 0).toLocaleString("id-ID")} –{" "}
+                        {Number(job.budget_max).toLocaleString("id-ID")}
+                      </p>
+                    )}
+                  </Link>
+                </AnimateIn>
+              ))}
+        </div>
+
+        <AnimateIn>
+          <div className="text-center">
+            <Link
+              href="/jobs"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-slate-900 text-white font-semibold hover:bg-slate-800 transition-colors"
+            >
+              Lihat Semua Job
+              <Icon name="arrowRight" size={16} />
+            </Link>
+          </div>
+        </AnimateIn>
+      </div>
+    </section>
+  );
+}
+
 export default function LandingPage() {
   const [lang] = useLang();
   const t = copy[lang];

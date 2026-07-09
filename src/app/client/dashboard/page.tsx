@@ -223,6 +223,15 @@ export default function ClientDashboard() {
                         <span className={`text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full status-${job.status}`}>
                           {statusLabels[job.status]}
                         </span>
+                        {["in_progress", "submitted_for_review", "revision_requested", "completed"].includes(job.status) && (
+                          <Link
+                            href={`/workspace/${job.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-[10px] sm:text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-primary-200 text-primary-600 hover:bg-primary-50 font-medium transition-colors"
+                          >
+                            Buka Ruang Kerja
+                          </Link>
+                        )}
                       </div>
                       <div className="flex flex-wrap gap-1.5 mb-3">
                         {job.required_skills.map((s, i) => (

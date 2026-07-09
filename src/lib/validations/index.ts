@@ -23,6 +23,8 @@ export const jobCreateSchema = z.object({
   title: z.string().min(5, { message: "Judul minimal 5 karakter" }).max(255),
   description: z.string().min(20, { message: "Deskripsi minimal 20 karakter" }),
   category: z.enum(["web_dev", "graphic_designer"], { message: "Kategori tidak valid" }),
+  // PRD v5.3 §6.4 — required experience level (optional, backwards compatible)
+  experience_level: z.enum(["beginner", "intermediate", "expert"]).nullable().optional(),
   budget_min: z.number().nullable().optional(),
   budget_max: z.number().nullable().optional(),
   deadline: z.string().nullable().optional(),
@@ -54,6 +56,18 @@ export const talentProfileUpdateSchema = z.object({
       level: z.enum(["beginner", "intermediate", "expert"]).optional(),
     })
   ).optional(),
+  // PRD v5.3 §6.7 — structured work experience / projects (replace-all semantics)
+  experiences: z.array(
+    z.object({
+      title: z.string().min(2, { message: "Judul pengalaman minimal 2 karakter" }).max(255),
+      company: z.string().max(255).nullable().optional(),
+      description: z.string().max(2000).nullable().optional(),
+      tech_stack: z.array(z.string().max(50)).max(20).optional(),
+      start_date: z.string().nullable().optional(),
+      end_date: z.string().nullable().optional(),
+      url: z.string().url({ message: "Format URL tidak valid" }).nullable().optional().or(z.literal("")),
+    })
+  ).max(20, { message: "Maksimal 20 pengalaman" }).optional(),
 });
 
 export const clientOnboardingSchema = z.object({

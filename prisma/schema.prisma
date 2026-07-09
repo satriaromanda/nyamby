@@ -178,8 +178,27 @@ model TalentProfile {
   jobMatches         JobMatch[]
   ratings            TalentRating[]
   portfolioAnalyses  PortfolioAnalysis[]
+  experiences        TalentExperience[]
 
   @@map("talent_profiles")
+}
+
+// PRD v5.3 §6.7 — Structured work experience / projects for AI matching quality
+model TalentExperience {
+  id              String        @id @default(uuid())
+  talentProfileId String        @map("talent_profile_id")
+  title           String
+  company         String?
+  description     String?
+  techStack       String[]      @default([]) @map("tech_stack")
+  startDate       DateTime?     @map("start_date") @db.Date
+  endDate         DateTime?     @map("end_date") @db.Date
+  url             String?
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  talentProfile TalentProfile @relation(fields: [talentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("talent_experiences")
 }
 
 model ClientProfile {
@@ -262,6 +281,8 @@ model Job {
   submissionUrl    String?        @map("submission_url")
   submissionNotes  String?        @map("submission_notes")
   submittedAt      DateTime?      @map("submitted_at")
+  // PRD v5.3 §6.4 — Required experience level, feeds AI matching
+  experienceLevel  SkillLevel?    @map("experience_level")
   // PRD v4.0 §2.2 — Currency display for cross-border clients
   displayCurrency  Currency       @default(IDR) @map("display_currency")
   fxRateAtPosting  Decimal?       @map("fx_rate_at_posting") @db.Decimal(12, 6)

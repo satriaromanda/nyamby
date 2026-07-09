@@ -584,12 +584,20 @@ export default function TalentDashboard() {
                           <div className="font-medium text-sm text-surface-900">{job.title}</div>
                           <div className="text-xs text-surface-400">{job.client_name}</div>
                         </div>
-                        <span className={`text-xs px-3 py-1 rounded-full status-${job.status}`}>
-                          {job.status === "in_progress" ? "In Progress" 
-                           : job.status === "submitted_for_review" ? "Menunggu Review" 
-                           : job.status === "revision_requested" ? "Revisi Diminta"
-                           : job.status === "completed" ? "Selesai" : job.status}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xs px-3 py-1 rounded-full status-${job.status}`}>
+                            {job.status === "in_progress" ? "In Progress"
+                             : job.status === "submitted_for_review" ? "Menunggu Review"
+                             : job.status === "revision_requested" ? "Revisi Diminta"
+                             : job.status === "completed" ? "Selesai" : job.status}
+                          </span>
+                          <Link
+                            href={`/workspace/${job.job_id}`}
+                            className="text-xs px-3 py-1 rounded-full border border-primary-200 text-primary-600 hover:bg-primary-50 font-medium transition-colors"
+                          >
+                            Buka Ruang Kerja
+                          </Link>
+                        </div>
                       </div>
                       <JobStatusTracker status={job.status} />
 

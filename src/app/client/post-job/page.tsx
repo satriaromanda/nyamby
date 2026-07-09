@@ -41,6 +41,8 @@ export default function PostJobPage() {
     budget_min: "",
     budget_max: "",
     deadline: "",
+    // PRD v5.3 §6.4 — required experience level ("" = tidak spesifik)
+    experience_level: "",
     required_skills: [] as { skill_id: string; is_mandatory: boolean; name: string }[],
   });
 
@@ -105,6 +107,7 @@ export default function PostJobPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          experience_level: form.experience_level || null,
           budget_min: form.budget_min ? Number(form.budget_min) : null,
           budget_max: form.budget_max ? Number(form.budget_max) : null,
           required_skills: form.required_skills.map((s) => ({
@@ -254,6 +257,39 @@ export default function PostJobPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* PRD v5.3 §6.4 — experience level */}
+          <div>
+            <label className="block text-sm text-surface-600 mb-2">
+              {isExportClient ? "Experience Level" : "Level Pengalaman"}
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { value: "", label: isExportClient ? "Any" : "Bebas" },
+                { value: "beginner", label: "Entry" },
+                { value: "intermediate", label: "Intermediate" },
+                { value: "expert", label: "Expert" },
+              ].map((lvl) => (
+                <button
+                  key={lvl.value}
+                  type="button"
+                  onClick={() => setForm({ ...form, experience_level: lvl.value })}
+                  className={`p-3 rounded-xl text-sm font-medium transition-all ${
+                    form.experience_level === lvl.value
+                      ? "gradient-primary text-white"
+                      : "bg-white border border-surface-200 text-surface-600 hover:border-primary-200"
+                  }`}
+                >
+                  {lvl.label}
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-surface-400 mt-2">
+              {isExportClient
+                ? "AI matching will factor talent seniority against this level."
+                : "AI matching akan mempertimbangkan senioritas talenta terhadap level ini."}
+            </p>
           </div>
 
           <div>

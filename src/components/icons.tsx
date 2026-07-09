@@ -38,6 +38,7 @@ import {
   Zap,
   FlaskConical,
   Globe,
+  TriangleAlert,
   type LucideIcon,
 } from "lucide-react";
 import NextImage from "next/image";
@@ -112,6 +113,9 @@ const lucideMap: Record<string, any> = {
   plus: Plus,
   bolt: Zap,
   beaker: FlaskConical,
+  // Was referenced by dispute UI but never registered — <Icon name="alertTriangle">
+  // resolved to undefined and crashed at render (latent bug, PRD v5.3 sprint find)
+  alertTriangle: TriangleAlert,
   twitter: TwitterIcon,
   instagram: InstagramIcon,
   linkedin: LinkedinIcon,

@@ -20,6 +20,14 @@ export interface TalentForMatching {
   bio: string;
   cv_text?: string | null;
   portfolio_context?: string | null;
+  // PRD v5.3 §6.7 — structured experience entries
+  experiences?: {
+    title: string;
+    company?: string | null;
+    description?: string | null;
+    tech_stack?: string[];
+    period?: string;
+  }[];
 }
 
 export interface JobForMatching {
@@ -28,6 +36,8 @@ export interface JobForMatching {
   required_skills: string[];
   category: string;
   budget_range: string;
+  // PRD v5.3 §6.4 — beginner | intermediate | expert (null = not specified)
+  experience_level?: string | null;
 }
 
 export interface MatchResult {
@@ -68,7 +78,11 @@ export async function generateJobMatches(
   try {
     const systemPrompt = `Kamu adalah mesin matching profesional untuk platform freelance Indonesia.
 Tugasmu adalah mengevaluasi kesesuaian setiap talenta terhadap job yang diberikan.
-Jika tersedia, gunakan cv_text dan portfolio_context sebagai bukti konkret, bukan hanya self-report skill.
+Jika tersedia, gunakan cv_text, portfolio_context, dan experiences (daftar pengalaman kerja/project terstruktur: judul, perusahaan, deskripsi, tech_stack, periode) sebagai bukti konkret — experiences adalah bukti terkuat, lebih kuat dari self-report skill.
+Jika job memiliki experience_level (beginner/intermediate/expert), bandingkan dengan level skill talenta (PRD v5.3 §6.4):
+- Level talenta jauh DI BAWAH requirement → beri penalti skor dan catat di gaps.
+- Level sesuai atau sedikit di atas requirement → nilai plus, catat di strengths.
+- Level jauh DI ATAS job entry-level → catat sebagai risiko overqualified di reasoning, tanpa penalti besar.
 
 RESPON HANYA JSON dengan struktur:
 {

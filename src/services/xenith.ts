@@ -92,6 +92,57 @@ export async function createPayIn(data: {
     return result;
 }
 
+// ── Pay In Status (active reconcile) ────────────────────────────────────────
+
+/**
+ * Query current status of a single Pay In from Xenith.
+ *
+ * Used by the reconcile route so the app can actively pull status instead of
+ * waiting passively for the webhook (PRD v5.3 §6.13).
+ *
+ * ⚠️ TODO(Akbar): confirm exact path + response shape at docs.xenithpay.com/reference.
+ * Assumed REST convention `GET /v1/payins/{id}` mirroring `POST /v1/payins`.
+ * Response parsing below is defensive (handles `data.status` or top-level `status`).
+ */
+export async function getPayInStatus(payinId: string): Promise<{
+    id: string;
+    status: string;
+    currency?: string;
+    raw: unknown;
+}> {
+    const uri = `/v1/payins/${payinId}`;
+    const method = 'GET';
+    const timestamp = new Date().toISOString();
+
+    // GET has no body; sign over empty payload string (same HMAC pattern as createPayIn)
+    const payloadStr = '';
+    const signature = generateSignature(payloadStr, method, uri, timestamp);
+
+    const response = await fetch(`${API_BASE_URL}${uri}`, {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Xenith-Api-Key': API_KEY,
+            'Xenith-Request-Timestamp': timestamp,
+            'Xenith-Request-Signature': signature,
+        },
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+        console.error('[Xenith] Get Pay In Status Error:', result);
+        throw new Error(`Xenith Get Pay In Error: ${response.statusText}`);
+    }
+
+    const data = result?.data ?? result;
+    return {
+        id: data?.id ?? payinId,
+        status: data?.status ?? '',
+        currency: data?.currency ?? data?.originCurrency ?? undefined,
+        raw: result,
+    };
+}
+
 // ── Pay Out ─────────────────────────────────────────────────────────────────
 
 export async function createPayOut(data: {

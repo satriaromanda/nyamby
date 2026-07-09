@@ -42,7 +42,7 @@
 | Styling | Tailwind CSS + shadcn/ui |
 | Database | PostgreSQL + Prisma ORM |
 | AI Engine | DeepSeek Chat (primary) / GPT-4o (fallback) |
-| Auth | Session-based (iron-session) |
+| Auth | Custom JWT via `jose` (httpOnly cookie, 7 hari) |
 | Deployment | Virtual Private Server|
 
 ---
@@ -67,7 +67,7 @@ npm install
 
 # Setup environment
 cp .env.example .env
-# Isi DATABASE_URL, AI_API_KEY, SESSION_SECRET di .env
+# Isi DATABASE_URL, AI_API_KEY, JWT_SECRET (minimal 32 karakter) di .env
 
 # Setup database
 npx prisma db push

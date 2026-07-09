@@ -41,7 +41,11 @@ export default async function EscrowPaymentPage({
     redirect("/client/dashboard");
   }
 
-  // Check if escrow already exists
+  // Check existing escrow + payment (PRD v5.3 §6.13):
+  // - escrow settled (held/released/...) → back to dashboard
+  // - escrow pending with PENDING payment → show payment instructions + Cek Status
+  //   (previously this page blindly redirected, leaving the user with NO way to
+  //   see or recover a stuck-pending payment in the app)
   const existingEscrow = await prisma.escrowTransaction.findUnique({
     where: { jobId },
     include: { payment: true },

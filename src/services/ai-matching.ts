@@ -20,6 +20,8 @@ export async function runAiJobMatching(jobId: string, category: TalentCategory) 
       include: {
         user: { select: { fullName: true, id: true } },
         talentSkills: { include: { skill: true } },
+        // PRD v5.3 §6.7 — structured experience feeds the prompt
+        experiences: { orderBy: { startDate: "desc" }, take: 10 },
       },
     });
 
@@ -53,6 +55,8 @@ export async function runAiJobMatching(jobId: string, category: TalentCategory) 
       required_skills: jobWithSkills.requiredSkills.map((rs) => rs.skill.name),
       category: jobWithSkills.category,
       budget_range: `${jobWithSkills.budgetMin || 0} - ${jobWithSkills.budgetMax || "Negotiable"} IDR`,
+      // PRD v5.3 §6.4 — level requirement feeds the matching prompt
+      experience_level: jobWithSkills.experienceLevel || null,
     };
 
     const talentData = allTalents.map((t) => ({
@@ -64,6 +68,14 @@ export async function runAiJobMatching(jobId: string, category: TalentCategory) 
       bio: t.bio || "",
       cv_text: t.cvText,
       portfolio_context: t.portfolioContext,
+      // PRD v5.3 §6.7 — structured experience (stronger evidence than free text)
+      experiences: t.experiences.map((ex) => ({
+        title: ex.title,
+        company: ex.company,
+        description: ex.description,
+        tech_stack: ex.techStack,
+        period: `${ex.startDate ? ex.startDate.toISOString().slice(0, 7) : "?"} - ${ex.endDate ? ex.endDate.toISOString().slice(0, 7) : "sekarang"}`,
+      })),
     }));
 
     // Call OpenAI

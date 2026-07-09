@@ -74,91 +74,6 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-/* ─── Job Status Tracker ────────────────────────────────────────── */
-
-function JobStatusTracker({ status, onDispute }: { status: string; onDispute?: () => void }) {
-  const steps = [
-    { key: "active", label: "Aktif", icon: "file" as const },
-    { key: "matched", label: "Matched", icon: "ai" as const },
-    { key: "in_progress", label: "In Progress", icon: "settings" as const },
-    { key: "completed", label: "Selesai", icon: "check" as const },
-  ];
-
-  const statusOrder: Record<string, number> = {
-    active: 0,
-    matched: 1,
-    in_progress: 2,
-    completed: 3,
-    cancelled: -1,
-  };
-
-  const currentIndex = statusOrder[status] ?? 0;
-
-  if (status === "cancelled") {
-    return (
-      <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
-        <Icon name="x" className="text-red-600" size={15} />
-        <span className="text-xs text-red-600 font-medium">Dibatalkan</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-4 w-full">
-      <div className="flex items-center gap-0 w-full">
-        {steps.map((step, i) => {
-          const isActive = i <= currentIndex;
-          const isCurrent = i === currentIndex;
-          return (
-            <div key={step.key} className="flex items-center flex-1 last:flex-none">
-              <div className="flex flex-col items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-500 ${
-                    isCurrent
-                      ? "gradient-primary shadow-lg shadow-primary-500/20 scale-110 text-white"
-                      : isActive
-                        ? "bg-accent-500/10 text-accent-600"
-                        : "bg-surface-100 text-surface-400"
-                  }`}
-                >
-                  {isActive && i < currentIndex ? <Icon name="check" size={14} /> : <Icon name={step.icon} size={14} />}
-                </div>
-                <span
-                  className={`text-[9px] mt-1 font-medium transition-colors ${
-                    isCurrent
-                      ? "text-primary-600"
-                      : isActive
-                        ? "text-accent-600"
-                        : "text-surface-300"
-                  }`}
-                >
-                  {step.label}
-                </span>
-              </div>
-              {i < steps.length - 1 && (
-                <div
-                  className={`flex-1 h-0.5 mx-1 rounded-full transition-all duration-500 ${
-                    i < currentIndex ? "bg-accent-500/30" : "bg-surface-200"
-                  }`}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
-      
-      {status === "in_progress" && onDispute && (
-        <button
-          onClick={onDispute}
-          className="text-xs text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1 self-start ml-2"
-        >
-          <Icon name="alertTriangle" size={14} /> Laporkan Masalah
-        </button>
-      )}
-    </div>
-  );
-}
-
 /* ─── Main Page ──────────────────────────────────────────────────── */
 
 export default function JobDetailPage() {
@@ -409,14 +324,14 @@ export default function JobDetailPage() {
       </nav>
 
       <main role="main" className="max-w-5xl mx-auto px-6 py-8">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-surface-400 mb-6">
-          <Link href="/jobs" className="hover:text-primary-600 transition-colors">
-            Jobs
-          </Link>
-          <span>/</span>
-          <span className="text-surface-600">{job.title}</span>
-        </div>
+        {/* Breadcrumb — SEO JSON-LD included (PRD v5.3 §6.11) */}
+        <Breadcrumb
+          items={[
+            { label: "Beranda", href: "/" },
+            { label: "Jobs", href: "/jobs" },
+            { label: job.title },
+          ]}
+        />
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* ─── Main Content ────────────────────────────────────── */}
