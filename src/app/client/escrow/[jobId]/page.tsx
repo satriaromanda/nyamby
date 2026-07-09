@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Icon, Logo } from "@/components/icons";
-import EscrowPaymentClient from "./escrow-client";
+import EscrowPaymentClient, { PaymentInstructions } from "./escrow-client";
 
 export default async function EscrowPaymentPage({
   params,
@@ -41,14 +41,24 @@ export default async function EscrowPaymentPage({
     redirect("/client/dashboard");
   }
 
-  // Check if escrow already exists
+  // Check existing escrow + payment (PRD v5.3 §6.13):
+  // - escrow settled (held/released/...) → back to dashboard
+  // - escrow pending with PENDING payment → show payment instructions + Cek Status
+  //   (previously this page blindly redirected, leaving the user with NO way to
+  //   see or recover a stuck-pending payment in the app)
   const existingEscrow = await prisma.escrowTransaction.findUnique({
     where: { jobId },
+    include: { payment: true },
   });
 
-  if (existingEscrow) {
+  if (existingEscrow && existingEscrow.status !== "pending") {
     redirect("/client/dashboard");
   }
+
+  const pendingPayment =
+    existingEscrow?.payment && existingEscrow.payment.status === "PENDING"
+      ? existingEscrow.payment
+      : null;
 
   const amount = Number(job.budgetMax || job.budgetMin || 1000000);
   const talentName = acceptedMatch.talentProfile.user.fullName;
@@ -94,11 +104,20 @@ export default async function EscrowPaymentPage({
             </div>
           </div>
 
-          <EscrowPaymentClient 
-            jobId={job.id} 
-            talentUserId={talentUserId} 
-            amount={amount} 
-          />
+          {pendingPayment ? (
+            <PaymentInstructions
+              jobId={job.id}
+              paymentCode={pendingPayment.paymentCode}
+              paymentCodeType={pendingPayment.paymentCodeType}
+              amount={Number(pendingPayment.amount)}
+            />
+          ) : (
+            <EscrowPaymentClient
+              jobId={job.id}
+              talentUserId={talentUserId}
+              amount={amount}
+            />
+          )}
         </div>
       </main>
     </div>

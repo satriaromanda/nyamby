@@ -74,7 +74,9 @@ export async function POST(request: NextRequest) {
         customerName: session.fullName || "Client AyoNyamby",
         description: `Pembayaran Escrow untuk Job: ${job.title}`,
         callbackUrl: `${APP_URL}/api/webhooks/xenith/payin`,
-        redirectUrl: `${APP_URL}/client/dashboard`,
+        // Return user to escrow page — it shows payment status + active
+        // "Cek Status" reconcile (PRD v5.3 §6.13), not the dashboard blind spot
+        redirectUrl: `${APP_URL}/client/escrow/${job_id}`,
       });
 
       // Update escrow with payment record
