@@ -4,6 +4,7 @@ import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getJobCollabAccess } from "@/lib/job-access";
 import { Logo } from "@/components/icons";
+import { DashboardShell } from "@/components/DashboardShell";
 import WorkspaceClient from "./workspace-client";
 
 export default async function WorkspacePage({
@@ -45,25 +46,19 @@ export default async function WorkspacePage({
     access.role === "client" ? job.escrowTransaction.talent.fullName : job.client.fullName;
 
   return (
-    <div className="min-h-screen bg-surface-50">
-      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200">
-        <div className="max-w-[1100px] mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={30} />
-          </Link>
-          <Link href={dashboardHref} className="text-sm text-surface-500 hover:text-surface-900">
+    <DashboardShell role={session.role as "client" | "talent"} exempt={[]}>
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-surface-900">{job.title}</h1>
+            <p className="text-sm text-surface-500 mt-1">
+              Ruang kerja dengan <span className="font-semibold text-surface-700">{counterpartName}</span> · Nilai project Rp{" "}
+              {Number(job.escrowTransaction.amount).toLocaleString("id-ID")}
+            </p>
+          </div>
+          <Link href={dashboardHref} className="btn-secondary text-xs sm:text-sm px-4 py-2 shrink-0">
             Kembali ke Dashboard
           </Link>
-        </div>
-      </nav>
-
-      <main className="max-w-[1100px] mx-auto px-4 sm:px-6 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-surface-900">{job.title}</h1>
-          <p className="text-sm text-surface-500 mt-1">
-            Ruang kerja dengan {counterpartName} · Nilai project Rp{" "}
-            {Number(job.escrowTransaction.amount).toLocaleString("id-ID")}
-          </p>
         </div>
 
         <WorkspaceClient
@@ -73,6 +68,6 @@ export default async function WorkspacePage({
           jobStatus={job.status}
         />
       </main>
-    </div>
+    </DashboardShell>
   );
 }

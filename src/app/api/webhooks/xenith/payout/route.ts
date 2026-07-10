@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
     } else {
       await prisma.payout.update({
         where: { id: payout.id },
-        data: { status },
+        data: { status: status as any },
       });
     }
 

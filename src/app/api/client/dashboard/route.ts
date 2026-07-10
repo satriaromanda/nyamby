@@ -57,6 +57,9 @@ export async function GET() {
             recommendation: m.recommendation,
             status: m.status,
             aiStatus: m.aiStatus,
+            talent_bid_amount: m.talentBidAmount,
+            talent_message: m.talentMessage,
+            talent_portfolio_link: m.talentPortfolioLink,
           })),
           escrow: j.escrowTransaction
             ? {

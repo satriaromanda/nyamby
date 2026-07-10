@@ -25,7 +25,7 @@ interface MenuItem {
 const MENUS: Record<Role, MenuItem[]> = {
   talent: [
     { label: "Dashboard", href: "/talent/dashboard", icon: "chart" },
-    { label: "Cari Kerja", href: "/jobs", icon: "search" },
+    { label: "Cari Kerja", href: "/talent/jobs", icon: "search" },
     { label: "Edit Profil", href: "/talent/edit-profile", icon: "spark" },
     { label: "Disputes", href: "/talent/disputes", icon: "alertTriangle" },
   ],

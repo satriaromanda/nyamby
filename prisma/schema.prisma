@@ -329,6 +329,11 @@ model JobMatch {
   rejectionReason String?             @map("rejection_reason")
   aiStatus        AiAnalysisStatus    @default(completed) @map("ai_status")
   generatedAt     DateTime            @default(now()) @map("generated_at")
+  
+  // Talent Bidding Fields
+  talentBidAmount     Decimal?        @map("talent_bid_amount") @db.Decimal(12, 2)
+  talentMessage       String?         @map("talent_message")
+  talentPortfolioLink String?         @map("talent_portfolio_link")
 
   // Relations
   job           Job           @relation(fields: [jobId], references: [id], onDelete: Cascade)
