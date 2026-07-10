@@ -79,9 +79,10 @@ export async function GET(request: NextRequest) {
           continue;
         }
 
-        // Calculate payout amount (total - platform fee)
-        const talentAmount = Number(escrow.amount) - Number(escrow.platformFee);
-        const callbackUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "https://nyamby.id"}/api/webhooks/xenith`;
+        // Talent receives full escrow amount — platformFee was charged
+        // separately on top of this to the client (see escrow/hold route).
+        const talentAmount = Number(escrow.amount);
+        const callbackUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "https://nyamby.id"}/api/webhooks/xenith/payout`;
         const referenceCode = `AUTO-REL-${job.id.slice(0, 8)}-${Date.now()}`;
 
         // Trigger Xenith payout

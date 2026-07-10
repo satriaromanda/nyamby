@@ -43,6 +43,15 @@ export async function GET(
         res.cookies.delete("oauth_role");
         return res;
       }
+      // Security: Only auto-link provider if the OAuth email is verified.
+      // This prevents account takeover where an attacker registers a
+      // GitHub/Google account with someone else's email.
+      if (!profile.emailVerified) {
+        const res = redirectTo("/login", { error: "oauth_email_not_verified" });
+        res.cookies.delete("oauth_state");
+        res.cookies.delete("oauth_role");
+        return res;
+      }
       // Link this provider to the existing account (password or another provider).
       if (user.provider !== provider || user.providerId !== profile.providerId) {
         user = await prisma.user.update({
@@ -50,7 +59,7 @@ export async function GET(
           data: {
             provider,
             providerId: profile.providerId,
-            emailVerified: profile.emailVerified ? new Date() : user.emailVerified,
+            emailVerified: new Date(),
             avatarUrl: user.avatarUrl || profile.avatarUrl,
           },
         });

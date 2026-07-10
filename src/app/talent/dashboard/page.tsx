@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Icon, RatingStars, Logo } from "@/components/icons";
+import { Icon, RatingStars } from "@/components/icons";
 import { NotificationBell } from "@/components/NotificationBell";
 import { JobStatusTracker } from "@/components/JobStatusTracker";
 import { SmartPricingCard } from "@/components/SmartPricingCard";
@@ -70,6 +70,7 @@ export default function TalentDashboard() {
   const router = useRouter();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"aktif" | "match">("aktif");
   const [applyingId, setApplyingId] = useState<string | null>(null);
   const [analyzingPortfolio, setAnalyzingPortfolio] = useState(false);
   const [offerModalJob, setOfferModalJob] = useState<RecommendedJob | null>(null);
@@ -192,11 +193,6 @@ export default function TalentDashboard() {
     }
   };
 
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-50 flex items-center justify-center">
@@ -215,37 +211,7 @@ export default function TalentDashboard() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Top Nav */}
-      <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200" role="navigation" aria-label="Main navigation">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Logo height={32} />
-          </Link>
 
-          <div className="hidden sm:flex items-center gap-1 bg-surface-100/80 border border-surface-200/60 rounded-full p-1">
-            <span className="pill-tab pill-tab-active cursor-default">Home</span>
-            <Link href="/jobs" className="pill-tab">Find Work</Link>
-            <Link href="/talent/earnings" className="pill-tab">Pendapatan</Link>
-            <Link href="/talent/activity" className="pill-tab">Aktivitas</Link>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-            <NotificationBell />
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full gradient-primary flex items-center justify-center text-[10px] sm:text-xs font-bold text-white">
-                {data.profile.full_name[0]}
-              </div>
-              <span className="text-xs sm:text-sm font-medium hidden sm:block text-surface-900">{data.profile.full_name}</span>
-            </div>
-            <Link href="/talent/settings" className="text-surface-500 hover:text-surface-900 transition-colors" title="Pengaturan">
-              <Icon name="settings" size={16} />
-            </Link>
-            <button onClick={handleLogout} className="text-xs text-surface-400 hover:text-surface-700">
-              Keluar
-            </button>
-          </div>
-        </div>
-      </nav>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
@@ -258,9 +224,12 @@ export default function TalentDashboard() {
               Siap dapat <span className="text-gradient-brand">project berikutnya?</span>
             </h1>
           </div>
-          <Link href="/talent/edit-profile" className="btn-secondary text-xs sm:text-sm inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 shrink-0 self-start">
-            <Icon name="spark" size={14} /> Edit Profil
-          </Link>
+          <div className="flex items-center gap-3 shrink-0 self-start">
+            <NotificationBell />
+            <Link href="/talent/edit-profile" className="btn-secondary text-xs sm:text-sm inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2">
+              <Icon name="spark" size={14} /> Edit Profil
+            </Link>
+          </div>
         </div>
 
         {/* Quick Stats */}
@@ -307,9 +276,9 @@ export default function TalentDashboard() {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="flex flex-col-reverse lg:flex-row-reverse gap-6">
           {/* ─── Skill Gap Analysis Card ─────────────────────────── */}
-          <div className="lg:col-span-1">
+          <div className="w-full lg:w-[320px] xl:w-[360px] shrink-0">
             <div className="card p-6 card-hover">
               <div className="flex items-center justify-between gap-2 mb-4">
                 <div className="flex items-center gap-2">
@@ -474,16 +443,29 @@ export default function TalentDashboard() {
           </div>
 
           {/* ─── Recommended Jobs ────────────────────────────────── */}
-          <div className="lg:col-span-2">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-surface-900" >
-              Job Untukmu
-              <span className="badge-match">
-                <Icon name="ai" size={12} /> AI Matched
-              </span>
-            </h2>
+          <div className="w-full lg:flex-1 min-w-0 space-y-6">
+            <div className="flex items-center gap-6 border-b border-surface-200">
+              <button
+                onClick={() => setActiveTab("aktif")}
+                className={`pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${activeTab === "aktif" ? "border-primary-600 text-primary-600" : "border-transparent text-surface-500 hover:text-surface-900"}`}
+              >
+                <Icon name="briefcase" size={16} /> Job Aktif {data.active_jobs && data.active_jobs.length > 0 ? `(${data.active_jobs.length})` : ""}
+              </button>
+              <button
+                onClick={() => setActiveTab("match")}
+                className={`pb-3 text-sm font-bold border-b-2 transition-colors flex items-center gap-2 ${activeTab === "match" ? "border-primary-600 text-primary-600" : "border-transparent text-surface-500 hover:text-surface-900"}`}
+              >
+                Job Untukmu
+                <span className="badge-match scale-90 origin-left">
+                  <Icon name="ai" size={10} /> AI Matched
+                </span>
+              </button>
+            </div>
 
-            {data.recommended_jobs && data.recommended_jobs.length > 0 ? (
-              <div className="space-y-4">
+            {activeTab === "match" && (
+              <div className="animate-fade-in">
+                {data.recommended_jobs && data.recommended_jobs.length > 0 ? (
+                  <div className="space-y-4">
                 {data.recommended_jobs.map((job) => (
                   <Link key={job.match_id} href={`/jobs/${job.job_id}`} className="card p-5 card-hover block focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
                     <div className="flex items-start justify-between gap-4">
@@ -569,14 +551,14 @@ export default function TalentDashboard() {
                 </p>
               </div>
             )}
+              </div>
+            )}
 
             {/* Active Jobs with Status Tracker */}
-            {data.active_jobs && data.active_jobs.length > 0 && (
-              <div className="mt-8">
-                <h2 className="text-xl font-bold mb-4 text-surface-900" >
-                  <Icon name="briefcase" className="inline mr-2 text-primary-600" size={20} />Job Aktif
-                </h2>
-                <div className="space-y-3">
+            {activeTab === "aktif" && (
+              <div className="animate-fade-in">
+                {data.active_jobs && data.active_jobs.length > 0 ? (
+                  <div className="space-y-3">
                   {data.active_jobs.map((job) => (
                     <div key={job.job_id} className="card p-5">
                       <div className="flex items-center justify-between mb-4">
@@ -591,17 +573,19 @@ export default function TalentDashboard() {
                              : job.status === "revision_requested" ? "Revisi Diminta"
                              : job.status === "completed" ? "Selesai" : job.status}
                           </span>
-                          <Link
-                            href={`/workspace/${job.job_id}`}
-                            className="text-xs px-3 py-1 rounded-full border border-primary-200 text-primary-600 hover:bg-primary-50 font-medium transition-colors"
-                          >
-                            Buka Ruang Kerja
-                          </Link>
+                          {job.status !== "matched" && (
+                            <Link
+                              href={`/workspace/${job.job_id}`}
+                              className="text-xs px-3 py-1 rounded-full border border-primary-200 text-primary-600 hover:bg-primary-50 font-medium transition-colors"
+                            >
+                              Buka Ruang Kerja
+                            </Link>
+                          )}
                         </div>
                       </div>
                       <JobStatusTracker status={job.status} />
 
-                      {job.status !== "completed" && (
+                      {job.status !== "completed" && job.status !== "matched" && (
                         <Link
                           href={`/workspace/${job.job_id}`}
                           className="mt-4 flex items-center justify-center gap-2 text-sm font-semibold text-primary-600 bg-primary-50 hover:bg-primary-100 py-2.5 rounded-xl transition-all"
@@ -609,6 +593,13 @@ export default function TalentDashboard() {
                           <Icon name="users" size={16} />
                           Buka Ruang Kerja
                         </Link>
+                      )}
+                      
+                      {job.status === "matched" && (
+                        <div className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-amber-600 bg-amber-50 py-2.5 rounded-xl">
+                          <Icon name="money" size={16} />
+                          Menunggu Client Membayar Escrow
+                        </div>
                       )}
 
                       {/* Deliverable Actions */}
@@ -642,6 +633,12 @@ export default function TalentDashboard() {
                     </div>
                   ))}
                 </div>
+                ) : (
+                  <div className="card p-12 text-center">
+                    <Icon name="briefcase" className="mx-auto mb-4 text-surface-300" size={40} />
+                    <p className="text-surface-500">Belum ada job yang aktif.</p>
+                  </div>
+                )}
               </div>
             )}
           </div>

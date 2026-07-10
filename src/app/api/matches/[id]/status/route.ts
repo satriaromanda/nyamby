@@ -11,7 +11,7 @@ export async function PATCH(
     const { id } = await params;
 
     const body = await request.json();
-    const { status, rejection_reason } = body;
+    const { status, rejection_reason, bidAmount, message, portfolioLink } = body;
 
     if (!["applied", "offered", "accepted", "rejected"].includes(status)) {
       return NextResponse.json(
@@ -59,7 +59,10 @@ export async function PATCH(
       where: { id },
       data: {
         status,
-        rejectionReason: rejection_reason || null
+        rejectionReason: rejection_reason || null,
+        talentBidAmount: bidAmount ? Number(bidAmount) : null,
+        talentMessage: message || null,
+        talentPortfolioLink: portfolioLink || null,
       },
     });
 

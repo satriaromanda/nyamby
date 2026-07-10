@@ -13,6 +13,18 @@ export async function PATCH(
     const body = await request.json();
     const { status, submission_url, submission_notes } = body;
 
+    // State machine: only allow legal transitions
+    const ALLOWED_TRANSITIONS: Record<string, string[]> = {
+      active: ["matched", "cancelled"],
+      matched: ["in_progress", "active", "cancelled"],
+      in_progress: ["submitted_for_review", "disputed", "cancelled"],
+      submitted_for_review: ["revision_requested", "completed", "disputed"],
+      revision_requested: ["submitted_for_review", "disputed", "cancelled"],
+      disputed: ["cancelled"],      // only admin/webhook resolves disputes
+      completed: [],                 // terminal state
+      cancelled: [],                 // terminal state
+    };
+
     if (!["active", "matched", "in_progress", "submitted_for_review", "revision_requested", "completed", "cancelled"].includes(status)) {
       return NextResponse.json(
         { success: false, message: "Status tidak valid" },
@@ -25,6 +37,14 @@ export async function PATCH(
       return NextResponse.json(
         { success: false, message: "Job tidak ditemukan" },
         { status: 404 }
+      );
+    }
+
+    const allowed = ALLOWED_TRANSITIONS[job.status] || [];
+    if (!allowed.includes(status)) {
+      return NextResponse.json(
+        { success: false, message: `Tidak bisa mengubah status dari '${job.status}' ke '${status}'` },
+        { status: 400 }
       );
     }
 

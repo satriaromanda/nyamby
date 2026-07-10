@@ -6,6 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { Icon, RatingStars, Logo } from "@/components/icons";
 import { CancelEscrowModal } from "@/components/CancelEscrowModal";
 import { Footer } from "@/components/layout/Footer";
+import { Breadcrumb } from "@/components/Breadcrumb";
+import { JobStatusTracker } from "@/components/JobStatusTracker";
 
 interface JobDetail {
   id: string;
@@ -88,6 +90,9 @@ export default function JobDetailPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [applying, setApplying] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
+  const [bidAmount, setBidAmount] = useState<string>("");
+  const [bidMessage, setBidMessage] = useState<string>("");
+  const [portfolioLink, setPortfolioLink] = useState<string>("");
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
   const [disputeReason, setDisputeReason] = useState("ghosting");
@@ -178,12 +183,22 @@ export default function JobDetailPage() {
   // Apply to job
   const handleApply = async () => {
     if (!match) return;
+    if (!bidAmount || isNaN(Number(bidAmount.replace(/\D/g, "")))) {
+      showToast("Masukkan harga penawaran yang valid", "error");
+      return;
+    }
+
     setApplying(true);
     try {
       const res = await fetch(`/api/matches/${match.match_id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "applied" }),
+        body: JSON.stringify({ 
+          status: "applied",
+          bidAmount: Number(bidAmount.replace(/\D/g, "")),
+          message: bidMessage,
+          portfolioLink
+        }),
       });
       const d = await res.json();
       if (d.success) {
@@ -717,26 +732,83 @@ export default function JobDetailPage() {
 
       <Footer />
 
-      {/* Apply Confirmation Modal */}
+      {/* Apply Modal with Bidding */}
       {showApplyModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-surface-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-slide-up">
-            <h3 className="text-lg font-bold text-surface-900 mb-2">Konfirmasi Lamaran</h3>
-            <p className="text-sm text-surface-600 mb-6">
-              Konfirmasi lamaran ke <span className="font-semibold text-surface-800">{job.title}</span>?
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-surface-900/40 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 my-8 animate-slide-up">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xl font-bold text-surface-900">Ajukan Lamaran</h3>
+              <button onClick={() => setShowApplyModal(false)} className="text-surface-400 hover:text-surface-600">
+                <Icon name="x" size={20} />
+              </button>
+            </div>
+            
+            <p className="text-sm text-surface-500 mb-6 pb-4 border-b border-surface-200">
+              Kamu akan melamar untuk <span className="font-semibold text-surface-800">{job.title}</span>. 
+              {job.budget_max && ` Budget client: Rp ${Number(job.budget_min || 0).toLocaleString("id-ID")} - Rp ${Number(job.budget_max).toLocaleString("id-ID")}`}
             </p>
-            <div className="flex gap-3 justify-end">
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-semibold text-surface-900 mb-1.5">Harga Penawaran (Bid) <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <span className="text-surface-500 font-medium">Rp</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={bidAmount}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      if (val) {
+                        setBidAmount(Number(val).toLocaleString("id-ID"));
+                      } else {
+                        setBidAmount("");
+                      }
+                    }}
+                    placeholder="Contoh: 5.000.000"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+                  />
+                </div>
+                <p className="text-[10px] text-surface-500 mt-1">Sesuaikan dengan budget yang diberikan oleh client agar peluang diterima lebih besar.</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-surface-900 mb-1.5">Pesan atau Cover Letter <span className="text-surface-400 font-normal">(Opsional)</span></label>
+                <textarea
+                  value={bidMessage}
+                  onChange={(e) => setBidMessage(e.target.value)}
+                  placeholder="Ceritakan singkat mengapa kamu cocok untuk pekerjaan ini..."
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-surface-900 mb-1.5">Link Portfolio Terkait <span className="text-surface-400 font-normal">(Opsional)</span></label>
+                <input
+                  type="url"
+                  value={portfolioLink}
+                  onChange={(e) => setPortfolioLink(e.target.value)}
+                  placeholder="https://behance.net/..."
+                  className="w-full px-4 py-3 rounded-xl border border-surface-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+                />
+                <p className="text-[10px] text-surface-500 mt-1">Tambahkan link bukti karya atau pengalaman yang paling relevan dengan job ini.</p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end pt-4 border-t border-surface-200">
               <button
                 onClick={() => setShowApplyModal(false)}
-                className="px-4 py-2 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors"
+                className="px-5 py-2.5 text-sm font-medium text-surface-600 hover:text-surface-900 transition-colors rounded-xl"
                 disabled={applying}
               >
                 Batal
               </button>
               <button
                 onClick={handleApply}
-                disabled={applying}
-                className="btn-primary text-sm px-6 py-2 flex items-center justify-center gap-2"
+                disabled={applying || !bidAmount}
+                className="btn-primary text-sm px-6 py-2.5 flex items-center justify-center gap-2"
               >
                 {applying ? (
                   <>
@@ -744,7 +816,7 @@ export default function JobDetailPage() {
                     Mengirim...
                   </>
                 ) : (
-                  "Konfirmasi"
+                  <>Kirim Lamaran <Icon name="arrowRight" size={16} /></>
                 )}
               </button>
             </div>

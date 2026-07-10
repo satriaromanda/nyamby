@@ -32,3 +32,35 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const { name, category } = await request.json();
+    if (!name || !category) {
+      return NextResponse.json({ success: false, message: "Name and category required" }, { status: 400 });
+    }
+
+    const existing = await prisma.skill.findFirst({
+      where: { name: { equals: name, mode: 'insensitive' } }
+    });
+
+    if (existing) {
+      return NextResponse.json({ success: true, data: existing });
+    }
+
+    const newSkill = await prisma.skill.create({
+      data: {
+        name,
+        category,
+      },
+    });
+
+    return NextResponse.json({ success: true, data: newSkill });
+  } catch (error) {
+    console.error("[Skills POST]", error);
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

@@ -56,9 +56,10 @@ export async function POST(request: NextRequest) {
     const token = await signToken({
       userId: user.id,
       email: user.email,
-      role: user.role as "talent" | "client",
+      role: user.role as "talent" | "client" | "admin",
       fullName: user.fullName,
-      onboardingComplete: (user as any).onboardingComplete ?? false,
+      onboardingComplete: user.onboardingComplete ?? false,
+      isSuspended: user.isSuspended ?? false,
     });
     await setSessionCookie(token);
 

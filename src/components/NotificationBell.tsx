@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Icon } from "@/components/icons";
+import { useRouter } from "next/navigation";
 
 interface Notification {
   id: string;
@@ -13,6 +14,7 @@ interface Notification {
 }
 
 export function NotificationBell() {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -53,6 +55,29 @@ export function NotificationBell() {
       prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
     );
     setUnreadCount((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNotificationClick = async (notif: Notification) => {
+    if (!notif.is_read) {
+      await markAsRead(notif.id);
+    }
+    
+    setIsOpen(false);
+    
+    if (notif.related_job_id) {
+      const workspaceTypes = [
+        "payment_held", "payment_released", "payment_failed",
+        "job_started", "job_submitted", "job_revision", "job_completed", 
+        "new_message", "dispute_opened", "refund_received",
+        "job_accepted", "job_rejected"
+      ];
+      
+      if (workspaceTypes.includes(notif.type)) {
+        router.push(`/workspace/${notif.related_job_id}`);
+      } else {
+        router.push(`/jobs/${notif.related_job_id}`);
+      }
+    }
   };
 
   const typeIcons: Record<string, "target" | "check" | "x" | "money" | "spark"> = {
@@ -107,7 +132,7 @@ export function NotificationBell() {
               notifications.slice(0, 15).map((notif) => (
                 <button
                   key={notif.id}
-                  onClick={() => !notif.is_read && markAsRead(notif.id)}
+                  onClick={() => handleNotificationClick(notif)}
                   className={`w-full text-left p-4 hover:bg-surface-50 transition-colors border-b border-surface-100 last:border-0 ${
                     !notif.is_read ? "bg-primary-50/50" : ""
                   }`}

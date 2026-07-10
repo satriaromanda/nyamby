@@ -5,7 +5,7 @@ import { verifyToken } from './lib/auth';
 // PRD §2.4 & §11: Public Routes that do not require authentication
 const publicRoutes = ['/', '/talents', '/jobs', '/how-it-works', '/login', '/register', '/api', '/perusahaan', '/fitur', '/physical-mode', '/coming-soon', '/global', '/blog', '/help', '/legal'];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Skip middleware for static files, api routes (auth logic is inside), _next
@@ -50,10 +50,10 @@ export async function middleware(request: NextRequest) {
     }
 
     // 3. Role Guard: Talent can't access client routes, Client can't access talent routes
-    if (session.role === 'talent' && pathname.startsWith('/client')) {
+    if (session.role === 'talent' && (pathname.startsWith('/client/') || pathname === '/client')) {
       return NextResponse.redirect(new URL('/talent/dashboard', request.url));
     }
-    if (session.role === 'client' && pathname.startsWith('/talent')) {
+    if (session.role === 'client' && (pathname.startsWith('/talent/') || pathname === '/talent')) {
       return NextResponse.redirect(new URL('/client/dashboard', request.url));
     }
 

@@ -33,6 +33,7 @@ export default function PostJobPage() {
   const [error, setError] = useState("");
   const [clientCurrency, setClientCurrency] = useState("IDR");
   const [isExportClient, setIsExportClient] = useState(false);
+  const [customSkill, setCustomSkill] = useState("");
 
   const [form, setForm] = useState({
     title: "",
@@ -75,7 +76,7 @@ export default function PostJobPage() {
       return ["Design Tool", "Design"].includes(s.category);
     }
     return true;
-  });
+  }).filter((s) => customSkill ? s.name.toLowerCase().includes(customSkill.toLowerCase()) : true);
 
   const toggleSkill = (skill: Skill) => {
     const exists = form.required_skills.find((s) => s.skill_id === skill.id);
@@ -164,21 +165,7 @@ export default function PostJobPage() {
 
   return (
     <div className="min-h-screen bg-surface-50">
-      {/* Nav */}
-      <nav className="glass sticky top-0 z-50" role="navigation">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo height={32} />
-          </Link>
-          <Link href="/client/dashboard" className="text-sm text-surface-500 hover:text-surface-900">
-            <span className="inline-flex items-center gap-1">
-              <Icon name="arrowLeft" size={14} />
-              {isExportClient ? "Back to Dashboard" : "Kembali ke Dashboard"}
-            </span>
-          </Link>
-        </div>
-      </nav>
-
+      {/* Nav moved to DashboardSidebar via /client layout (PRD v5.3 §6.12) */}
       <main role="main" className="max-w-2xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-surface-900" >
           {isExportClient ? "Post a New Job" : "Post Job Baru"}
@@ -266,10 +253,10 @@ export default function PostJobPage() {
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { value: "", label: isExportClient ? "Any" : "Bebas" },
-                { value: "beginner", label: "Entry" },
-                { value: "intermediate", label: "Intermediate" },
-                { value: "expert", label: "Expert" },
+                { value: "", label: isExportClient ? "Any" : "Bebas", desc: isExportClient ? "AI matching will factor talent seniority against this level." : "AI matching akan mempertimbangkan semua level senioritas." },
+                { value: "beginner", label: "Entry", desc: isExportClient ? "Looking for beginner talent with affordable rates." : "Mencari talenta pemula dengan rate yang lebih terjangkau." },
+                { value: "intermediate", label: "Intermediate", desc: isExportClient ? "Looking for independent mid-level talent." : "Mencari talenta berpengalaman menengah yang mandiri." },
+                { value: "expert", label: "Expert", desc: isExportClient ? "Looking for expert talent for complex projects with minimal supervision." : "Mencari talenta ahli untuk proyek kompleks dengan pengawasan minim." },
               ].map((lvl) => (
                 <button
                   key={lvl.value}
@@ -286,9 +273,15 @@ export default function PostJobPage() {
               ))}
             </div>
             <p className="text-[11px] text-surface-400 mt-2">
-              {isExportClient
-                ? "AI matching will factor talent seniority against this level."
-                : "AI matching akan mempertimbangkan senioritas talenta terhadap level ini."}
+              {(() => {
+                const selected = [
+                  { value: "", desc: isExportClient ? "AI matching will factor talent seniority against this level." : "AI matching akan mempertimbangkan semua level senioritas." },
+                  { value: "beginner", desc: isExportClient ? "Looking for beginner talent with affordable rates." : "Mencari talenta pemula dengan rate yang lebih terjangkau." },
+                  { value: "intermediate", desc: isExportClient ? "Looking for independent mid-level talent." : "Mencari talenta berpengalaman menengah yang mandiri." },
+                  { value: "expert", desc: isExportClient ? "Looking for expert talent for complex projects with minimal supervision." : "Mencari talenta ahli untuk proyek kompleks dengan pengawasan minim." },
+                ].find(l => l.value === form.experience_level);
+                return selected ? selected.desc : "";
+              })()}
             </p>
           </div>
 
@@ -296,7 +289,62 @@ export default function PostJobPage() {
             <label className="block text-sm text-surface-600 mb-2">
               Required Skills * ({form.required_skills.length} {isExportClient ? "selected" : "dipilih"})
             </label>
+            <div className="flex items-center gap-2 mb-4">
+              <input 
+                type="text" 
+                id="customSkillInput"
+                placeholder={isExportClient ? "Cari atau tambah skill..." : "Cari atau tambah skill..."} 
+                className="input-dark text-sm flex-1 max-w-[300px]"
+                value={customSkill}
+                onChange={(e) => setCustomSkill(e.target.value)}
+                onKeyDown={async (e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const target = e.target as HTMLInputElement;
+                    const val = target.value.trim();
+                    if (!val) return;
+                    target.disabled = true;
+                    try {
+                      const res = await fetch('/api/skills', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          name: val,
+                          category: form.category === 'web_dev' ? 'Frontend' : 'Design'
+                        })
+                      });
+                      const data = await res.json();
+                      if (data.success && data.data) {
+                        const newSkill = data.data;
+                        if (!allSkills.find(s => s.id === newSkill.id)) {
+                          setAllSkills([...allSkills, newSkill]);
+                        }
+                        if (!form.required_skills.find(s => s.skill_id === newSkill.id)) {
+                          setForm({
+                            ...form,
+                            required_skills: [
+                              ...form.required_skills,
+                              { skill_id: newSkill.id, is_mandatory: true, name: newSkill.name },
+                            ],
+                          });
+                        }
+                      }
+                    } catch (error) {
+                      console.error("Failed to add skill", error);
+                    }
+                    setCustomSkill("");
+                    target.disabled = false;
+                    target.focus();
+                  }
+                }}
+              />
+              <span className="text-[10px] text-surface-400">Tekan Enter untuk menambah jika tidak ada</span>
+            </div>
+
             <div className="flex flex-wrap gap-2">
+              {filteredSkills.length === 0 && customSkill && (
+                <p className="text-xs text-surface-400">Skill belum ada, tekan Enter untuk membuatnya.</p>
+              )}
               {filteredSkills.map((skill) => {
                 const selected = form.required_skills.find((s) => s.skill_id === skill.id);
                 return (
@@ -315,6 +363,7 @@ export default function PostJobPage() {
                 );
               })}
             </div>
+
             {form.required_skills.length === 0 && (
               <p className="text-xs text-red-500 mt-2">
                 {isExportClient ? "Select at least 1 skill to post the job." : "Pilih minimal 1 skill untuk bisa post job."}
